@@ -1,59 +1,135 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Academic Workspace (E-Akademik)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi manajemen akademik berbasis Laravel 12, Vite, dan Tailwind CSS v4.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📋 Persyaratan Sistem (Prerequisites)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Sebelum memulai instalasi, pastikan sistem Anda telah terpasang software berikut:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+*   **PHP** `>= 8.2`
+*   **Composer** (Manajer dependensi PHP)
+*   **Node.js** (Rekomendasi versi LTS terbaru) & **NPM**
+*   **Database Engine** (Secara default dikonfigurasi menggunakan **SQLite**, namun bisa menggunakan **MySQL**, **PostgreSQL**, dll.)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## ⚡ Cara Instalasi Cepat (Automated Setup)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Projek ini dilengkapi dengan skrip setup otomatis yang didefinisikan dalam `composer.json`. Untuk melakukan instalasi secara otomatis, jalankan perintah berikut secara berurutan di terminal:
 
-## Laravel Sponsors
+1. **Instal dependensi Composer awal:**
+   ```bash
+   composer install
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+2. **Jalankan skrip setup otomatis:**
+   ```bash
+   composer run setup
+   ```
+   *Skrip ini secara otomatis akan:*
+   * Menyalin file `.env.example` ke `.env` (jika `.env` belum ada).
+   * Menghasilkan Application Key (`php artisan key:generate`).
+   * Menjalankan migrasi database (`php artisan migrate --force`).
+   * Menginstal dependensi Node.js (`npm install`).
+   * Membangun aset frontend (`npm run build`).
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 🛠️ Cara Instalasi Manual (Manual Setup)
 
-## Contributing
+Jika Anda ingin melakukan instalasi langkah demi langkah secara manual:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 1. Duplikasi File Environment
+Salin file `.env.example` menjadi `.env`:
+```bash
+cp .env.example .env
+```
 
-## Code of Conduct
+### 2. Instal Dependensi Backend (Composer)
+```bash
+composer install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 3. Generate Application Key
+```bash
+php artisan key:generate
+```
 
-## Security Vulnerabilities
+### 4. Konfigurasi Database
+Secara default, aplikasi menggunakan database **SQLite**. 
+* Jika menggunakan SQLite, buat file database kosong di folder database:
+  ```bash
+  # Di Windows PowerShell:
+  New-Item -Path .\database\database.sqlite -ItemType File
+  
+  # Di Linux / macOS / Git Bash:
+  touch database/database.sqlite
+  ```
+* Jika ingin menggunakan **MySQL** atau database lain, silakan perbarui baris berikut pada file `.env` Anda:
+  ```env
+  DB_CONNECTION=mysql
+  DB_HOST=127.0.0.1
+  DB_PORT=3306
+  DB_DATABASE=nama_database_anda
+  DB_USERNAME=root
+  DB_PASSWORD=password_anda
+  ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 5. Jalankan Migrasi & Database Seeder
+Jalankan migrasi database beserta data awal (seeders):
+```bash
+php artisan migrate --seed
+```
 
-## License
+### 6. Instal Dependensi Frontend & Compile Aset
+```bash
+npm install
+npm run build
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## 🚀 Menjalankan Aplikasi
+
+Aplikasi ini menggunakan `npx concurrently` untuk menjalankan server backend PHP, queue worker, Laravel Pail (logs), dan Vite dev server secara bersamaan dengan satu perintah mudah:
+
+```bash
+composer run dev
+```
+
+Atau, jika Anda ingin menjalankannya secara manual di terminal terpisah:
+
+*   **Menjalankan Server Backend PHP:**
+    ```bash
+    php artisan serve
+    ```
+*   **Menjalankan Vite Asset Compiler (Hot Reload):**
+    ```bash
+    npm run dev
+    ```
+
+Aplikasi default dapat diakses melalui browser pada alamat: **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
+
+---
+
+## 🔑 Kredensial Akun Bawaan (Default Credentials)
+
+Setelah database berhasil di-seed, Anda dapat menggunakan akun-akun bawaan berikut untuk masuk ke aplikasi:
+
+### 👤 Super Admin (Akses Penuh)
+*   **Email:** `admin@akademik.id`
+*   **Password:** `password`
+
+### 👥 Staff (Akses Terbatas / Read-only)
+*   Terdapat 25 akun staff simulasi dengan format email `staff{1-25}@akademik.id` untuk pengujian. Contoh:
+    *   **Email:** `staff1@akademik.id` (hingga `staff25@akademik.id`)
+    *   **Password:** `password`
+
+---
+
+## 📂 Informasi Tambahan
+
+*   **Skema Program Studi:** Terdapat file SQL referensi mentah `database/eakademik_prodi.sql` yang mendefinisikan tabel dan struktur untuk manajemen program studi.
+*   **Struktur Menu & Fitur:** Pengaturan hak akses (Role), Menu, Halaman (Pages), dan Matriks Izin (Permission Matrix) dapat dikelola langsung oleh akun Super Admin melalui menu **Settings**.

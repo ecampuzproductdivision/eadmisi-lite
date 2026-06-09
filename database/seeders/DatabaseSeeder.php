@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             RegencySeeder::class,
+            RegistrationPathSeeder::class,
         ]);
     }
 }

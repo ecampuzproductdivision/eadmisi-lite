@@ -11,6 +11,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\RegistrationPathController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\OtpVerificationController;
@@ -24,6 +25,9 @@ Route::get('/', function () {
     return view('pmb.landing');
 })->name('pmb.landing');
 
+Route::get('/jalur-pendaftaran', [RegistrationPathController::class, 'publicIndex'])->name('pmb.registration-paths');
+Route::get('/api/registration-paths', [RegistrationPathController::class, 'apiList'])->name('api.registration-paths');
+
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -35,9 +39,7 @@ Route::get('/verify-otp', [OtpVerificationController::class, 'showVerificationFo
 Route::post('/verify-otp', [OtpVerificationController::class, 'verifyOtp'])->name('otp.verify');
 Route::post('/verify-otp/resend', [OtpVerificationController::class, 'resendOtp'])->name('otp.resend');
 
-// LOGIN by Google (khusus user existing)
 Route::get('/auth/google/login', [GoogleAuthController::class, 'redirectToGoogleLogin'])->name('auth.google.login');
-// DAFTAR by Google (user baru + lengkapi profil)
 Route::get('/auth/google/register', [GoogleAuthController::class, 'redirectToGoogleRegister'])->name('auth.google.register');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 Route::get('/auth/google/complete-registration', [GoogleAuthController::class, 'showCompleteRegistrationForm'])->name('google.complete.registration');
@@ -66,6 +68,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('settings/menus', MenuController::class);
         Route::resource('settings/pages', PageController::class);
         Route::resource('settings/permissions', PermissionController::class);
+        Route::resource('settings/registration-paths', RegistrationPathController::class);
         Route::get('settings/logs', [ActivityLogController::class, 'index'])->name('logs.index');
     });
 });

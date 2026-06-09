@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             RegencySeeder::class,
             KategoriJalurSeeder::class,
             RegistrationPathSeeder::class,
+            MenuRegistrationPathSeeder::class,
         ]);
     }
 }

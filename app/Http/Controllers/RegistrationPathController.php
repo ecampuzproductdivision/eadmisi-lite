@@ -11,11 +11,11 @@ use Illuminate\Support\Facades\Validator;
 class RegistrationPathController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource with infinite scroll.
      */
     public function index(Request $request)
     {
-        $paths = RegistrationPath::with('kategori')->orderBy('created_at', 'desc')->paginate(10);
+        $paths = RegistrationPath::with('kategori')->orderBy('code')->paginate(10);
 
         if ($request->ajax()) {
             return response()->json([
@@ -151,7 +151,7 @@ class RegistrationPathController extends Controller
 
         $query = RegistrationPath::with('kategori')
             ->where('is_active', true)
-            ->orderBy('created_at', 'desc');
+            ->orderBy('code');
 
         if ($kategoriId) {
             $query->where('kategori_jalur_id', $kategoriId);

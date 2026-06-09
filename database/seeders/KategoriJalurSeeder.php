@@ -12,6 +12,10 @@ class KategoriJalurSeeder extends Seeder
      */
     public function run(): void
     {
+        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
+        DB::table('kategori_jalurs')->truncate();
+        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
+
         $data = [
             ['nama' => 'Seleksi Nasional'],
             ['nama' => 'Seleksi Mandiri'],

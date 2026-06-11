@@ -55,7 +55,6 @@ Route::get('/api/registration-paths', [RegistrationPathController::class, 'apiLi
 
         // Riwayat Pendaftaran
         Route::get('/riwayat-pendaftaran', [RiwayatPendaftaranController::class, 'index'])->name('riwayat-pendaftaran.index');
-        Route::get('/riwayat-pendaftaran/{id}', [RiwayatPendaftaranController::class, 'show'])->name('riwayat-pendaftaran.show');
 
         // Tagihan (menu baru)
         Route::get('/tagihan', [TagihanController::class, 'index'])->name('tagihan.index');

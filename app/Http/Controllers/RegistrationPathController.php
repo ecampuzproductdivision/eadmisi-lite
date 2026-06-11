@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ActivityLogger;
+use App\Models\ExamQuestion;
+use App\Models\ExamResult;
 use App\Models\KategoriJalur;
+use App\Models\ProgramStudi;
+use App\Models\Registration;
+use App\Models\RegistrationDocument;
 use App\Models\RegistrationPath;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -138,6 +143,593 @@ class RegistrationPathController extends Controller
     {
         $kategoris = KategoriJalur::orderBy('nama')->get();
         return view('pmb.registration-paths', compact('kategoris'));
+    }
+
+    /**
+     * Halaman "Daftar PMB" untuk calon mahasiswa.
+     */
+    public function daftarPmb()
+    {
+        $kategoris = KategoriJalur::orderBy('nama')->get();
+        return view('daftar-pmb.index', compact('kategoris'));
+    }
+
+    /**
+     * Halaman "Alur Pendaftaran PMB" - Step by step registration.
+     */
+    public function registrationSteps($pathCode = null)
+    {
+        $path = null;
+        $pathId = null;
+        if ($pathCode) {
+            $path = RegistrationPath::where('code', $pathCode)->first();
+            $pathId = $path?->id;
+        }
+
+        $registration = Registration::where('user_id', auth()->id())
+            ->where('registration_path_id', $pathId)
+            ->first();
+
+        // Determine current step (only for Daftar PMB registration flow)
+        // Step 1: Biodata (draft without program_studi)
+        // Step 2: Program Studi (draft with program_studi_1_id)
+        // Step 3: Upload Dokumen (submitted)
+        // After submitting documents, user proceeds to Tagihan then Tes Online via separate menus
+        $currentStep = 1;
+        if ($registration) {
+            if ($registration->status === 'draft' && $registration->program_studi_1_id) {
+                $currentStep = 2; // Step 1 done, step 2 active
+            }
+            if ($registration->status === 'submitted') {
+                $currentStep = 3; // Step 1 & 2 complete, step 3 (Upload) active
+            }
+            if (in_array($registration->status, ['documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted'])) {
+                $currentStep = 4; // All registration steps complete
+            }
+        }
+
+        return view('daftar-pmb.registration-steps', compact('path', 'registration', 'currentStep'));
+    }
+
+    /**
+     * Halaman formulir pendaftaran (biodata pribadi).
+     */
+    public function registrationForm($pathCode = null)
+    {
+        $path = null;
+        if ($pathCode) {
+            $path = RegistrationPath::where('code', $pathCode)->first();
+        }
+        $programStudis = ProgramStudi::where('status', true)->orderBy('kode')->get();
+        return view('daftar-pmb.registration-form', compact('path', 'programStudis'));
+    }
+
+    /**
+     * Simpan data pendaftaran (biodata pribadi).
+     * Saving always sets status to 'draft' so user must select program studi next.
+     */
+    public function registrationStore(Request $request, $pathCode = null)
+    {
+        $validator = Validator::make($request->all(), [
+            'nama_lengkap'   => 'required|string|max:200',
+            'tempat_lahir'   => 'nullable|string|max:100',
+            'tanggal_lahir'  => 'nullable|date',
+            'jenis_kelamin'  => 'nullable|in:L,P',
+            'agama'          => 'nullable|string|max:20',
+            'nik'            => 'nullable|string|size:16',
+            'alamat'         => 'nullable|string',
+            'kode_pos'       => 'nullable|string|size:5',
+            'no_hp'          => 'nullable|string|max:20',
+            'email'          => 'nullable|email|max:200',
+            'nama_sekolah'   => 'nullable|string|max:200',
+            'jurusan'        => 'nullable|string|max:200',
+            'tahun_lulus'    => 'nullable|string|max:4',
+            'registration_path_id' => 'nullable|exists:registration_paths,id',
+            'is_draft'       => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+            }
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $pathId = null;
+        if ($pathCode) {
+            $pathObj = RegistrationPath::where('code', $pathCode)->first();
+            $pathId = $pathObj?->id;
+        }
+
+        $isDraft = $request->input('is_draft') === '1';
+        // Always save as draft after biodata; user must select program studi next.
+        $status = 'draft';
+
+        // Check if user already has a registration for this path
+        $registration = Registration::where('user_id', auth()->id())
+            ->where('registration_path_id', $pathId)
+            ->first();
+
+        $data = [
+            'user_id'             => auth()->id(),
+            'registration_path_id' => $pathId,
+            'nama_lengkap'        => $request->input('nama_lengkap'),
+            'tempat_lahir'        => $request->input('tempat_lahir'),
+            'tanggal_lahir'       => $request->input('tanggal_lahir'),
+            'jenis_kelamin'       => $request->input('jenis_kelamin'),
+            'agama'               => $request->input('agama'),
+            'nik'                 => $request->input('nik'),
+            'alamat'              => $request->input('alamat'),
+            'kode_pos'            => $request->input('kode_pos'),
+            'no_hp'               => $request->input('no_hp'),
+            'email'               => $request->input('email'),
+            'nama_sekolah'        => $request->input('nama_sekolah'),
+            'jurusan'             => $request->input('jurusan'),
+            'tahun_lulus'         => $request->input('tahun_lulus'),
+            'status'              => $status,
+        ];
+
+        if ($registration) {
+            $registration->update($data);
+        } else {
+            $registration = Registration::create($data);
+        }
+
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => $isDraft ? 'Draft berhasil disimpan!' : 'Data pendaftaran berhasil disimpan!']);
+        }
+
+        return redirect()->route('daftar-pmb.steps', $pathCode)
+            ->with('success', $isDraft ? 'Draft berhasil disimpan!' : 'Data pendaftaran berhasil disimpan. Silakan lanjut memilih program studi.');
+    }
+
+    /**
+     * Halaman form pilihan program studi.
+     */
+    public function programStudiForm($pathCode = null)
+    {
+        $path = null;
+        $pathId = null;
+        if ($pathCode) {
+            $path = RegistrationPath::where('code', $pathCode)->first();
+            $pathId = $path?->id;
+        }
+
+        $registration = Registration::where('user_id', auth()->id())
+            ->where('registration_path_id', $pathId)
+            ->first();
+
+        if (!$registration) {
+            return redirect()->route('daftar-pmb.steps', $pathCode)
+                ->with('error', 'Silakan lengkapi data pendaftaran terlebih dahulu.');
+        }
+
+        $programStudis = ProgramStudi::where('status', true)->orderBy('kode')->get();
+        return view('daftar-pmb.program-studi', compact('path', 'registration', 'programStudis'));
+    }
+
+    /**
+     * Simpan pilihan program studi.
+     */
+    public function programStudiStore(Request $request, $pathCode = null)
+    {
+        // Convert empty string to null for program_studi_2_id
+        $input = $request->all();
+        if (empty($input['program_studi_2_id'])) {
+            $input['program_studi_2_id'] = null;
+        }
+        $request->merge($input);
+
+        $validator = Validator::make($request->all(), [
+            'program_studi_1_id' => 'required|exists:program_studis,id',
+            'program_studi_2_id' => 'nullable|exists:program_studis,id|different:program_studi_1_id',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $pathId = null;
+        if ($pathCode) {
+            $pathObj = RegistrationPath::where('code', $pathCode)->first();
+            $pathId = $pathObj?->id;
+        }
+
+        $registration = Registration::where('user_id', auth()->id())
+            ->where('registration_path_id', $pathId)
+            ->first();
+
+        if (!$registration) {
+            return redirect()->route('daftar-pmb.steps', $pathCode)
+                ->with('error', 'Data pendaftaran tidak ditemukan.');
+        }
+
+        $registration->update([
+            'program_studi_1_id' => $request->input('program_studi_1_id'),
+            'program_studi_2_id' => $request->input('program_studi_2_id') ?: null,
+            'status' => 'submitted',
+        ]);
+
+        return redirect()->route('daftar-pmb.steps', $pathCode)
+            ->with('success', 'Pilihan program studi berhasil disimpan. Silakan lanjut ke tahap upload dokumen.');
+    }
+
+    /**
+     * Halaman form upload dokumen.
+     */
+    public function documentUpload($pathCode = null)
+    {
+        $path = null;
+        $pathId = null;
+        if ($pathCode) {
+            $path = RegistrationPath::where('code', $pathCode)->first();
+            $pathId = $path?->id;
+        }
+
+        $registration = Registration::where('user_id', auth()->id())
+            ->where('registration_path_id', $pathId)
+            ->first();
+
+        if (!$registration) {
+            return redirect()->route('daftar-pmb.steps', $pathCode)
+                ->with('error', 'Silakan lengkapi data pendaftaran terlebih dahulu.');
+        }
+
+        if ($registration->status === 'draft') {
+            return redirect()->route('daftar-pmb.program-studi.form', $pathCode)
+                ->with('error', 'Silakan pilih program studi terlebih dahulu.');
+        }
+
+        $existingDocuments = RegistrationDocument::where('registration_id', $registration->id)
+            ->get()
+            ->keyBy('type');
+
+        return view('daftar-pmb.document-upload', compact('path', 'registration', 'existingDocuments'));
+    }
+
+    /**
+     * Simpan dokumen upload.
+     */
+    public function documentStore(Request $request, $pathCode = null)
+    {
+        $pathId = null;
+        if ($pathCode) {
+            $pathObj = RegistrationPath::where('code', $pathCode)->first();
+            $pathId = $pathObj?->id;
+        }
+
+        $registration = Registration::where('user_id', auth()->id())
+            ->where('registration_path_id', $pathId)
+            ->first();
+
+        if (!$registration) {
+            return redirect()->route('daftar-pmb.steps', $pathCode)
+                ->with('error', 'Data pendaftaran tidak ditemukan.');
+        }
+
+        $request->validate([
+            'foto_formal'    => 'nullable|file|max:2048|mimes:jpg,jpeg,png',
+            'ijazah'         => 'nullable|file|max:5120|mimes:pdf',
+            'kartu_keluarga' => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg',
+            'akta_kelahiran' => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg',
+        ]);
+
+        $documentTypes = [
+            'foto_formal'    => ['accept' => 'jpg,jpeg,png', 'max' => 2048],
+            'ijazah'         => ['accept' => 'pdf', 'max' => 5120],
+            'kartu_keluarga' => ['accept' => 'pdf,jpg,jpeg', 'max' => 5120],
+            'akta_kelahiran' => ['accept' => 'pdf,jpg,jpeg', 'max' => 5120],
+        ];
+
+        foreach ($documentTypes as $type => $config) {
+            if ($request->hasFile($type)) {
+                $file = $request->file($type);
+
+                // Delete old file if exists
+                $oldDoc = RegistrationDocument::where('registration_id', $registration->id)
+                    ->where('type', $type)
+                    ->first();
+
+                if ($oldDoc) {
+                    $oldPath = storage_path('app/public/' . $oldDoc->file_path);
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
+                    $oldDoc->delete();
+                }
+
+                // Store new file
+                $path = $file->store('registrations/' . $registration->id, 'public');
+
+                RegistrationDocument::create([
+                    'registration_id' => $registration->id,
+                    'type'            => $type,
+                    'original_name'   => $file->getClientOriginalName(),
+                    'file_path'       => $path,
+                    'mime_type'       => $file->getMimeType(),
+                    'file_size'       => $file->getSize(),
+                ]);
+            }
+        }
+
+        // Update registration status to documents_uploaded
+        \Illuminate\Support\Facades\DB::table('registrations')
+            ->where('id', $registration->id)
+            ->update(['status' => 'documents_uploaded', 'updated_at' => now()]);
+
+        return redirect()->route('daftar-pmb.steps', $pathCode)
+            ->with('success', 'Dokumen berhasil diunggah. Silakan lanjut ke tahap berikutnya.');
+    }
+
+    /**
+     * Halaman ujian online - CTA & Info.
+     */
+    public function examPage($pathCode = null)
+    {
+        $path = null;
+        $pathId = null;
+        if ($pathCode) {
+            $path = RegistrationPath::where('code', $pathCode)->first();
+            $pathId = $path?->id;
+        }
+
+        $registration = Registration::where('user_id', auth()->id())
+            ->where('registration_path_id', $pathId)
+            ->first();
+
+        if (!$registration) {
+            return redirect()->route('daftar-pmb.steps', $pathCode)
+                ->with('error', 'Silakan lengkapi data pendaftaran terlebih dahulu.');
+        }
+
+        $examResult = ExamResult::where('registration_id', $registration->id)
+            ->where('status', 'completed')
+            ->first();
+
+        return view('daftar-pmb.exam-online', compact('path', 'registration', 'examResult'));
+    }
+
+    /**
+     * Mulai ujian - buat exam result baru.
+     */
+    public function examStart($pathCode = null)
+    {
+        $pathId = null;
+        if ($pathCode) {
+            $pathObj = RegistrationPath::where('code', $pathCode)->first();
+            $pathId = $pathObj?->id;
+        }
+
+        $registration = Registration::where('user_id', auth()->id())
+            ->where('registration_path_id', $pathId)
+            ->first();
+
+        if (!$registration) {
+            return redirect()->route('daftar-pmb.steps', $pathCode);
+        }
+
+        // Check if already completed
+        $existingExam = ExamResult::where('registration_id', $registration->id)
+            ->where('status', 'completed')
+            ->first();
+
+        if ($existingExam) {
+            return redirect()->route('daftar-pmb.exam.page', $pathCode);
+        }
+
+        // Check if there's an in_progress exam
+        $examResult = ExamResult::where('registration_id', $registration->id)
+            ->where('status', 'in_progress')
+            ->first();
+
+        if (!$examResult) {
+            $questions = ExamQuestion::orderBy('order')->get();
+            $examResult = ExamResult::create([
+                'registration_id' => $registration->id,
+                'total_questions' => $questions->count(),
+                'answers' => [],
+                'status' => 'in_progress',
+            ]);
+        }
+
+        return redirect()->route('daftar-pmb.exam.question', [$pathCode, 0]);
+    }
+
+    /**
+     * Tampilkan soal ujian.
+     */
+    public function examQuestion($pathCode = null, $index = 0)
+    {
+        $path = null;
+        $pathId = null;
+        if ($pathCode) {
+            $path = RegistrationPath::where('code', $pathCode)->first();
+            $pathId = $path?->id;
+        }
+
+        $registration = Registration::where('user_id', auth()->id())
+            ->where('registration_path_id', $pathId)
+            ->first();
+
+        $examResult = ExamResult::where('registration_id', $registration->id)
+            ->where('status', 'in_progress')
+            ->first();
+
+        if (!$examResult) {
+            return redirect()->route('daftar-pmb.exam.page', $pathCode);
+        }
+
+        $questions = ExamQuestion::orderBy('order')->get();
+        $currentQuestion = $questions[$index] ?? null;
+        $answers = $examResult->answers ?? [];
+        $currentQuestionIndex = (int) $index;
+
+        // Calculate elapsed time
+        $elapsedSeconds = 0;
+        if ($examResult->created_at) {
+            $elapsedSeconds = max(0, now()->diffInSeconds($examResult->created_at, false) * -1);
+        }
+
+        return view('daftar-pmb.exam-online', compact(
+            'path', 'registration', 'examResult', 'questions',
+            'currentQuestion', 'currentQuestionIndex', 'answers', 'elapsedSeconds'
+        ));
+    }
+
+    /**
+     * Simpan jawaban dan pindah ke soal berikutnya.
+     */
+    public function examAnswer(Request $request, $pathCode = null)
+    {
+        $pathId = null;
+        if ($pathCode) {
+            $pathObj = RegistrationPath::where('code', $pathCode)->first();
+            $pathId = $pathObj?->id;
+        }
+
+        $registration = Registration::where('user_id', auth()->id())
+            ->where('registration_path_id', $pathId)
+            ->first();
+
+        $examResult = ExamResult::where('registration_id', $registration->id)
+            ->where('status', 'in_progress')
+            ->first();
+
+        if (!$examResult) {
+            return redirect()->route('daftar-pmb.exam.page', $pathCode);
+        }
+
+        $questionId = $request->input('question_id');
+        $answer = $request->input('answer');
+        $elapsedSeconds = $request->input('elapsed_seconds', 0);
+
+        // Save answer
+        $answers = $examResult->answers ?? [];
+        if ($questionId && $answer) {
+            $answers[$questionId] = $answer;
+            $examResult->update([
+                'answers' => $answers,
+                'duration_seconds' => $elapsedSeconds,
+            ]);
+        }
+
+        // Find current question index
+        $questions = ExamQuestion::orderBy('order')->get();
+        $currentIndex = $questions->search(function ($q) use ($questionId) {
+            return $q->id == $questionId;
+        });
+
+        $nextIndex = $currentIndex + 1;
+        if ($nextIndex >= $questions->count()) {
+            $nextIndex = $questions->count() - 1;
+        }
+
+        return redirect()->route('daftar-pmb.exam.question', [$pathCode, $nextIndex]);
+    }
+
+    /**
+     * Selesai ujian - koreksi jawaban.
+     */
+    public function examSubmit(Request $request, $pathCode = null)
+    {
+        $pathId = null;
+        if ($pathCode) {
+            $pathObj = RegistrationPath::where('code', $pathCode)->first();
+            $pathId = $pathObj?->id;
+        }
+
+        $registration = Registration::where('user_id', auth()->id())
+            ->where('registration_path_id', $pathId)
+            ->first();
+
+        $examResult = ExamResult::where('registration_id', $registration->id)
+            ->where('status', 'in_progress')
+            ->first();
+
+        if (!$examResult) {
+            return redirect()->route('daftar-pmb.exam.page', $pathCode);
+        }
+
+        // Save last answer if any
+        $questionId = $request->input('question_id');
+        $answer = $request->input('answer');
+        $elapsedSeconds = $request->input('elapsed_seconds', 0);
+
+        $answers = $examResult->answers ?? [];
+        if ($questionId && $answer) {
+            $answers[$questionId] = $answer;
+        }
+
+        // Grade the exam
+        $questions = ExamQuestion::orderBy('order')->get();
+        $correctAnswers = 0;
+
+        foreach ($questions as $question) {
+            if (isset($answers[$question->id]) && $answers[$question->id] === $question->correct_answer) {
+                $correctAnswers++;
+            }
+        }
+
+        $totalQuestions = $questions->count();
+        $wrongAnswers = $totalQuestions - $correctAnswers;
+        $score = $totalQuestions > 0 ? ($correctAnswers / $totalQuestions) * 100 : 0;
+
+        $examResult->update([
+            'answers' => $answers,
+            'total_questions' => $totalQuestions,
+            'correct_answers' => $correctAnswers,
+            'wrong_answers' => $wrongAnswers,
+            'score' => $score,
+            'duration_seconds' => $elapsedSeconds,
+            'status' => 'completed',
+        ]);
+
+        // Update registration status
+        \Illuminate\Support\Facades\DB::table('registrations')
+            ->where('id', $registration->id)
+            ->update(['status' => 'exam_completed', 'updated_at' => now()]);
+
+        return redirect()->route('daftar-pmb.exam.page', $pathCode)
+            ->with('success', 'Ujian berhasil diselesaikan!');
+    }
+
+    /**
+     * Halaman review / ringkasan pendaftaran.
+     */
+    public function review($pathCode = null)
+    {
+        $path = null;
+        $pathId = null;
+        if ($pathCode) {
+            $path = RegistrationPath::where('code', $pathCode)->first();
+            $pathId = $path?->id;
+        }
+
+        $registration = Registration::where('user_id', auth()->id())
+            ->where('registration_path_id', $pathId)
+            ->with(['programStudi1', 'programStudi2', 'registrationPath'])
+            ->first();
+
+        if (!$registration) {
+            return redirect()->route('daftar-pmb.steps', $pathCode);
+        }
+
+        $examResult = ExamResult::where('registration_id', $registration->id)
+            ->where('status', 'completed')
+            ->first();
+
+        $documents = RegistrationDocument::where('registration_id', $registration->id)
+            ->get()
+            ->keyBy('type');
+
+        $documentLabels = [
+            'foto_formal' => 'Foto Formal',
+            'ijazah' => 'Ijazah / SKHUN',
+            'kartu_keluarga' => 'Kartu Keluarga',
+            'akta_kelahiran' => 'Akta Kelahiran',
+        ];
+
+        return view('daftar-pmb.review', compact('path', 'registration', 'examResult', 'documents', 'documentLabels'));
     }
 
     /**

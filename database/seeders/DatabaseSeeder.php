@@ -19,8 +19,15 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             RegencySeeder::class,
             KategoriJalurSeeder::class,
+            ProgramStudiSeeder::class,
             RegistrationPathSeeder::class,
             MenuRegistrationPathSeeder::class,
+            PageRegistrationPathSeeder::class,
+            DaftarPmbSeeder::class,
+            ExamQuestionSeeder::class,
+            PendaftaranSeeder::class,
+            MenuCalonMahasiswaSeeder::class,
+            MenuTagihanSeeder::class,
         ]);
     }
 }

@@ -15,6 +15,12 @@ use App\Http\Controllers\RegistrationPathController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\OtpVerificationController;
+use App\Http\Controllers\PendaftaranController;
+use App\Http\Controllers\TagihanController;
+use App\Http\Controllers\TesOnlineController;
+use App\Http\Controllers\RiwayatPendaftaranController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Admin\TagihanController as AdminTagihanController;
 use App\Http\Controllers\Api\RegencyController;
 
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])
@@ -27,6 +33,46 @@ Route::get('/', function () {
 
 Route::get('/jalur-pendaftaran', [RegistrationPathController::class, 'publicIndex'])->name('pmb.registration-paths');
 Route::get('/api/registration-paths', [RegistrationPathController::class, 'apiList'])->name('api.registration-paths');
+
+// Menu "Pendaftaran" untuk Super Admin (data pendaftaran yang sudah disubmit)
+    Route::middleware(['auth', 'permission'])->group(function () {
+        Route::get('/pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran.index');
+        Route::get('/pendaftaran/{id}', [PendaftaranController::class, 'show'])->name('pendaftaran.show');
+        Route::post('/payment/{paymentId}/verify', [PaymentController::class, 'manualVerify'])->name('payment.manual-verify');
+    });
+
+// Halaman "Daftar PMB" untuk calon mahasiswa (login required)
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/daftar-pmb', [RegistrationPathController::class, 'daftarPmb'])->name('daftar-pmb');
+        Route::get('/daftar-pmb/registrasi/{pathCode?}', [RegistrationPathController::class, 'registrationSteps'])->name('daftar-pmb.steps');
+        Route::get('/daftar-pmb/registrasi/{pathCode?}/form', [RegistrationPathController::class, 'registrationForm'])->name('daftar-pmb.registration.form');
+        Route::post('/daftar-pmb/registrasi/{pathCode?}/form', [RegistrationPathController::class, 'registrationStore'])->name('daftar-pmb.registration.store');
+        Route::get('/daftar-pmb/registrasi/{pathCode?}/program-studi', [RegistrationPathController::class, 'programStudiForm'])->name('daftar-pmb.program-studi.form');
+        Route::post('/daftar-pmb/registrasi/{pathCode?}/program-studi', [RegistrationPathController::class, 'programStudiStore'])->name('daftar-pmb.program-studi.store');
+        Route::get('/daftar-pmb/registrasi/{pathCode?}/upload', [RegistrationPathController::class, 'documentUpload'])->name('daftar-pmb.document.upload');
+        Route::post('/daftar-pmb/registrasi/{pathCode?}/upload', [RegistrationPathController::class, 'documentStore'])->name('daftar-pmb.document.store');
+        Route::get('/daftar-pmb/registrasi/{pathCode?}/review', [RegistrationPathController::class, 'review'])->name('daftar-pmb.review');
+
+        // Riwayat Pendaftaran
+        Route::get('/riwayat-pendaftaran', [RiwayatPendaftaranController::class, 'index'])->name('riwayat-pendaftaran.index');
+        Route::get('/riwayat-pendaftaran/{id}', [RiwayatPendaftaranController::class, 'show'])->name('riwayat-pendaftaran.show');
+
+        // Tagihan (menu baru)
+        Route::get('/tagihan', [TagihanController::class, 'index'])->name('tagihan.index');
+
+        // Payment / Invoice
+        Route::post('/payment/invoice/{registrationId}', [PaymentController::class, 'createInvoice'])->name('payment.invoice');
+
+        // Tes Online (menu baru - ujian dipindahkan kesini)
+        Route::get('/tes-online', [TesOnlineController::class, 'index'])->name('tes-online.index');
+        Route::get('/tes-online/start/{registrationId?}', [TesOnlineController::class, 'start'])->name('tes-online.start');
+        Route::get('/tes-online/question/{registrationId}/{index?}', [TesOnlineController::class, 'question'])->name('tes-online.question');
+        Route::post('/tes-online/answer', [TesOnlineController::class, 'answer'])->name('tes-online.answer');
+        Route::post('/tes-online/submit', [TesOnlineController::class, 'submit'])->name('tes-online.submit');
+    });
+
+// Payment Callback (public - untuk webhook dari aggregator)
+Route::post('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
@@ -70,5 +116,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('settings/permissions', PermissionController::class);
         Route::resource('settings/registration-paths', RegistrationPathController::class);
         Route::get('settings/logs', [ActivityLogController::class, 'index'])->name('logs.index');
+        Route::get('settings/tagihan', [AdminTagihanController::class, 'index'])->name('settings.tagihan.index');
+        Route::post('settings/tagihan/{paymentId}/verify', [AdminTagihanController::class, 'verify'])->name('settings.tagihan.verify');
     });
 });

@@ -3,11 +3,13 @@
 @section('content')
 <main class="p-6">
   <!-- Header -->
-  <div class="row mb-5">
-    <div class="col-12 text-center">
-      <h2 class="fw-bold mb-2">Pilih Jalur Pendaftaran Anda</h2>
-      <p class="text-muted mb-0">Silakan pilih jalur masuk yang sesuai. Perhatikan rentang tanggal, biaya, dan sisa kuota yang tersedia.</p>
-    </div>
+  <div class="bg-gradient-mixed p-8 py-10 rounded-3 p-lg-7 mb-6">
+    <h1 class="fs-3">📋 Pilih Jalur Pendaftaran</h1>
+    <p class="mb-0">Tersedia berbagai jalur pendaftaran yang dapat disesuaikan</p>
+    <p>dengan latar belakang dan prestasi Anda.</p>
+    <a href="{{ route('riwayat-pendaftaran.index') }}" class="btn btn-dark">
+      <i class="ti ti-history me-1"></i> Lihat Riwayat
+    </a>
   </div>
 
   @if(session('success'))
@@ -19,29 +21,36 @@
   @endif
 
   <!-- Filter Kategori -->
-  <div class="row mb-4">
-    <div class="col-12 d-flex justify-content-center gap-2 flex-wrap">
-      <button class="btn btn-sm rounded-pill px-3 py-2 fw-semibold btn-primary filter-btn active" data-kategori="">
-        Semua Jalur
-      </button>
-      @foreach($kategoris as $kategori)
-        <button class="btn btn-sm rounded-pill px-3 py-2 fw-semibold btn-outline-secondary filter-btn" data-kategori="{{ $kategori->id }}">
-          {{ $kategori->nama }}
+  <div class="card card-lg rounded-3 mb-5">
+    <div class="card-body px-4 py-3">
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <span class="fw-semibold small text-muted"><i class="ti ti-filter me-1"></i>Filter:</span>
+        <button class="btn btn-sm rounded-pill px-3 py-2 fw-semibold btn-primary filter-btn active" data-kategori="">
+          <i class="ti ti-list me-1"></i> Semua Jalur
         </button>
-      @endforeach
+        @foreach($kategoris as $kategori)
+          <button class="btn btn-sm rounded-pill px-3 py-2 fw-semibold btn-outline-secondary filter-btn" data-kategori="{{ $kategori->id }}">
+            <i class="ti ti-tag me-1"></i> {{ $kategori->nama }}
+          </button>
+        @endforeach
+      </div>
     </div>
   </div>
 
-  <!-- Card List -->
-  <div class="row g-4" id="pathsContainer">
+  <!-- Card Grid -->
+  <div class="d-flex flex-column gap-3" id="pathsContainer">
     <!-- Cards will be loaded here via JS -->
   </div>
 
   <!-- Empty State -->
-  <div id="emptyContainer" class="text-center py-5 d-none">
-    <i class="ti ti-road-off text-muted" style="font-size: 3.5rem;"></i>
-    <h5 class="mt-3 text-muted">Belum ada jalur pendaftaran tersedia</h5>
-    <p class="text-muted small">Silakan hubungi panitia untuk informasi lebih lanjut.</p>
+  <div id="emptyContainer" class="text-center py-8 d-none">
+    <div class="card border-0 shadow-sm rounded-4">
+      <div class="card-body py-8">
+        <i class="ti ti-road-off text-muted" style="font-size: 4rem;"></i>
+        <h4 class="fw-bold mt-4 text-muted">Belum Ada Jalur Tersedia</h4>
+        <p class="text-muted small">Belum ada jalur pendaftaran yang tersedia saat ini.</p>
+      </div>
+    </div>
   </div>
 
   <!-- Loading -->
@@ -54,56 +63,6 @@
 </main>
 
 <style>
-  .path-card {
-    border: 2px solid transparent !important;
-    border-radius: 16px !important;
-    transition: all 0.3s ease;
-    overflow: hidden;
-  }
-
-  .path-card .icon-badge {
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-  }
-  .path-card .info-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 0;
-  }
-  .path-card .info-item .info-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    flex-shrink: 0;
-  }
-  .path-card .terms-link {
-    font-weight: 600;
-    font-size: 0.9rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    text-decoration: none;
-    transition: all 0.2s;
-  }
-  .path-card .terms-link:hover {
-    gap: 8px;
-  }
-  .popular-badge {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    z-index: 10;
-  }
   .filter-btn {
     border: 2px solid #e9ecef;
     transition: all 0.2s;
@@ -114,7 +73,7 @@
 </style>
 
 <script>
-  // Color scheme mapping
+  // Color scheme mapping menggunakan warna theme
   const colorSchemes = {
     primary:   { bg: '#e8f0fe', icon: '#1a73e8', border: '#1a73e8' },
     success:   { bg: '#e6f4ea', icon: '#1e8e3e', border: '#1e8e3e' },
@@ -136,75 +95,57 @@
 
   function renderCard(path) {
     const scheme = getColorScheme(path.color);
-    const isPopular = path.quota && path.quota <= 20;
 
     return `
-      <div class="col-12">
-        <div class="card path-card shadow-lg position-relative">
-          ${isPopular ? `<div class="popular-badge"><span class="badge rounded-pill px-3 py-2 fw-bold" style="background:${scheme.border};color:#fff;">POPULER</span></div>` : ''}
-
-          <div class="card-body p-4">
-            <div class="row align-items-start">
-              <!-- Left: Icon + Title + Description -->
-              <div class="col-md-7 col-lg-8">
-                <div class="d-flex align-items-start gap-3 mb-3">
-                  <div class="icon-badge flex-shrink-0" style="background:${scheme.bg}; color:${scheme.icon};">
-                    <i class="ti ti-school"></i>
-                  </div>
-                  <div>
-                    <h5 class="fw-bold mb-1">${path.name}</h5>
-                    ${path.kategori ? `<span class="badge bg-light text-dark fw-semibold mb-2">${path.kategori}</span>` : ''}
+      <div class="card card-lift border cursor-pointer">
+        <div class="card-body">
+          <div class="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center gap-3">
+            <div class="d-flex align-items-center gap-3">
+              <div>
+                <div class="fw-semibold d-flex flex-column gap-1">
+                  ${path.name}
+                  <div class="d-flex gap-1 flex-wrap">
+                    ${path.is_open
+                      ? '<span class="badge bg-success-subtle text-success fw-semibold"><i class="ti ti-circle-check me-1"></i> Dibuka</span>'
+                      : '<span class="badge bg-danger-subtle text-danger fw-semibold"><i class="ti ti-circle-off me-1"></i> Ditutup</span>'
+                    }
                   </div>
                 </div>
-                ${path.description ? `<p class="text-muted small mb-3">${path.description}</p>` : ''}
-              </div>
-
-              <!-- Right: Info Items -->
-              <div class="col-md-5 col-lg-4">
-                <div class=" ps-3 h-100">
-                  ${path.registration_start && path.registration_end ? `
-                    <div class="info-item">
-                      <div class="info-icon" style="background:${scheme.bg}; color:${scheme.icon};">
-                        <i class="ti ti-calendar-time"></i>
-                      </div>
-                      <div>
-                        <small class="text-muted d-block">Periode Pendaftaran</small>
-                        <span class="fw-semibold small">${path.registration_start} - ${path.registration_end}</span>
-                      </div>
-                    </div>
-                  ` : ''}
-
-                  <div class="info-item">
-                    <div class="info-icon" style="background:${scheme.bg}; color:${scheme.icon};">
-                      <i class="ti ti-users"></i>
-                    </div>
-                    <div>
-                      <small class="text-muted d-block">Sisa Kuota</small>
-                      <span class="fw-semibold small">${path.quota ? path.quota + ' Kursi' : 'Tidak Terbatas'}</span>
-                    </div>
-                  </div>
-
-                  <div class="info-item">
-                    <div class="info-icon" style="background:${scheme.bg}; color:${scheme.icon};">
-                      <i class="ti ti-wallet"></i>
-                    </div>
-                    <div>
-                      <small class="text-muted d-block">Biaya Formulir</small>
-                      <span class="fw-bold small">${path.fee_formatted}</span>
-                    </div>
-                  </div>
+                <div class="text-secondary small mt-2">
+                  <span class="me-3"><i class="ti ti-wallet me-1"></i>${path.fee_formatted}</span>
+                  <span class="me-3"><i class="ti ti-users me-1"></i>${path.quota ? path.quota + ' Kursi' : 'Tak Terbatas'}</span>
+                  ${path.registration_start && path.registration_end ? `<span class="d-inline-block mt-1"><i class="ti ti-calendar-time me-1"></i>${path.registration_start} - ${path.registration_end}</span>` : ''}
                 </div>
+                ${path.description ? `<p class="text-muted small mb-0 mt-2">${path.description}</p>` : ''}
               </div>
             </div>
-
-            <!-- Action -->
-            <div class="mt-3 pt-3 border-top d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <a href="/jalur-pendaftaran?detail=${path.code}" class="terms-link text-primary">
-                Lihat Syarat & Ketentuan <i class="ti ti-external-link"></i>
-              </a>
-              <a href="/daftar-pmb/registrasi/${path.code}" class="btn btn-primary btn-sm px-4 py-2 fw-semibold d-inline-flex align-items-center gap-2">
-                <i class="ti ti-user-plus"></i> Daftar Sekarang
-              </a>
+            <div class="d-flex align-items-center gap-4">
+              ${path.is_open
+                ? `<a href="/daftar-pmb/registrasi/${path.code}" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1">
+                  <i class="ti ti-user-plus"></i> Daftar
+                </a>`
+                : `<button class="btn btn-secondary btn-sm d-inline-flex align-items-center gap-1" disabled>
+                  <i class="ti ti-lock"></i> Ditutup
+                </button>`
+              }
+              <div class="dropdown dropstart">
+                <button type="button" class="btn btn-icon btn-ghost btn-sm rounded-circle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-dots-vertical" width="20" height="20" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                    <path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                    <path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                  </svg>
+                </button>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item d-flex align-items-center" href="/jalur-pendaftaran?detail=${path.code}">
+                    <i class="ti ti-info-circle me-2"></i> Syarat & Ketentuan
+                  </a>
+                  <a class="dropdown-item d-flex align-items-center" href="/daftar-pmb/registrasi/${path.code}">
+                    <i class="ti ti-user-plus me-2"></i> Daftar Sekarang
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -277,4 +218,7 @@
   // Load initial data
   loadPaths();
 </script>
+@php
+  // Suppress undefined variable warnings for JS init
+@endphp
 @endsection

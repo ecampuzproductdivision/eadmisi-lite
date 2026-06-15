@@ -94,6 +94,47 @@
             @enderror
           </div>
 
+          <!-- Program Studi Ditawarkan (Tag Input) -->
+          <div class="col-12">
+            <label for="tag-input-prodi" class="form-label fw-semibold">Program Studi Ditawarkan <span class="text-danger">*</span></label>
+            <div class="tag-input-wrapper @error('program_studi_ids') is-invalid @enderror" id="tag-input-wrapper">
+              <div class="tag-input-container" id="tag-input-container">
+                <div class="tag-input-tags" id="tag-input-tags"></div>
+                <input type="text" class="tag-input-field" id="tag-input-field" placeholder="Ketik untuk mencari program studi..." autocomplete="off">
+              </div>
+              <div class="tag-dropdown" id="tag-dropdown" style="display:none;"></div>
+            </div>
+            <select name="program_studi_ids[]" id="program_studi_ids" multiple required style="display:none;">
+              @foreach($programStudis as $prodi)
+                <option value="{{ $prodi->id }}"
+                  {{ (old('program_studi_ids') && in_array($prodi->id, old('program_studi_ids'))) || (old('program_studi_ids') === null && $registrationPath->programStudis->contains($prodi->id)) ? 'selected' : '' }}>
+                  {{ $prodi->nama_prodi ?: $prodi->nama }} ({{ $prodi->jenjang_akademik ?? $prodi->jenjang }})
+                </option>
+              @endforeach
+            </select>
+            @error('program_studi_ids')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            @error('program_studi_ids.*')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            <div class="form-text">Ketik nama program studi lalu klik atau tekan Enter untuk menambahkan.</div>
+          </div>
+
+          <!-- Jumlah Pilihan Program Studi -->
+          <div class="col-md-4">
+            <label for="jumlah_pilihan_prodi" class="form-label fw-semibold">Jumlah Pilihan Program Studi <span class="text-danger">*</span></label>
+            <select name="jumlah_pilihan_prodi" id="jumlah_pilihan_prodi" class="form-select @error('jumlah_pilihan_prodi') is-invalid @enderror" required>
+              <option value="1" {{ old('jumlah_pilihan_prodi', $registrationPath->jumlah_pilihan_prodi ?? 1) == 1 ? 'selected' : '' }}>1 Pilihan</option>
+              <option value="2" {{ old('jumlah_pilihan_prodi', $registrationPath->jumlah_pilihan_prodi) == 2 ? 'selected' : '' }}>2 Pilihan</option>
+              <option value="3" {{ old('jumlah_pilihan_prodi', $registrationPath->jumlah_pilihan_prodi) == 3 ? 'selected' : '' }}>3 Pilihan</option>
+            </select>
+            @error('jumlah_pilihan_prodi')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            <div class="form-text">Jumlah maksimal pilihan program studi yang dapat dipilih pendaftar.</div>
+          </div>
+
           <div class="col-md-5">
             <label for="fee" class="form-label fw-semibold">Biaya Pendaftaran (Rp)</label>
             <input type="number" name="fee" id="fee" class="form-control @error('fee') is-invalid @enderror" placeholder="0" value="{{ old('fee', $registrationPath->fee) }}" min="0">
@@ -126,6 +167,60 @@
               <label for="is_active" class="form-check-label fw-semibold">Aktif</label>
             </div>
           </div>
+
+          <!-- Gunakan Ujian Online Toggle -->
+          <div class="col-12">
+            <div class="form-check form-switch mt-2">
+              <input type="hidden" name="gunakan_ujian" value="0">
+              <input type="checkbox" name="gunakan_ujian" id="gunakan_ujian" class="form-check-input" value="1" {{ old('gunakan_ujian', $registrationPath->gunakan_ujian) ? 'checked' : '' }}>
+              <label for="gunakan_ujian" class="form-check-label fw-semibold">Gunakan Ujian Online</label>
+            </div>
+          </div>
+
+          <!-- Pilih Paket Soal Ujian (conditional) -->
+          <div class="col-12" id="paket-soal-section" style="{{ old('gunakan_ujian', $registrationPath->gunakan_ujian) ? '' : 'display:none;' }}">
+            <label for="paket_soal_id" class="form-label fw-semibold">Pilih Paket Soal Ujian <span class="text-danger">*</span></label>
+            <select name="paket_soal_id" id="paket_soal_id" class="form-select @error('paket_soal_id') is-invalid @enderror">
+              <option value="">Pilih paket soal...</option>
+              @foreach($paketSoals as $paket)
+                <option value="{{ $paket->id }}"
+                  {{ (old('paket_soal_id') !== null && old('paket_soal_id') == $paket->id) || (old('paket_soal_id') === null && $registrationPath->paket_soal_id == $paket->id) ? 'selected' : '' }}>
+                  {{ $paket->nama_paket }} ({{ $paket->total_soal }} soal, skor: {{ $paket->total_skor }})
+                </option>
+              @endforeach
+            </select>
+            @error('paket_soal_id')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            <div class="form-text">Pilih paket soal ujian yang akan digunakan. Pastikan total skor paket tepat 100.</div>
+          </div>
+
+          <!-- Gunakan Unggah Berkas Toggle -->
+          <div class="col-12">
+            <div class="form-check form-switch mt-2">
+              <input type="hidden" name="gunakan_berkas" value="0">
+              <input type="checkbox" name="gunakan_berkas" id="gunakan_berkas" class="form-check-input" value="1" {{ old('gunakan_berkas', $registrationPath->gunakan_berkas) ? 'checked' : '' }}>
+              <label for="gunakan_berkas" class="form-check-label fw-semibold">Gunakan Unggah Berkas</label>
+            </div>
+          </div>
+
+          <!-- Pilih Template Syarat Berkas (conditional) -->
+          <div class="col-12" id="template-berkas-section" style="{{ old('gunakan_berkas', $registrationPath->gunakan_berkas) ? '' : 'display:none;' }}">
+            <label for="template_berkas_id" class="form-label fw-semibold">Pilih Template Syarat Berkas <span class="text-danger">*</span></label>
+            <select name="template_berkas_id" id="template_berkas_id" class="form-select @error('template_berkas_id') is-invalid @enderror">
+              <option value="">Pilih template...</option>
+              @foreach($templateBerkas as $tb)
+                <option value="{{ $tb->id }}"
+                  {{ (old('template_berkas_id') !== null && old('template_berkas_id') == $tb->id) || (old('template_berkas_id') === null && $registrationPath->template_berkas_id == $tb->id) ? 'selected' : '' }}>
+                  {{ $tb->nama_template }} ({{ $tb->total_dokumen }} dokumen)
+                </option>
+              @endforeach
+            </select>
+            @error('template_berkas_id')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            <div class="form-text">Pilih template syarat berkas untuk menentukan dokumen yang harus diunggah pendaftar.</div>
+          </div>
         </div>
 
         <div class="mt-5 d-flex gap-3">
@@ -141,3 +236,164 @@
   </div>
 </main>
 @endsection
+
+@push('scripts')
+<script>
+// Custom Multi-Select Tag Input for Program Studi
+document.addEventListener('DOMContentLoaded', function() {
+  const selectEl = document.getElementById('program_studi_ids');
+  const tagContainer = document.getElementById('tag-input-container');
+  const tagsEl = document.getElementById('tag-input-tags');
+  const fieldEl = document.getElementById('tag-input-field');
+  const dropdownEl = document.getElementById('tag-dropdown');
+  const wrapperEl = document.getElementById('tag-input-wrapper');
+
+  // Collect all options data
+  const options = [];
+  selectEl.querySelectorAll('option').forEach(opt => {
+    if (opt.value) {
+      options.push({ value: opt.value, text: opt.textContent.trim() });
+    }
+  });
+
+  // Pre-populate tags from selected options
+  function initTags() {
+    selectEl.querySelectorAll('option').forEach(opt => {
+      if (opt.selected && opt.value) {
+        addTag(opt.value, opt.textContent.trim(), false);
+      }
+    });
+  }
+
+  // Add a tag
+  function addTag(value, text, sync = true) {
+    if (tagsEl.querySelector(`[data-value="${value}"]`)) return;
+    const tag = document.createElement('span');
+    tag.className = 'tag-input-tag';
+    tag.dataset.value = value;
+    tag.innerHTML = `${text} <i class="ti ti-x tag-input-remove" data-value="${value}"></i>`;
+    tag.querySelector('.tag-input-remove').addEventListener('click', function(e) {
+      e.stopPropagation();
+      removeTag(value);
+    });
+    tagsEl.appendChild(tag);
+    syncSelect();
+    fieldEl.focus();
+  }
+
+  // Remove a tag
+  function removeTag(value) {
+    const tag = tagsEl.querySelector(`[data-value="${value}"]`);
+    if (tag) tag.remove();
+    syncSelect();
+    fieldEl.focus();
+  }
+
+  // Sync hidden select with current tags
+  function syncSelect() {
+    const selectedValues = [];
+    tagsEl.querySelectorAll('.tag-input-tag').forEach(tag => {
+      selectedValues.push(tag.dataset.value);
+    });
+    selectEl.querySelectorAll('option').forEach(opt => {
+      opt.selected = selectedValues.includes(opt.value);
+    });
+    selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  // Show dropdown with filtered options
+  function showDropdown(filter) {
+    const normalized = filter.toLowerCase().trim();
+    let filtered = options;
+    if (normalized) {
+      filtered = options.filter(o => o.text.toLowerCase().includes(normalized));
+    }
+    const selectedValues = [];
+    tagsEl.querySelectorAll('.tag-input-tag').forEach(tag => {
+      selectedValues.push(tag.dataset.value);
+    });
+    filtered = filtered.filter(o => !selectedValues.includes(o.value));
+
+    if (filtered.length === 0) {
+      dropdownEl.style.display = 'none';
+      return;
+    }
+
+    dropdownEl.innerHTML = '';
+    filtered.forEach(o => {
+      const item = document.createElement('div');
+      item.className = 'tag-dropdown-item';
+      item.textContent = o.text;
+      item.dataset.value = o.value;
+      item.addEventListener('click', function() {
+        addTag(this.dataset.value, this.textContent, false);
+        fieldEl.value = '';
+        dropdownEl.style.display = 'none';
+      });
+      dropdownEl.appendChild(item);
+    });
+    dropdownEl.style.display = 'block';
+  }
+
+  function hideDropdown() {
+    dropdownEl.style.display = 'none';
+  }
+
+  fieldEl.addEventListener('input', function() {
+    showDropdown(this.value);
+  });
+
+  fieldEl.addEventListener('focus', function() {
+    showDropdown(this.value);
+  });
+
+  fieldEl.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const visibleItems = dropdownEl.querySelectorAll('.tag-dropdown-item');
+      if (visibleItems.length > 0) {
+        const first = visibleItems[0];
+        addTag(first.dataset.value, first.textContent, false);
+        this.value = '';
+        hideDropdown();
+      }
+    } else if (e.key === 'Backspace' && this.value === '') {
+      const lastTag = tagsEl.querySelector('.tag-input-tag:last-child');
+      if (lastTag) removeTag(lastTag.dataset.value);
+    } else if (e.key === 'Escape') {
+      hideDropdown();
+    }
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!wrapperEl.contains(e.target)) hideDropdown();
+  });
+
+  initTags();
+});
+
+// Toggle Gunakan Ujian Online
+document.addEventListener('DOMContentLoaded', function() {
+  const toggle = document.getElementById('gunakan_ujian');
+  const section = document.getElementById('paket-soal-section');
+  
+  function togglePaketSection() {
+    section.style.display = toggle.checked ? 'block' : 'none';
+  }
+  
+  toggle.addEventListener('change', togglePaketSection);
+});
+
+// Toggle Gunakan Unggah Berkas
+document.addEventListener('DOMContentLoaded', function() {
+  const toggle = document.getElementById('gunakan_berkas');
+  const section = document.getElementById('template-berkas-section');
+  
+  function toggleBerkasSection() {
+    section.style.display = toggle.checked ? 'block' : 'none';
+  }
+  
+  toggle.addEventListener('change', toggleBerkasSection);
+});
+</script>
+@endpush

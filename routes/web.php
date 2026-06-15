@@ -11,6 +11,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\ProgramStudiController;
 use App\Http\Controllers\RegistrationPathController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\RegisterController;
@@ -22,6 +23,8 @@ use App\Http\Controllers\RiwayatPendaftaranController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Admin\TagihanController as AdminTagihanController;
 use App\Http\Controllers\Api\RegencyController;
+use App\Http\Controllers\SoalUjianController;
+use App\Http\Controllers\PaketSoalController;
 
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])
     ->whereIn('locale', ['id', 'en'])
@@ -114,6 +117,25 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('settings/pages', PageController::class);
         Route::resource('settings/permissions', PermissionController::class);
         Route::resource('settings/registration-paths', RegistrationPathController::class);
+        Route::resource('settings/program-studi', ProgramStudiController::class);
+        // Paket Soal - exam package management
+        Route::get('settings/paket-soal', [PaketSoalController::class, 'index'])->name('paket-soal.index');
+        Route::post('settings/paket-soal', [PaketSoalController::class, 'store'])->name('paket-soal.store');
+        Route::put('settings/paket-soal/{paketSoal}', [PaketSoalController::class, 'update'])->name('paket-soal.update');
+        Route::delete('settings/paket-soal/{paketSoal}', [PaketSoalController::class, 'destroy'])->name('paket-soal.destroy');
+        Route::post('settings/paket-soal/{paketSoal}/toggle-status', [PaketSoalController::class, 'toggleStatus'])->name('paket-soal.toggle-status');
+        // Drill-down: questions inside a package
+        Route::get('settings/paket-soal/{paketSoal}/kelola-soal', [PaketSoalController::class, 'kelolaSoal'])->name('paket-soal.kelola-soal');
+        Route::post('settings/paket-soal/{paketSoal}/store-question', [PaketSoalController::class, 'storeQuestion'])->name('paket-soal.store-question');
+        Route::put('settings/paket-soal/{paketSoal}/update-question/{soalUjian}', [PaketSoalController::class, 'updateQuestion'])->name('paket-soal.update-question');
+        Route::delete('settings/paket-soal/{paketSoal}/destroy-question/{soalUjian}', [PaketSoalController::class, 'destroyQuestion'])->name('paket-soal.destroy-question');
+        Route::post('settings/paket-soal/{paketSoal}/toggle-question-status/{soalUjian}', [PaketSoalController::class, 'toggleQuestionStatus'])->name('paket-soal.toggle-question-status');
+        // Static helper route for edit question JSON
+        Route::get('settings/paket-soal/{soalUjian}/edit-question', [PaketSoalController::class, 'edit'])->name('paket-soal.edit-question');
+        // Deprecated: old soal-ujian route redirects to paket-soal
+        Route::get('settings/soal-ujian', function () {
+            return redirect()->route('paket-soal.index');
+        })->name('soal-ujian.index');
         Route::get('settings/logs', [ActivityLogController::class, 'index'])->name('logs.index');
         Route::get('settings/tagihan', [AdminTagihanController::class, 'index'])->name('settings.tagihan.index');
         Route::post('settings/tagihan/{paymentId}/verify', [AdminTagihanController::class, 'verify'])->name('settings.tagihan.verify');

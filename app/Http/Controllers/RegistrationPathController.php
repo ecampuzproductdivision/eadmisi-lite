@@ -10,6 +10,8 @@ use App\Models\ProgramStudi;
 use App\Models\Registration;
 use App\Models\RegistrationDocument;
 use App\Models\RegistrationPath;
+use App\Models\SoalUjian;
+use App\Models\PaketSoal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -39,7 +41,9 @@ class RegistrationPathController extends Controller
     public function create()
     {
         $kategoris = KategoriJalur::orderBy('nama')->get();
-        return view('registration-paths.create', compact('kategoris'));
+        $programStudis = ProgramStudi::active()->orderBy('nama')->get();
+        $paketSoals = PaketSoal::active()->orderBy('nama_paket')->get();
+        return view('registration-paths.create', compact('kategoris', 'programStudis', 'paketSoals'));
     }
 
     /**
@@ -56,7 +60,12 @@ class RegistrationPathController extends Controller
             'fee' => 'nullable|numeric|min:0',
             'color' => 'nullable|string|max:20',
             'quota' => 'nullable|integer|min:0',
+            'jumlah_pilihan_prodi' => 'required|integer|in:1,2,3',
+            'program_studi_ids' => 'required|array|min:1',
+            'program_studi_ids.*' => 'exists:program_studis,id',
             'is_active' => 'boolean',
+            'gunakan_ujian' => 'boolean',
+            'paket_soal_id' => 'nullable|exists:paket_soal,id',
         ]);
 
         if ($validator->fails()) {
@@ -65,7 +74,22 @@ class RegistrationPathController extends Controller
                 ->withInput();
         }
 
-        RegistrationPath::create($request->all());
+        // Validate paket_soal total skor == 100 if using exam
+        if ($request->boolean('gunakan_ujian') && $request->filled('paket_soal_id')) {
+            $paket = PaketSoal::find($request->paket_soal_id);
+            if ($paket && $paket->total_skor !== 100) {
+                return redirect()->back()
+                    ->withErrors(['paket_soal_id' => 'Total skor paket soal (' . $paket->total_skor . ') harus tepat 100.'])
+                    ->withInput();
+            }
+        }
+
+        $path = RegistrationPath::create($request->except(['program_studi_ids']));
+
+        // Sync pivot tabel jalur_prodi
+        if ($request->has('program_studi_ids')) {
+            $path->programStudis()->sync($request->program_studi_ids);
+        }
 
         ActivityLogger::log('create', 'registration_path', 'Created registration path: ' . $request->code);
 
@@ -78,7 +102,7 @@ class RegistrationPathController extends Controller
      */
     public function show(RegistrationPath $registrationPath)
     {
-        $registrationPath->load('kategori');
+        $registrationPath->load('kategori', 'programStudis');
         return view('registration-paths.show', compact('registrationPath'));
     }
 
@@ -88,7 +112,11 @@ class RegistrationPathController extends Controller
     public function edit(RegistrationPath $registrationPath)
     {
         $kategoris = KategoriJalur::orderBy('nama')->get();
-        return view('registration-paths.edit', compact('registrationPath', 'kategoris'));
+        $programStudis = ProgramStudi::active()->orderBy('nama')->get();
+        $paketSoals = PaketSoal::active()->orderBy('nama_paket')->get();
+        // Load pivot relationships for pre-selection
+        $registrationPath->load('programStudis');
+        return view('registration-paths.edit', compact('registrationPath', 'kategoris', 'programStudis', 'paketSoals'));
     }
 
     /**
@@ -105,7 +133,12 @@ class RegistrationPathController extends Controller
             'fee' => 'nullable|numeric|min:0',
             'color' => 'nullable|string|max:20',
             'quota' => 'nullable|integer|min:0',
+            'jumlah_pilihan_prodi' => 'required|integer|in:1,2,3',
+            'program_studi_ids' => 'required|array|min:1',
+            'program_studi_ids.*' => 'exists:program_studis,id',
             'is_active' => 'boolean',
+            'gunakan_ujian' => 'boolean',
+            'paket_soal_id' => 'nullable|exists:paket_soal,id',
         ]);
 
         if ($validator->fails()) {
@@ -114,7 +147,22 @@ class RegistrationPathController extends Controller
                 ->withInput();
         }
 
-        $registrationPath->update($request->all());
+        // Validate paket_soal total skor == 100 if using exam
+        if ($request->boolean('gunakan_ujian') && $request->filled('paket_soal_id')) {
+            $paket = PaketSoal::find($request->paket_soal_id);
+            if ($paket && $paket->total_skor !== 100) {
+                return redirect()->back()
+                    ->withErrors(['paket_soal_id' => 'Total skor paket soal (' . $paket->total_skor . ') harus tepat 100.'])
+                    ->withInput();
+            }
+        }
+
+        $registrationPath->update($request->except(['program_studi_ids']));
+
+        // Sync pivot tabel jalur_prodi
+        if ($request->has('program_studi_ids')) {
+            $registrationPath->programStudis()->sync($request->program_studi_ids);
+        }
 
         ActivityLogger::log('update', 'registration_path', 'Updated registration path: ' . $registrationPath->code);
 

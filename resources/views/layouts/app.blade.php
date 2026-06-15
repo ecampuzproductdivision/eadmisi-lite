@@ -58,6 +58,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" />
 <link rel="stylesheet" href="{{ asset('assets/libs/simplebar/dist/simplebar.min.css') }}" />
 <link rel="stylesheet" href="{{ asset('assets/libs/@tabler/icons-webfont/tabler-icons.min.css') }}" />
+<link rel="stylesheet" href="{{ asset('assets/libs/select2/css/select2.min.css') }}" />
 
 <!-- Theme CSS -->
 <link rel="stylesheet" href="{{ asset('assets/css/theme.min.css') }}">
@@ -121,6 +122,123 @@
 .breadcrumb-item.active {
   color: #94a3b8;
 }
+/* === Custom Multi-Select Tag Input Styles === */
+.tag-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+.tag-input-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-height: 38px;
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  cursor: text;
+  transition: border-color 0.15s ease;
+}
+.tag-input-container:focus-within {
+  border-color: #f63a4c;
+  box-shadow: 0 0 0 2px rgba(246, 58, 76, 0.15);
+}
+[data-bs-theme="dark"] .tag-input-container {
+  background: #1e293b;
+  border-color: #334155;
+}
+[data-bs-theme="dark"] .tag-input-container:focus-within {
+  border-color: #f63a4c;
+  box-shadow: 0 0 0 2px rgba(246, 58, 76, 0.2);
+}
+.tag-input-wrapper.is-invalid .tag-input-container {
+  border-color: #dc3545;
+}
+.tag-input-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+.tag-input-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  white-space: nowrap;
+  animation: tagIn 0.2s ease;
+}
+[data-bs-theme="dark"] .tag-input-tag {
+  background: #3b1c1c;
+  color: #fca5a5;
+  border-color: #5c2a2a;
+}
+@keyframes tagIn {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.tag-input-remove {
+  cursor: pointer;
+  font-size: 0.75rem;
+  line-height: 1;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+.tag-input-remove:hover {
+  opacity: 1;
+}
+.tag-input-field {
+  flex: 1;
+  min-width: 120px;
+  border: none;
+  outline: none;
+  padding: 2px 4px;
+  font-size: 0.875rem;
+  background: transparent;
+  color: inherit;
+}
+.tag-input-field::placeholder {
+  color: #9ca3af;
+}
+.tag-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1050;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+[data-bs-theme="dark"] .tag-dropdown {
+  background: #1e293b;
+  border-color: #334155;
+}
+.tag-dropdown-item {
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.tag-dropdown-item:hover {
+  background: #fef2f2;
+}
+[data-bs-theme="dark"] .tag-dropdown-item:hover {
+  background: #3b1c1c;
+}
+/* === End Tag Input Styles === */
+
 /* Sticky Header and Filter Utility */
 .sticky-header-filter {
   position: sticky;
@@ -163,6 +281,7 @@
     <script src="{{ asset('assets/libs/jsvectormap/dist/maps/world.js') }}"></script>
     <script src="{{ asset('assets/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendors/chart.js') }}"></script>
+    <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
 
     <!-- Global Sticky Table Header Logic -->
     <script>

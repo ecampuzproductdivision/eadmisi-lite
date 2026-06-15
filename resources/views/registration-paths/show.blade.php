@@ -80,6 +80,32 @@
               </div>
             @endif
 
+            <div class="col-md-6">
+              <div class="border rounded p-3">
+                <small class="text-muted text-uppercase fw-semibold">Jumlah Pilihan Program Studi</small>
+                <h4 class="fw-bold mt-1 mb-0">{{ $registrationPath->jumlah_pilihan_prodi ?? 1 }} Pilihan</h4>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="border rounded p-3">
+                <small class="text-muted text-uppercase fw-semibold">Program Studi Ditawarkan</small>
+                @if($registrationPath->relationLoaded('programStudis') && $registrationPath->programStudis->isNotEmpty())
+                  <div class="mt-2 d-flex flex-wrap gap-2">
+                    @foreach($registrationPath->programStudis as $prodi)
+                      <span class="badge bg-primary-subtle text-primary px-3 py-2 fs-6">
+                        <i class="ti ti-building-community me-1"></i> {{ $prodi->nama_prodi ?: $prodi->nama }}
+                        @if($prodi->jenjang_akademik ?? $prodi->jenjang)
+                          <span class="opacity-75">({{ $prodi->jenjang_akademik ?? $prodi->jenjang }})</span>
+                        @endif
+                      </span>
+                    @endforeach
+                  </div>
+                @else
+                  <p class="text-muted mt-1 mb-0">Belum ada program studi yang ditawarkan.</p>
+                @endif
+              </div>
+            </div>
+
             <div class="col-12">
               <div class="border rounded p-3">
                 <small class="text-muted text-uppercase fw-semibold">Informasi Sistem</small>

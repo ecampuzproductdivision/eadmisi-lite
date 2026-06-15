@@ -19,7 +19,10 @@ class RegistrationPath extends Model
         'fee',
         'color',
         'quota',
+        'jumlah_pilihan_prodi',
         'is_active',
+        'gunakan_ujian',
+        'paket_soal_id',
     ];
 
     protected $casts = [
@@ -28,6 +31,8 @@ class RegistrationPath extends Model
         'registration_end' => 'date',
         'fee' => 'decimal:2',
         'quota' => 'integer',
+        'jumlah_pilihan_prodi' => 'integer',
+        'gunakan_ujian' => 'boolean',
     ];
 
     public function scopeActive($query)
@@ -51,5 +56,22 @@ class RegistrationPath extends Model
     public function kategori()
     {
         return $this->belongsTo(KategoriJalur::class, 'kategori_jalur_id');
+    }
+
+    /**
+     * Many-to-many: Jalur Pendaftaran memiliki banyak Program Studi yang ditawarkan.
+     */
+    public function programStudis()
+    {
+        return $this->belongsToMany(ProgramStudi::class, 'jalur_prodi', 'registration_path_id', 'program_studi_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * A RegistrationPath belongs to a PaketSoal (optional).
+     */
+    public function paketSoal()
+    {
+        return $this->belongsTo(PaketSoal::class, 'paket_soal_id');
     }
 }

@@ -169,7 +169,7 @@
           </div>
 
           <!-- Gunakan Ujian Online Toggle -->
-          <div class="col-md-4">
+          <div class="col-12">
             <div class="form-check form-switch mt-2">
               <input type="hidden" name="gunakan_ujian" value="0">
               <input type="checkbox" name="gunakan_ujian" id="gunakan_ujian" class="form-check-input" value="1" {{ old('gunakan_ujian', $registrationPath->gunakan_ujian) ? 'checked' : '' }}>
@@ -193,6 +193,33 @@
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
             <div class="form-text">Pilih paket soal ujian yang akan digunakan. Pastikan total skor paket tepat 100.</div>
+          </div>
+
+          <!-- Gunakan Unggah Berkas Toggle -->
+          <div class="col-12">
+            <div class="form-check form-switch mt-2">
+              <input type="hidden" name="gunakan_berkas" value="0">
+              <input type="checkbox" name="gunakan_berkas" id="gunakan_berkas" class="form-check-input" value="1" {{ old('gunakan_berkas', $registrationPath->gunakan_berkas) ? 'checked' : '' }}>
+              <label for="gunakan_berkas" class="form-check-label fw-semibold">Gunakan Unggah Berkas</label>
+            </div>
+          </div>
+
+          <!-- Pilih Template Syarat Berkas (conditional) -->
+          <div class="col-12" id="template-berkas-section" style="{{ old('gunakan_berkas', $registrationPath->gunakan_berkas) ? '' : 'display:none;' }}">
+            <label for="template_berkas_id" class="form-label fw-semibold">Pilih Template Syarat Berkas <span class="text-danger">*</span></label>
+            <select name="template_berkas_id" id="template_berkas_id" class="form-select @error('template_berkas_id') is-invalid @enderror">
+              <option value="">Pilih template...</option>
+              @foreach($templateBerkas as $tb)
+                <option value="{{ $tb->id }}"
+                  {{ (old('template_berkas_id') !== null && old('template_berkas_id') == $tb->id) || (old('template_berkas_id') === null && $registrationPath->template_berkas_id == $tb->id) ? 'selected' : '' }}>
+                  {{ $tb->nama_template }} ({{ $tb->total_dokumen }} dokumen)
+                </option>
+              @endforeach
+            </select>
+            @error('template_berkas_id')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            <div class="form-text">Pilih template syarat berkas untuk menentukan dokumen yang harus diunggah pendaftar.</div>
           </div>
         </div>
 
@@ -355,6 +382,18 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   toggle.addEventListener('change', togglePaketSection);
+});
+
+// Toggle Gunakan Unggah Berkas
+document.addEventListener('DOMContentLoaded', function() {
+  const toggle = document.getElementById('gunakan_berkas');
+  const section = document.getElementById('template-berkas-section');
+  
+  function toggleBerkasSection() {
+    section.style.display = toggle.checked ? 'block' : 'none';
+  }
+  
+  toggle.addEventListener('change', toggleBerkasSection);
 });
 </script>
 @endpush

@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\TagihanController as AdminTagihanController;
 use App\Http\Controllers\Api\RegencyController;
 use App\Http\Controllers\SoalUjianController;
 use App\Http\Controllers\PaketSoalController;
+use App\Http\Controllers\SyaratBerkasController;
 
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])
     ->whereIn('locale', ['id', 'en'])
@@ -136,6 +137,18 @@ Route::middleware(['auth'])->group(function () {
         Route::get('settings/soal-ujian', function () {
             return redirect()->route('paket-soal.index');
         })->name('soal-ujian.index');
+
+        // Syarat Berkas - document requirement templates
+        Route::get('settings/syarat-berkas', [SyaratBerkasController::class, 'index'])->name('syarat-berkas.index');
+        Route::post('settings/syarat-berkas', [SyaratBerkasController::class, 'store'])->name('syarat-berkas.store');
+        Route::put('settings/syarat-berkas/{templateBerkas}', [SyaratBerkasController::class, 'update'])->name('syarat-berkas.update');
+        Route::delete('settings/syarat-berkas/{templateBerkas}', [SyaratBerkasController::class, 'destroy'])->name('syarat-berkas.destroy');
+        Route::post('settings/syarat-berkas/{templateBerkas}/toggle-status', [SyaratBerkasController::class, 'toggleStatus'])->name('syarat-berkas.toggle-status');
+        Route::get('settings/syarat-berkas/{templateBerkas}/kelola-dokumen', [SyaratBerkasController::class, 'kelolaDokumen'])->name('syarat-berkas.kelola-dokumen');
+        Route::post('settings/syarat-berkas/{templateBerkas}/store-dokumen', [SyaratBerkasController::class, 'storeDokumen'])->name('syarat-berkas.store-dokumen');
+        Route::put('settings/syarat-berkas/{templateBerkas}/update-dokumen/{syaratDokumen}', [SyaratBerkasController::class, 'updateDokumen'])->name('syarat-berkas.update-dokumen');
+        Route::delete('settings/syarat-berkas/{templateBerkas}/destroy-dokumen/{syaratDokumen}', [SyaratBerkasController::class, 'destroyDokumen'])->name('syarat-berkas.destroy-dokumen');
+        Route::get('settings/syarat-berkas/{syaratDokumen}/edit-dokumen', [SyaratBerkasController::class, 'edit'])->name('syarat-berkas.edit-dokumen');
         Route::get('settings/logs', [ActivityLogController::class, 'index'])->name('logs.index');
         Route::get('settings/tagihan', [AdminTagihanController::class, 'index'])->name('settings.tagihan.index');
         Route::post('settings/tagihan/{paymentId}/verify', [AdminTagihanController::class, 'verify'])->name('settings.tagihan.verify');

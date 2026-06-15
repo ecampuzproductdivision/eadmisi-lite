@@ -23,6 +23,8 @@ class RegistrationPath extends Model
         'is_active',
         'gunakan_ujian',
         'paket_soal_id',
+        'gunakan_berkas',
+        'template_berkas_id',
     ];
 
     protected $casts = [
@@ -33,6 +35,7 @@ class RegistrationPath extends Model
         'quota' => 'integer',
         'jumlah_pilihan_prodi' => 'integer',
         'gunakan_ujian' => 'boolean',
+        'gunakan_berkas' => 'boolean',
     ];
 
     public function scopeActive($query)
@@ -73,5 +76,13 @@ class RegistrationPath extends Model
     public function paketSoal()
     {
         return $this->belongsTo(PaketSoal::class, 'paket_soal_id');
+    }
+
+    /**
+     * A RegistrationPath belongs to a TemplateBerkas (optional).
+     */
+    public function templateBerkas()
+    {
+        return $this->belongsTo(TemplateBerkas::class, 'template_berkas_id');
     }
 }

@@ -12,6 +12,7 @@ use App\Models\RegistrationDocument;
 use App\Models\RegistrationPath;
 use App\Models\SoalUjian;
 use App\Models\PaketSoal;
+use App\Models\TemplateBerkas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -43,7 +44,8 @@ class RegistrationPathController extends Controller
         $kategoris = KategoriJalur::orderBy('nama')->get();
         $programStudis = ProgramStudi::active()->orderBy('nama')->get();
         $paketSoals = PaketSoal::active()->orderBy('nama_paket')->get();
-        return view('registration-paths.create', compact('kategoris', 'programStudis', 'paketSoals'));
+        $templateBerkas = TemplateBerkas::active()->orderBy('nama_template')->get();
+        return view('registration-paths.create', compact('kategoris', 'programStudis', 'paketSoals', 'templateBerkas'));
     }
 
     /**
@@ -66,6 +68,8 @@ class RegistrationPathController extends Controller
             'is_active' => 'boolean',
             'gunakan_ujian' => 'boolean',
             'paket_soal_id' => 'nullable|exists:paket_soal,id',
+            'gunakan_berkas' => 'boolean',
+            'template_berkas_id' => 'nullable|exists:template_berkas,id',
         ]);
 
         if ($validator->fails()) {
@@ -82,6 +86,13 @@ class RegistrationPathController extends Controller
                     ->withErrors(['paket_soal_id' => 'Total skor paket soal (' . $paket->total_skor . ') harus tepat 100.'])
                     ->withInput();
             }
+        }
+
+        // Validate template_berkas required if menggunakan_berkas is true
+        if ($request->boolean('gunakan_berkas') && !$request->filled('template_berkas_id')) {
+            return redirect()->back()
+                ->withErrors(['template_berkas_id' => 'Template syarat berkas wajib dipilih jika menggunakan unggah berkas.'])
+                ->withInput();
         }
 
         $path = RegistrationPath::create($request->except(['program_studi_ids']));
@@ -114,9 +125,10 @@ class RegistrationPathController extends Controller
         $kategoris = KategoriJalur::orderBy('nama')->get();
         $programStudis = ProgramStudi::active()->orderBy('nama')->get();
         $paketSoals = PaketSoal::active()->orderBy('nama_paket')->get();
+        $templateBerkas = TemplateBerkas::active()->orderBy('nama_template')->get();
         // Load pivot relationships for pre-selection
         $registrationPath->load('programStudis');
-        return view('registration-paths.edit', compact('registrationPath', 'kategoris', 'programStudis', 'paketSoals'));
+        return view('registration-paths.edit', compact('registrationPath', 'kategoris', 'programStudis', 'paketSoals', 'templateBerkas'));
     }
 
     /**
@@ -139,6 +151,8 @@ class RegistrationPathController extends Controller
             'is_active' => 'boolean',
             'gunakan_ujian' => 'boolean',
             'paket_soal_id' => 'nullable|exists:paket_soal,id',
+            'gunakan_berkas' => 'boolean',
+            'template_berkas_id' => 'nullable|exists:template_berkas,id',
         ]);
 
         if ($validator->fails()) {
@@ -155,6 +169,13 @@ class RegistrationPathController extends Controller
                     ->withErrors(['paket_soal_id' => 'Total skor paket soal (' . $paket->total_skor . ') harus tepat 100.'])
                     ->withInput();
             }
+        }
+
+        // Validate template_berkas required if menggunakan_berkas is true
+        if ($request->boolean('gunakan_berkas') && !$request->filled('template_berkas_id')) {
+            return redirect()->back()
+                ->withErrors(['template_berkas_id' => 'Template syarat berkas wajib dipilih jika menggunakan unggah berkas.'])
+                ->withInput();
         }
 
         $registrationPath->update($request->except(['program_studi_ids']));

@@ -21,6 +21,7 @@ use App\Http\Controllers\TesOnlineController;
 use App\Http\Controllers\RiwayatPendaftaranController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Admin\TagihanController as AdminTagihanController;
+use App\Http\Controllers\Admin\FormPendaftaranController;
 use App\Http\Controllers\Api\RegencyController;
 
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])
@@ -117,5 +118,28 @@ Route::middleware(['auth'])->group(function () {
         Route::get('settings/logs', [ActivityLogController::class, 'index'])->name('logs.index');
         Route::get('settings/tagihan', [AdminTagihanController::class, 'index'])->name('settings.tagihan.index');
         Route::post('settings/tagihan/{paymentId}/verify', [AdminTagihanController::class, 'verify'])->name('settings.tagihan.verify');
+
+        // Form Pendaftaran (Settings > Form Pendaftaran)
+        Route::prefix('settings/form-pendaftaran')->name('settings.form-pendaftaran.')->group(function () {
+            Route::get('/', [FormPendaftaranController::class, 'index'])->name('index');
+            Route::get('/create', [FormPendaftaranController::class, 'create'])->name('create');
+            Route::post('/', [FormPendaftaranController::class, 'store'])->name('store');
+            Route::get('/{id}/builder', [FormPendaftaranController::class, 'builder'])->name('builder');
+            Route::get('/{id}/edit', [FormPendaftaranController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [FormPendaftaranController::class, 'update'])->name('update');
+            Route::post('/{id}/toggle-status', [FormPendaftaranController::class, 'toggleStatus'])->name('toggle-status');
+            Route::delete('/{id}', [FormPendaftaranController::class, 'destroy'])->name('destroy');
+        });
+
+        // Form Builder (AJAX routes untuk form builder)
+        Route::prefix('settings/form-builder')->name('settings.form-builder.')->group(function () {
+            Route::get('/fields/{formId}', [FormPendaftaranController::class, 'getFields'])->name('get-fields');
+            Route::post('/', [FormPendaftaranController::class, 'storeField'])->name('store');
+            Route::post('/reorder', [FormPendaftaranController::class, 'reorderFields'])->name('reorder');
+            Route::post('/{id}/toggle-status', [FormPendaftaranController::class, 'toggleFieldStatus'])->name('toggle-status');
+            Route::post('/{id}/duplicate', [FormPendaftaranController::class, 'duplicateField'])->name('duplicate');
+            Route::put('/{id}', [FormPendaftaranController::class, 'updateField'])->name('update');
+            Route::delete('/{id}', [FormPendaftaranController::class, 'destroyField'])->name('destroy');
+        });
     });
 });

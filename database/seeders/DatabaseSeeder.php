@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             PendaftaranSeeder::class,
             MenuCalonMahasiswaSeeder::class,
             MenuTagihanSeeder::class,
+            MenuFormPendaftaranSeeder::class,
         ]);
     }
 }

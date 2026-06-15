@@ -29,6 +29,9 @@ class DatabaseSeeder extends Seeder
             MenuCalonMahasiswaSeeder::class,
             MenuTagihanSeeder::class,
             MenuFormPendaftaranSeeder::class,
+            MenuSyaratBerkasSeeder::class,
+            MenuBankSoalSeeder::class,
+            MenuProgramStudiSeeder::class,
         ]);
     }
 }

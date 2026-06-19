@@ -26,6 +26,8 @@ class RegistrationPath extends Model
         'paket_soal_id',
         'gunakan_berkas',
         'template_berkas_id',
+        'metode_pengumuman',
+        'gunakan_wawancara',
     ];
 
     protected $casts = [
@@ -37,6 +39,8 @@ class RegistrationPath extends Model
         'jumlah_pilihan_prodi' => 'integer',
         'gunakan_ujian' => 'boolean',
         'gunakan_berkas' => 'boolean',
+        'metode_pengumuman' => 'string',
+        'gunakan_wawancara' => 'boolean',
     ];
 
     public function scopeActive($query)
@@ -93,6 +97,14 @@ class RegistrationPath extends Model
     public function periode()
     {
         return $this->belongsTo(Periode::class, 'periode_id');
+    }
+
+    /**
+     * A RegistrationPath has many Registrations (pendaftaran).
+     */
+    public function registrations()
+    {
+        return $this->hasMany(Registration::class, 'registration_path_id');
     }
 
     /**

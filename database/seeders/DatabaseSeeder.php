@@ -34,6 +34,8 @@ class DatabaseSeeder extends Seeder
             MenuProgramStudiSeeder::class,
             PeriodeMenuSeeder::class,
             PeriodeSeeder::class,
+            WawancaraMenuSeeder::class,
+            TestDataStikesSeeder::class,
         ]);
     }
 }

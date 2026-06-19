@@ -75,7 +75,14 @@ class RegistrationPathController extends Controller
             'paket_soal_id' => 'nullable|exists:paket_soal,id',
             'gunakan_berkas' => 'boolean',
             'template_berkas_id' => 'nullable|exists:template_berkas,id',
+            'metode_pengumuman' => 'required|in:langsung,ditahan',
+            'gunakan_wawancara' => 'boolean',
         ]);
+
+        // Auto-set metode_pengumuman to 'ditahan' if wawancara is enabled
+        if ($request->boolean('gunakan_wawancara')) {
+            $request->merge(['metode_pengumuman' => 'ditahan']);
+        }
 
         if ($validator->fails()) {
             return redirect()->back()
@@ -164,6 +171,8 @@ class RegistrationPathController extends Controller
             'paket_soal_id' => 'nullable|exists:paket_soal,id',
             'gunakan_berkas' => 'boolean',
             'template_berkas_id' => 'nullable|exists:template_berkas,id',
+            'metode_pengumuman' => 'required|in:langsung,ditahan',
+            'gunakan_wawancara' => 'boolean',
         ]);
 
         if ($validator->fails()) {
@@ -187,6 +196,11 @@ class RegistrationPathController extends Controller
             return redirect()->back()
                 ->withErrors(['template_berkas_id' => 'Template syarat berkas wajib dipilih jika menggunakan unggah berkas.'])
                 ->withInput();
+        }
+
+        // Auto-set metode_pengumuman to 'ditahan' if wawancara is enabled
+        if ($request->boolean('gunakan_wawancara')) {
+            $request->merge(['metode_pengumuman' => 'ditahan']);
         }
 
         $registrationPath->update($request->except(['program_studi_ids']));

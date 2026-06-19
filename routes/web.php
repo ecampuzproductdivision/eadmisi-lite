@@ -28,6 +28,7 @@ use App\Http\Controllers\SoalUjianController;
 use App\Http\Controllers\PaketSoalController;
 use App\Http\Controllers\SyaratBerkasController;
 use App\Http\Controllers\PeriodeController;
+use App\Http\Controllers\WawancaraController;
 
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])
     ->whereIn('locale', ['id', 'en'])
@@ -162,6 +163,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('settings/periode/{periode}/toggle-active', [PeriodeController::class, 'toggleActive'])->name('periode.toggle-active');
         Route::delete('settings/periode/{periode}', [PeriodeController::class, 'destroy'])->name('periode.destroy');
         Route::get('settings/periode/active', [PeriodeController::class, 'getActive'])->name('periode.active');
+
+        // Kelola Wawancara (Settings)
+        Route::get('settings/wawancara', [WawancaraController::class, 'index'])->name('wawancara.index');
+        Route::post('settings/wawancara/schedule', [WawancaraController::class, 'storeSchedule'])->name('wawancara.schedule');
+        Route::post('settings/wawancara/hasil', [WawancaraController::class, 'storeHasil'])->name('wawancara.hasil');
 
         // Form Pendaftaran (Settings > Form Pendaftaran)
         Route::prefix('settings/form-pendaftaran')->name('settings.form-pendaftaran.')->group(function () {

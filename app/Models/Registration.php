@@ -58,4 +58,12 @@ class Registration extends Model
     {
         return $this->hasMany(RegistrationDocument::class);
     }
+
+    /**
+     * A registration has one wawancara (interview) record.
+     */
+    public function wawancara()
+    {
+        return $this->hasOne(Wawancara::class, 'pendaftaran_id');
+    }
 }

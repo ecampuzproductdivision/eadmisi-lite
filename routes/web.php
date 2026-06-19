@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\RegencyController;
 use App\Http\Controllers\SoalUjianController;
 use App\Http\Controllers\PaketSoalController;
 use App\Http\Controllers\SyaratBerkasController;
+use App\Http\Controllers\PeriodeController;
 
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])
     ->whereIn('locale', ['id', 'en'])
@@ -153,6 +154,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('settings/logs', [ActivityLogController::class, 'index'])->name('logs.index');
         Route::get('settings/tagihan', [AdminTagihanController::class, 'index'])->name('settings.tagihan.index');
         Route::post('settings/tagihan/{paymentId}/verify', [AdminTagihanController::class, 'verify'])->name('settings.tagihan.verify');
+
+        // Periode Akademik (Settings)
+        Route::get('settings/periode', [PeriodeController::class, 'index'])->name('periode.index');
+        Route::post('settings/periode', [PeriodeController::class, 'store'])->name('periode.store');
+        Route::put('settings/periode/{periode}', [PeriodeController::class, 'update'])->name('periode.update');
+        Route::post('settings/periode/{periode}/toggle-active', [PeriodeController::class, 'toggleActive'])->name('periode.toggle-active');
+        Route::delete('settings/periode/{periode}', [PeriodeController::class, 'destroy'])->name('periode.destroy');
+        Route::get('settings/periode/active', [PeriodeController::class, 'getActive'])->name('periode.active');
 
         // Form Pendaftaran (Settings > Form Pendaftaran)
         Route::prefix('settings/form-pendaftaran')->name('settings.form-pendaftaran.')->group(function () {

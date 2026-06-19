@@ -10,6 +10,7 @@ class RegistrationPath extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'periode_id',
         'kategori_jalur_id',
         'code',
         'name',
@@ -84,5 +85,25 @@ class RegistrationPath extends Model
     public function templateBerkas()
     {
         return $this->belongsTo(TemplateBerkas::class, 'template_berkas_id');
+    }
+
+    /**
+     * A RegistrationPath belongs to a Periode (Academic Period).
+     */
+    public function periode()
+    {
+        return $this->belongsTo(Periode::class, 'periode_id');
+    }
+
+    /**
+     * Scope to filter by the currently active period.
+     */
+    public function scopeByActivePeriode($query)
+    {
+        $activePeriodeId = \App\Helpers\PeriodeHelper::getActiveId();
+        if ($activePeriodeId) {
+            return $query->where('periode_id', $activePeriodeId);
+        }
+        return $query;
     }
 }

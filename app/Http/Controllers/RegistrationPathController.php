@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ActivityLogger;
+use App\Helpers\PeriodeHelper;
 use App\Models\ExamQuestion;
 use App\Models\ExamResult;
 use App\Models\KategoriJalur;
@@ -23,7 +24,11 @@ class RegistrationPathController extends Controller
      */
     public function index(Request $request)
     {
-        $paths = RegistrationPath::with('kategori')->orderBy('code')->paginate(10);
+        // Filter paths by the currently active period
+        $paths = RegistrationPath::with('kategori')
+            ->byActivePeriode()
+            ->orderBy('code')
+            ->paginate(10);
 
         if ($request->ajax()) {
             return response()->json([
@@ -95,7 +100,13 @@ class RegistrationPathController extends Controller
                 ->withInput();
         }
 
-        $path = RegistrationPath::create($request->except(['program_studi_ids']));
+        // Auto-bind the currently active period
+        $activePeriodeId = PeriodeHelper::getActiveId();
+
+        $data = $request->except(['program_studi_ids']);
+        $data['periode_id'] = $activePeriodeId;
+
+        $path = RegistrationPath::create($data);
 
         // Sync pivot tabel jalur_prodi
         if ($request->has('program_studi_ids')) {

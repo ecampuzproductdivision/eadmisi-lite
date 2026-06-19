@@ -32,6 +32,8 @@ class DatabaseSeeder extends Seeder
             MenuSyaratBerkasSeeder::class,
             MenuBankSoalSeeder::class,
             MenuProgramStudiSeeder::class,
+            PeriodeMenuSeeder::class,
+            PeriodeSeeder::class,
         ]);
     }
 }

@@ -133,6 +133,24 @@
         </div>
       </li>
 
+      <!-- Active Period Badge -->
+      @php $activePeriode = \App\Helpers\PeriodeHelper::getActive(); @endphp
+      @if($activePeriode)
+        <li class="d-none d-md-flex align-items-center me-2">
+          <div class="badge bg-primary-subtle text-primary px-3 py-2 d-flex align-items-center gap-2" style="font-size: 0.8rem; font-weight: 500;">
+            <i class="ti ti-calendar-stats fs-5"></i>
+            <span>Periode Aktif: <strong>{{ $activePeriode->label }}</strong></span>
+          </div>
+        </li>
+      @else
+        <li class="d-none d-md-flex align-items-center me-2">
+          <div class="badge bg-warning-subtle text-warning px-3 py-2 d-flex align-items-center gap-2" style="font-size: 0.8rem; font-weight: 500;">
+            <i class="ti ti-alert-triangle fs-5"></i>
+            <span>Belum ada periode aktif</span>
+          </div>
+        </li>
+      @endif
+
       <!-- Language Switcher (nav-custom-pill) -->
       <li>
         @php $currentLocale = app()->getLocale(); @endphp

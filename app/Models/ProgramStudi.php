@@ -21,6 +21,9 @@ class ProgramStudi extends Model
         'label_prodi_no_pendaftaran',
         'status',
         'status_aktif',
+        'deskripsi_singkat',
+        'akreditasi',
+        'kode_icon',
     ];
 
     protected $table = 'program_studis';

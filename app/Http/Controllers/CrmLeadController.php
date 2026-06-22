@@ -25,7 +25,6 @@ class CrmLeadController extends Controller
 
         $leads = $query->orderBy('created_at', 'desc')->paginate(15);
 
-        // Dashboard aggregates
         $totalLeads = CrmLead::count();
         $newLeads = CrmLead::where('status', 'New')->count();
         $inProgressLeads = CrmLead::where('status', 'In Progress')->count();
@@ -70,5 +69,24 @@ class CrmLeadController extends Controller
     {
         $crmLead->delete();
         return response()->json(['success' => true, 'message' => 'Lead berhasil dihapus.']);
+    }
+
+    public function storePublic(Request $request)
+    {
+        $validated = $request->validate([
+            'nama' => 'required|string|max:200',
+            'whatsapp' => 'required|string|max:50',
+            'pertanyaan' => 'required|string',
+        ]);
+
+        CrmLead::create([
+            'nama' => $validated['nama'],
+            'whatsapp' => $validated['whatsapp'],
+            'pertanyaan' => $validated['pertanyaan'],
+            'status' => 'New',
+        ]);
+
+        return redirect()->route('pmb.landing', ['#tanya-dulu'])
+            ->with('success', 'Terima kasih! Pertanyaan Anda telah kami terima. Tim kami akan menghubungi Anda melalui WhatsApp.');
     }
 }

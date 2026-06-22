@@ -23,6 +23,7 @@ use App\Http\Controllers\RiwayatPendaftaranController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Admin\TagihanController as AdminTagihanController;
 use App\Http\Controllers\Admin\FormPendaftaranController;
+use App\Http\Controllers\Admin\LandingPageController;
 use App\Http\Controllers\Api\RegencyController;
 use App\Http\Controllers\SoalUjianController;
 use App\Http\Controllers\PaketSoalController;
@@ -36,7 +37,23 @@ Route::get('/locale/{locale}', [LocaleController::class, 'switch'])
     ->name('locale.switch');
 
 Route::get('/', function () {
-    return view('pmb.landing');
+    $activePaths = \App\Models\RegistrationPath::with('kategori')
+        ->byActivePeriode()
+        ->where('is_active', true)
+        ->orderBy('code')
+        ->get();
+
+    $activePaths->loadCount(['registrations as terdaftar' => function ($q) {
+        $q->whereIn('status', ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted']);
+    }]);
+
+    // Dynamic landing data
+    $features = \App\Models\LandingFeature::active()->get();
+    $programStudis = \App\Models\LandingProgramStudi::with('programStudi')->published()->get();
+    $settings = \App\Models\LandingSetting::all()->keyBy('key');
+    $facilities = \App\Models\LandingFacility::active()->get();
+
+    return view('pmb.landing', compact('activePaths', 'features', 'programStudis', 'settings', 'facilities'));
 })->name('pmb.landing');
 
 Route::get('/jalur-pendaftaran', [RegistrationPathController::class, 'publicIndex'])->name('pmb.registration-paths');
@@ -98,6 +115,8 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'handleGoogleC
 Route::get('/auth/google/complete-registration', [GoogleAuthController::class, 'showCompleteRegistrationForm'])->name('google.complete.registration');
 Route::post('/auth/google/complete-registration', [GoogleAuthController::class, 'completeRegistration'])->name('google.complete.registration.post');
 Route::get('/auth/google/simulation', [GoogleAuthController::class, 'showSimulationForm'])->name('auth.google.simulation');
+
+Route::post('/crm-leads/store', [CrmLeadController::class, 'storePublic'])->name('crm-leads.store-public');
 
 Route::get('/api/regencies/select2', [RegencyController::class, 'select2'])->name('api.regencies.select2');
 
@@ -176,6 +195,20 @@ Route::middleware(['auth'])->group(function () {
         Route::post('crm-leads/{crmLead}/notes', [CrmLeadController::class, 'updateNotes'])->name('crm-leads.notes');
         Route::get('crm-leads/{crmLead}', [CrmLeadController::class, 'show'])->name('crm-leads.show');
         Route::delete('crm-leads/{crmLead}', [CrmLeadController::class, 'destroy'])->name('crm-leads.destroy');
+
+        // Landing Page Configuration
+        Route::get('settings/landing-page', [LandingPageController::class, 'index'])->name('settings.landing-page.index');
+        Route::post('settings/landing-page/feature', [LandingPageController::class, 'storeFeature'])->name('settings.landing-page.store-feature');
+        Route::put('settings/landing-page/feature/{landingFeature}', [LandingPageController::class, 'updateFeature'])->name('settings.landing-page.update-feature');
+        Route::post('settings/landing-page/feature/{landingFeature}/toggle', [LandingPageController::class, 'toggleFeature'])->name('settings.landing-page.toggle-feature');
+        Route::delete('settings/landing-page/feature/{landingFeature}', [LandingPageController::class, 'destroyFeature'])->name('settings.landing-page.destroy-feature');
+        Route::post('settings/landing-page/settings', [LandingPageController::class, 'updateSettings'])->name('settings.landing-page.update-settings');
+        Route::post('settings/landing-page/prodi', [LandingPageController::class, 'storeLandingProdi'])->name('settings.landing-page.store-prodi');
+        Route::post('settings/landing-page/prodi/{landingProgramStudi}/toggle', [LandingPageController::class, 'toggleLandingProdi'])->name('settings.landing-page.toggle-prodi');
+        Route::delete('settings/landing-page/prodi/{landingProgramStudi}', [LandingPageController::class, 'destroyLandingProdi'])->name('settings.landing-page.destroy-prodi');
+        Route::post('settings/landing-page/facility', [LandingPageController::class, 'storeFacility'])->name('settings.landing-page.store-facility');
+        Route::post('settings/landing-page/facility/{landingFacility}/toggle', [LandingPageController::class, 'toggleFacility'])->name('settings.landing-page.toggle-facility');
+        Route::delete('settings/landing-page/facility/{landingFacility}', [LandingPageController::class, 'destroyFacility'])->name('settings.landing-page.destroy-facility');
 
         // Form Pendaftaran (Settings > Form Pendaftaran)
         Route::prefix('settings/form-pendaftaran')->name('settings.form-pendaftaran.')->group(function () {

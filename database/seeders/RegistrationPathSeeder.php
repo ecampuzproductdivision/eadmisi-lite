@@ -15,11 +15,11 @@ class RegistrationPathSeeder extends Seeder
 {
     public function run(): void
     {
-        // Hapus data lama dulu, lalu buat 5 data baru
-        RegistrationPath::query()->delete();
+        // Force delete all (termasuk soft deleted) lalu buat 5 data baru
+        RegistrationPath::withTrashed()->forceDelete();
 
         $kategoriIds = KategoriJalur::pluck('id', 'nama');
-        $periode = Periode::first();
+        $periode = Periode::where('status_aktif', true)->first();
         $periodeId = $periode ? $periode->id : null;
 
         // Ambil data relasi yang sudah ada (dari seeder sebelumnya)

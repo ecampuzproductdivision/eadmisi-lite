@@ -1,0 +1,53 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        // Add landing-related columns to program_studis
+        Schema::table('program_studis', function (Blueprint $table) {
+            if (!Schema::hasColumn('program_studis', 'deskripsi_singkat')) {
+                $table->text('deskripsi_singkat')->nullable()->after('jurusan');
+            }
+            if (!Schema::hasColumn('program_studis', 'akreditasi')) {
+                $table->string('akreditasi', 50)->default('A')->after('deskripsi_singkat');
+            }
+            if (!Schema::hasColumn('program_studis', 'kode_icon')) {
+                $table->string('kode_icon', 100)->default('ti-device-analytics')->after('akreditasi');
+            }
+        });
+
+        // Rename columns in landing_features for clarity
+        Schema::table('landing_features', function (Blueprint $table) {
+            if (Schema::hasColumn('landing_features', 'title')) {
+                $table->renameColumn('title', 'judul_poin');
+            }
+            if (Schema::hasColumn('landing_features', 'description')) {
+                $table->renameColumn('description', 'deskripsi_poin');
+            }
+            if (Schema::hasColumn('landing_features', 'icon')) {
+                $table->renameColumn('icon', 'nama_icon');
+            }
+            if (!Schema::hasColumn('landing_features', 'warna_skema')) {
+                $table->string('warna_skema', 50)->default('danger')->after('nama_icon');
+            }
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('program_studis', function (Blueprint $table) {
+            $table->dropColumn(['deskripsi_singkat', 'akreditasi', 'kode_icon']);
+        });
+        Schema::table('landing_features', function (Blueprint $table) {
+            $table->renameColumn('judul_poin', 'title');
+            $table->renameColumn('deskripsi_poin', 'description');
+            $table->renameColumn('nama_icon', 'icon');
+            $table->dropColumn(['warna_skema']);
+        });
+    }
+};

@@ -14,6 +14,7 @@ use App\Models\RegistrationPath;
 use App\Models\SoalUjian;
 use App\Models\PaketSoal;
 use App\Models\TemplateBerkas;
+use App\Models\Form;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -25,7 +26,7 @@ class RegistrationPathController extends Controller
     public function index(Request $request)
     {
         // Filter paths by the currently active period
-        $paths = RegistrationPath::with('kategori')
+        $paths = RegistrationPath::with('kategori', 'formPendaftaran')
             ->byActivePeriode()
             ->orderBy('code')
             ->paginate(10);
@@ -50,7 +51,8 @@ class RegistrationPathController extends Controller
         $programStudis = ProgramStudi::active()->orderBy('nama')->get();
         $paketSoals = PaketSoal::active()->orderBy('nama_paket')->get();
         $templateBerkas = TemplateBerkas::active()->orderBy('nama_template')->get();
-        return view('registration-paths.create', compact('kategoris', 'programStudis', 'paketSoals', 'templateBerkas'));
+        $forms = Form::active()->orderBy('nama')->get();
+        return view('registration-paths.create', compact('kategoris', 'programStudis', 'paketSoals', 'templateBerkas', 'forms'));
     }
 
     /**
@@ -62,6 +64,7 @@ class RegistrationPathController extends Controller
             'code' => 'required|string|max:50|unique:registration_paths,code',
             'name' => 'required|string|max:200',
             'description' => 'nullable|string',
+            'form_pendaftaran_id' => 'nullable|exists:forms,id',
             'registration_start' => 'nullable|date',
             'registration_end' => 'nullable|date|after_or_equal:registration_start',
             'fee' => 'nullable|numeric|min:0',
@@ -131,7 +134,7 @@ class RegistrationPathController extends Controller
      */
     public function show(RegistrationPath $registrationPath)
     {
-        $registrationPath->load('kategori', 'programStudis');
+        $registrationPath->load('kategori', 'programStudis', 'formPendaftaran');
         return view('registration-paths.show', compact('registrationPath'));
     }
 
@@ -144,9 +147,10 @@ class RegistrationPathController extends Controller
         $programStudis = ProgramStudi::active()->orderBy('nama')->get();
         $paketSoals = PaketSoal::active()->orderBy('nama_paket')->get();
         $templateBerkas = TemplateBerkas::active()->orderBy('nama_template')->get();
+        $forms = Form::active()->orderBy('nama')->get();
         // Load pivot relationships for pre-selection
-        $registrationPath->load('programStudis');
-        return view('registration-paths.edit', compact('registrationPath', 'kategoris', 'programStudis', 'paketSoals', 'templateBerkas'));
+        $registrationPath->load('programStudis', 'formPendaftaran');
+        return view('registration-paths.edit', compact('registrationPath', 'kategoris', 'programStudis', 'paketSoals', 'templateBerkas', 'forms'));
     }
 
     /**
@@ -158,6 +162,7 @@ class RegistrationPathController extends Controller
             'code' => 'required|string|max:50|unique:registration_paths,code,' . $registrationPath->id,
             'name' => 'required|string|max:200',
             'description' => 'nullable|string',
+            'form_pendaftaran_id' => 'nullable|exists:forms,id',
             'registration_start' => 'nullable|date',
             'registration_end' => 'nullable|date|after_or_equal:registration_start',
             'fee' => 'nullable|numeric|min:0',

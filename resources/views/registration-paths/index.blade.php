@@ -31,6 +31,7 @@
               <th style="width: 60px;">No</th>
               <th>Nama Jalur</th>
               <th>Kategori</th>
+              <th>Form Template</th>
               <th>Biaya</th>
               <th>Periode</th>
               <th>Kuota</th>
@@ -41,7 +42,7 @@
           <tbody id="paths-table-body">
             @if($paths->isEmpty())
               <tr>
-                <td colspan="9" class="text-center py-5">
+                <td colspan="10" class="text-center py-5">
                   <i class="ti ti-road-off text-muted" style="font-size: 3rem;"></i>
                   <p class="mt-3 mb-0 text-muted">Belum ada jalur pendaftaran.</p>
                   <a href="{{ route('registration-paths.create') }}" class="btn btn-primary mt-3">Tambah Jalur Pertama</a>

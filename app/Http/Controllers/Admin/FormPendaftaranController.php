@@ -38,7 +38,10 @@ class FormPendaftaranController extends Controller
 
         $form = Form::create($validated);
 
-        // Simpan fields dari builder jika ada
+        // Auto-create core system fields (Nama Lengkap, No. WA, Email)
+        FormField::ensureCoreFields($form->id);
+
+        // Simpan fields dari builder jika ada (start after core fields)
         if ($request->has('fields') && is_array($request->fields)) {
             $order = 1;
             foreach ($request->fields as $fieldData) {
@@ -64,11 +67,17 @@ class FormPendaftaranController extends Controller
     }
 
     /**
-     * 3. BULDER - Halaman builder untuk form tertentu (drag & drop).
+     * 3. BUILDER - Halaman builder untuk form tertentu (drag & drop).
      */
     public function builder($id)
     {
         $form = Form::with('fields')->findOrFail($id);
+
+        // Ensure core fields exist for this form
+        FormField::ensureCoreFields($form->id);
+
+        // Reload after ensuring core fields
+        $form->load('fields');
         $fields = $form->fields->groupBy('section');
         $fieldTypes = FormField::fieldTypes();
         $widthOptions = FormField::widthOptions();
@@ -171,6 +180,14 @@ class FormPendaftaranController extends Controller
     {
         $field = FormField::findOrFail($id);
 
+        // Prevent editing core/system fields
+        if ($field->isCoreField()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Field sistem tidak dapat diedit.',
+            ], 403);
+        }
+
         $validated = $request->validate([
             'field_label'   => 'required|string|max:255',
             'placeholder'   => 'nullable|string|max:255',
@@ -227,6 +244,15 @@ class FormPendaftaranController extends Controller
     public function toggleFieldStatus($id)
     {
         $field = FormField::findOrFail($id);
+
+        // Prevent toggling core/system fields
+        if ($field->isCoreField()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Status field sistem tidak dapat diubah.',
+            ], 403);
+        }
+
         $field->update(['is_active' => !$field->is_active]);
 
         return response()->json([
@@ -242,6 +268,15 @@ class FormPendaftaranController extends Controller
     public function duplicateField($id)
     {
         $original = FormField::findOrFail($id);
+
+        // Prevent duplicating core/system fields
+        if ($original->isCoreField()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Field sistem tidak dapat diduplikasi.',
+            ], 403);
+        }
+
         $copy = $original->replicate();
         $copy->field_name = $original->field_name . '_copy';
         $copy->sort_order = $original->sort_order + 1;
@@ -262,6 +297,15 @@ class FormPendaftaranController extends Controller
     public function destroyField($id)
     {
         $field = FormField::findOrFail($id);
+
+        // Prevent deleting core/system fields
+        if ($field->isCoreField()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Field sistem tidak dapat dihapus.',
+            ], 403);
+        }
+
         $formId = $field->form_id;
         $field->delete();
 
@@ -278,6 +322,9 @@ class FormPendaftaranController extends Controller
      */
     public function getFields($formId)
     {
+        // Ensure core fields exist
+        FormField::ensureCoreFields($formId);
+
         $form = Form::with('fields')->findOrFail($formId);
         $fields = $form->fields->groupBy('section');
 
@@ -289,9 +336,15 @@ class FormPendaftaranController extends Controller
 
     private function resortFields($formId)
     {
-        $fields = FormField::where('form_id', $formId)->orderBy('sort_order')->get();
+        // Keep core fields first, then sort the rest
+        $coreFields = FormField::where('form_id', $formId)->system()->orderBy('sort_order')->get();
+        $customFields = FormField::where('form_id', $formId)->notSystem()->orderBy('sort_order')->get();
+
         $order = 1;
-        foreach ($fields as $field) {
+        foreach ($coreFields as $field) {
+            $field->update(['sort_order' => $order++]);
+        }
+        foreach ($customFields as $field) {
             $field->update(['sort_order' => $order++]);
         }
     }

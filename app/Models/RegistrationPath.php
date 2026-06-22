@@ -12,6 +12,7 @@ class RegistrationPath extends Model
     protected $fillable = [
         'periode_id',
         'kategori_jalur_id',
+        'form_pendaftaran_id',
         'code',
         'name',
         'description',
@@ -64,6 +65,14 @@ class RegistrationPath extends Model
     public function kategori()
     {
         return $this->belongsTo(KategoriJalur::class, 'kategori_jalur_id');
+    }
+
+    /**
+     * A RegistrationPath belongs to a Form (Form Pendaftaran template).
+     */
+    public function formPendaftaran()
+    {
+        return $this->belongsTo(Form::class, 'form_pendaftaran_id');
     }
 
     /**

@@ -9,6 +9,13 @@
         <span class="text-muted">—</span>
       @endif
     </td>
+    <td>
+      @if($path->formPendaftaran)
+        <span class="badge bg-info-subtle text-info px-2 py-1">{{ $path->formPendaftaran->nama }}</span>
+      @else
+        <span class="text-muted">—</span>
+      @endif
+    </td>
     <td>Rp {{ number_format($path->fee, 0, ',', '.') }}</td>
     <td>
       @if($path->registration_start && $path->registration_end)

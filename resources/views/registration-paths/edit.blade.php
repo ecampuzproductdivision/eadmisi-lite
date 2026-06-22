@@ -169,6 +169,28 @@
           </div>
 
           <!-- ======================== -->
+          <!-- FORM TEMPLATE SELECTION -->
+          <!-- ======================== -->
+
+          <!-- Pilih Template Formulir Pendaftaran -->
+          <div class="col-12 mt-3">
+            <label for="form_pendaftaran_id" class="form-label fw-semibold">Pilih Template Formulir Pendaftaran <span class="text-danger">*</span></label>
+            <select name="form_pendaftaran_id" id="form_pendaftaran_id" class="form-select @error('form_pendaftaran_id') is-invalid @enderror">
+              <option value="">Pilih template formulir...</option>
+              @foreach($forms as $form)
+                <option value="{{ $form->id }}"
+                  {{ (old('form_pendaftaran_id') !== null && old('form_pendaftaran_id') == $form->id) || (old('form_pendaftaran_id') === null && $registrationPath->form_pendaftaran_id == $form->id) ? 'selected' : '' }}>
+                  {{ $form->nama }}
+                </option>
+              @endforeach
+            </select>
+            @error('form_pendaftaran_id')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+            <div class="form-text">Pilih template form pendaftaran yang akan digunakan oleh jalur ini. Hanya template dengan status aktif yang ditampilkan.</div>
+          </div>
+
+          <!-- ======================== -->
           <!-- FEATURE CONFIGURATION TOGGLES -->
           <!-- ======================== -->
 

@@ -6,6 +6,40 @@ use Illuminate\Database\Eloquent\Model;
 
 class FormField extends Model
 {
+    /**
+     * Core/default fields that MUST exist in every form template.
+     * These are protected from deletion/editing by admins.
+     */
+    const CORE_FIELDS = [
+        'nama_lengkap' => [
+            'field_label' => 'Nama Lengkap',
+            'field_type'  => 'text',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => 'Masukkan nama lengkap',
+            'help_text'   => 'Nama lengkap sesuai identitas resmi',
+        ],
+        'no_hp' => [
+            'field_label' => 'Nomor WhatsApp Aktif',
+            'field_type'  => 'tel',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => '08xxxxxxxxxx',
+            'help_text'   => 'Nomor WhatsApp yang aktif dan dapat dihubungi',
+        ],
+        'email' => [
+            'field_label' => 'Alamat Email',
+            'field_type'  => 'email',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => 'contoh@email.com',
+            'help_text'   => 'Alamat email aktif untuk komunikasi pendaftaran',
+        ],
+    ];
+
     protected $fillable = [
         'form_id',
         'field_type',
@@ -19,6 +53,7 @@ class FormField extends Model
         'sort_order',
         'is_required',
         'is_active',
+        'is_system',
         'width',
         'default_value',
     ];
@@ -28,6 +63,7 @@ class FormField extends Model
         'validation_rules' => 'array',
         'is_required' => 'boolean',
         'is_active' => 'boolean',
+        'is_system' => 'boolean',
         'sort_order' => 'integer',
     ];
 
@@ -44,6 +80,66 @@ class FormField extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order');
+    }
+
+    public function scopeSystem($query)
+    {
+        return $query->where('is_system', true);
+    }
+
+    public function scopeNotSystem($query)
+    {
+        return $query->where('is_system', false);
+    }
+
+    /**
+     * Check if this field is a core/system field.
+     */
+    public function isCoreField(): bool
+    {
+        return $this->is_system || array_key_exists($this->field_name, self::CORE_FIELDS);
+    }
+
+    /**
+     * Get the list of core field names.
+     */
+    public static function coreFieldNames(): array
+    {
+        return array_keys(self::CORE_FIELDS);
+    }
+
+    /**
+     * Auto-create core fields for a given form if they don't exist.
+     * Returns the created fields.
+     */
+    public static function ensureCoreFields($formId): array
+    {
+        $created = [];
+        $sortOrder = 1;
+        foreach (self::CORE_FIELDS as $fieldName => $config) {
+            $existing = self::where('form_id', $formId)
+                ->where('field_name', $fieldName)
+                ->first();
+            if (!$existing) {
+                $field = self::create([
+                    'form_id'     => $formId,
+                    'field_type'  => $config['field_type'],
+                    'field_name'  => $fieldName,
+                    'field_label' => $config['field_label'],
+                    'placeholder' => $config['placeholder'],
+                    'help_text'   => $config['help_text'],
+                    'section'     => $config['section'],
+                    'width'       => $config['width'],
+                    'is_required' => $config['is_required'],
+                    'is_active'   => true,
+                    'is_system'   => true,
+                    'sort_order'  => $sortOrder++,
+                ]);
+                $created[] = $field;
+            }
+            $sortOrder++;
+        }
+        return $created;
     }
 
     /**

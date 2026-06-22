@@ -121,6 +121,9 @@
                             {{ $field->field_label }}
                             @if($field->is_required)<span class="text-danger">*</span>@endif
                           </span>
+                          @if($field->is_system)
+                            <span class="badge bg-primary-subtle text-primary px-2" style="font-size: 0.6rem;"><i class="ti ti-shield-check me-1"></i>Sistem</span>
+                          @endif
                           @if(!$field->is_active)<span class="badge bg-warning-subtle text-warning" style="font-size: 0.6rem;">Disabled</span>@endif
                         </div>
                         <div class="d-flex align-items-center gap-2 mt-1 ms-4">
@@ -132,10 +135,14 @@
                         </div>
                       </div>
                       <div class="d-flex gap-1 flex-shrink-0">
-                        <button type="button" class="btn btn-sm btn-outline-info border-0" title="Edit" onclick="openEditModal({{ $field->id }})"><i class="ti ti-edit"></i></button>
-                        <button type="button" class="btn btn-sm btn-outline-success border-0" title="Duplikat" onclick="duplicateField({{ $field->id }})"><i class="ti ti-copy"></i></button>
-                        <button type="button" class="btn btn-sm btn-outline-{{ $field->is_active ? 'warning' : 'success' }} border-0" onclick="toggleField({{ $field->id }})"><i class="ti ti-{{ $field->is_active ? 'eye-off' : 'eye' }}"></i></button>
-                        <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Hapus" onclick="deleteField({{ $field->id }})"><i class="ti ti-trash"></i></button>
+                        @if($field->is_system)
+                          <span class="badge bg-primary-subtle text-primary px-3 py-2" title="Field sistem tidak dapat diubah"><i class="ti ti-lock me-1"></i>System</span>
+                        @else
+                          <button type="button" class="btn btn-sm btn-outline-info border-0" title="Edit" onclick="openEditModal({{ $field->id }})"><i class="ti ti-edit"></i></button>
+                          <button type="button" class="btn btn-sm btn-outline-success border-0" title="Duplikat" onclick="duplicateField({{ $field->id }})"><i class="ti ti-copy"></i></button>
+                          <button type="button" class="btn btn-sm btn-outline-{{ $field->is_active ? 'warning' : 'success' }} border-0" onclick="toggleField({{ $field->id }})"><i class="ti ti-{{ $field->is_active ? 'eye-off' : 'eye' }}"></i></button>
+                          <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Hapus" onclick="deleteField({{ $field->id }})"><i class="ti ti-trash"></i></button>
+                        @endif
                       </div>
                     </div>
                   </div>
@@ -172,7 +179,7 @@
         <input type="hidden" name="_method" id="field_method" value="POST">
         <input type="hidden" name="field_id" id="field_id" value="">
 
-        <div class="modal-body p-4">
+        <div class="modal-body p-4" style="max-height: 60vh; overflow-y: auto;">
           <div class="row g-3">
             <div class="col-12">
               <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-3">

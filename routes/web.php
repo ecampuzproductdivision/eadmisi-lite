@@ -29,6 +29,7 @@ use App\Http\Controllers\PaketSoalController;
 use App\Http\Controllers\SyaratBerkasController;
 use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\WawancaraController;
+use App\Http\Controllers\CrmLeadController;
 
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])
     ->whereIn('locale', ['id', 'en'])
@@ -168,6 +169,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('settings/wawancara', [WawancaraController::class, 'index'])->name('wawancara.index');
         Route::post('settings/wawancara/schedule', [WawancaraController::class, 'storeSchedule'])->name('wawancara.schedule');
         Route::post('settings/wawancara/hasil', [WawancaraController::class, 'storeHasil'])->name('wawancara.hasil');
+
+        // CRM Leads
+        Route::get('settings/crm-leads', [CrmLeadController::class, 'index'])->name('crm-leads.index');
+        Route::post('crm-leads/{crmLead}/status', [CrmLeadController::class, 'updateStatus'])->name('crm-leads.status');
+        Route::post('crm-leads/{crmLead}/notes', [CrmLeadController::class, 'updateNotes'])->name('crm-leads.notes');
+        Route::get('crm-leads/{crmLead}', [CrmLeadController::class, 'show'])->name('crm-leads.show');
+        Route::delete('crm-leads/{crmLead}', [CrmLeadController::class, 'destroy'])->name('crm-leads.destroy');
 
         // Form Pendaftaran (Settings > Form Pendaftaran)
         Route::prefix('settings/form-pendaftaran')->name('settings.form-pendaftaran.')->group(function () {

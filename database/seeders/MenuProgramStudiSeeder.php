@@ -12,12 +12,19 @@ class MenuProgramStudiSeeder extends Seeder
         $existing = DB::table('menus')->where('menu_code', 'MASTER_PROGRAM_STUDI')->first();
 
         if (!$existing) {
-            $lastRoot = DB::table('menus')
+            // Find "Jalur Pendaftaran" menu to insert Master Program Studi BEFORE it
+            $jalurPendaftaran = DB::table('menus')
                 ->whereNull('parent_id')
-                ->orderBy('sort_order', 'desc')
+                ->where('menu_code', 'REGISTRATION_PATHS')
                 ->first();
 
-            $sortOrder = $lastRoot ? ($lastRoot->sort_order + 1) : 1;
+            $sortOrder = $jalurPendaftaran ? $jalurPendaftaran->sort_order : 11;
+
+            // Shift existing menus starting from this position down by 1
+            DB::table('menus')
+                ->whereNull('parent_id')
+                ->where('sort_order', '>=', $sortOrder)
+                ->increment('sort_order');
 
             $menuId = DB::table('menus')->insertGetId([
                 'menu_name'  => 'Master Program Studi',

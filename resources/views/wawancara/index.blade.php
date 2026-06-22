@@ -50,10 +50,14 @@
                 <td class="fw-semibold px-3 py-3 whitespace-nowrap">REG-{{ str_pad($reg->id, 5, '0', STR_PAD_LEFT) }}</td>
                 <td class="px-3 py-3 whitespace-nowrap">
                   <div class="d-flex align-items-center gap-2">
-                    <img src="{{ $reg->user->avatar_url }}" class="rounded-circle" width="32" height="32" alt="">
+                    <img src="{{ optional($reg->user)->avatar_url ?? asset('assets/images/avatar/avatar-1.jpg') }}" class="rounded-circle" width="32" height="32" alt="">
                     <div>
                       <span class="d-block fw-semibold text-truncate" style="max-width: 180px;">{{ $reg->nama_lengkap }}</span>
-                      <small class="text-muted text-truncate" style="max-width: 180px;">{{ $reg->user->email }}</small>
+                      @if($reg->user)
+                        <small class="text-muted text-truncate" style="max-width: 180px;">{{ $reg->user->email }}</small>
+                      @else
+                        <small class="text-muted">—</small>
+                      @endif
                     </div>
                   </div>
                 </td>

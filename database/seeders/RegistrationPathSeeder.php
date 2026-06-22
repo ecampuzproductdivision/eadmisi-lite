@@ -2,63 +2,147 @@
 
 namespace Database\Seeders;
 
+use App\Models\Form;
+use App\Models\RegistrationPath;
+use App\Models\KategoriJalur;
+use App\Models\ProgramStudi;
+use App\Models\PaketSoal;
+use App\Models\TemplateBerkas;
+use App\Models\Periode;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class RegistrationPathSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $kategoris = DB::table('kategori_jalurs')->pluck('id', 'nama');
-        $now = now();
+        // Hapus data lama dulu, lalu buat 5 data baru
+        RegistrationPath::query()->delete();
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        DB::table('registration_paths')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        $kategoriIds = KategoriJalur::pluck('id', 'nama');
+        $periode = Periode::first();
+        $periodeId = $periode ? $periode->id : null;
+
+        // Ambil data relasi yang sudah ada (dari seeder sebelumnya)
+        $programStudis = ProgramStudi::pluck('id')->toArray();
+        $paketSoals = PaketSoal::pluck('id')->toArray();
+        $templateBerkas = TemplateBerkas::pluck('id')->toArray();
+        $forms = Form::pluck('id')->toArray();
 
         $paths = [
-            // SELEKSI NASIONAL
-            ['kategori_jalur_id' => $kategoris['Seleksi Nasional'] ?? 1, 'code' => 'SNBP', 'name' => 'Seleksi Nasional Berdasarkan Prestasi', 'description' => 'Jalur seleksi nasional berdasarkan prestasi akademik dan non-akademik siswa.', 'registration_start' => '2026-01-15', 'registration_end' => '2026-02-28', 'fee' => 250000, 'color' => 'primary', 'quota' => 500, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Nasional'] ?? 1, 'code' => 'SNBT', 'name' => 'Seleksi Nasional Berdasarkan Tes', 'description' => 'Jalur seleksi nasional berdasarkan hasil tes kemampuan akademik.', 'registration_start' => '2026-03-01', 'registration_end' => '2026-04-30', 'fee' => 300000, 'color' => 'success', 'quota' => 800, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Nasional'] ?? 1, 'code' => 'SNBP_PENDIDIKAN', 'name' => 'SNBP Jalur Pendidikan', 'description' => 'Jalur seleksi nasional bagi lulusan dari sekolah mitra.', 'registration_start' => '2026-01-20', 'registration_end' => '2026-03-15', 'fee' => 200000, 'color' => 'primary', 'quota' => 300, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Nasional'] ?? 1, 'code' => 'SNBT_SAINTEK', 'name' => 'SNBT Kelompok Sains & Teknologi', 'description' => 'Jalur seleksi untuk peminatan bidang sains, teknologi, teknik, dan matematika.', 'registration_start' => '2026-03-01', 'registration_end' => '2026-05-15', 'fee' => 325000, 'color' => 'info', 'quota' => 450, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Nasional'] ?? 1, 'code' => 'SNBT_SOSHUM', 'name' => 'SNBT Kelompok Sosial & Humaniora', 'description' => 'Jalur seleksi untuk peminatan bidang sosial, ekonomi, hukum.', 'registration_start' => '2026-03-01', 'registration_end' => '2026-05-15', 'fee' => 325000, 'color' => 'warning', 'quota' => 450, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Nasional'] ?? 1, 'code' => 'SNBT_CAMPURAN', 'name' => 'SNBT Kelompok Campuran', 'description' => 'Jalur seleksi untuk peminatan bidang campuran.', 'registration_start' => '2026-03-01', 'registration_end' => '2026-05-01', 'fee' => 350000, 'color' => 'secondary', 'quota' => 350, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            // SELEKSI MANDIRI
-            ['kategori_jalur_id' => $kategoris['Seleksi Mandiri'] ?? 2, 'code' => 'MANDIRI', 'name' => 'Jalur Mandiri Reguler', 'description' => 'Jalur pendaftaran mandiri reguler.', 'registration_start' => '2026-05-01', 'registration_end' => '2026-07-31', 'fee' => 500000, 'color' => 'warning', 'quota' => 300, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Mandiri'] ?? 2, 'code' => 'MANDIRI_TUITION', 'name' => 'Jalur Mandiri Beasiswa UKT', 'description' => 'Jalur mandiri dengan penyesuaian UKT.', 'registration_start' => '2026-05-15', 'registration_end' => '2026-08-15', 'fee' => 350000, 'color' => 'success', 'quota' => 400, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Mandiri'] ?? 2, 'code' => 'MANDIRI_KIP', 'name' => 'Jalur Mandiri KIP Kuliah', 'description' => 'Jalur mandiri khusus bagi penerima KIP Kuliah.', 'registration_start' => '2026-05-01', 'registration_end' => '2026-08-30', 'fee' => 100000, 'color' => 'info', 'quota' => 200, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Mandiri'] ?? 2, 'code' => 'MANDIRI_INTERNASIONAL', 'name' => 'Jalur Mandiri Program Internasional', 'description' => 'Jalur mandiri program internasional.', 'registration_start' => '2026-04-01', 'registration_end' => '2026-07-15', 'fee' => 750000, 'color' => 'danger', 'quota' => 150, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Mandiri'] ?? 2, 'code' => 'MANDIRI_VOKASI', 'name' => 'Jalur Mandiri Vokasi (D3/D4)', 'description' => 'Jalur mandiri khusus program diploma (vokasi).', 'registration_start' => '2026-05-01', 'registration_end' => '2026-08-20', 'fee' => 400000, 'color' => 'primary', 'quota' => 250, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Mandiri'] ?? 2, 'code' => 'MANDIRI_SORE', 'name' => 'Jalur Mandiri Kelas Karyawan (Sore)', 'description' => 'Jalur mandiri bagi karyawan.', 'registration_start' => '2026-06-01', 'registration_end' => '2026-09-15', 'fee' => 450000, 'color' => 'secondary', 'quota' => 200, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            // SELEKSI PRESTASI
-            ['kategori_jalur_id' => $kategoris['Seleksi Prestasi'] ?? 3, 'code' => 'PRESTASI', 'name' => 'Jalur Prestasi Akademik', 'description' => 'Jalur pendaftaran bagi calon mahasiswa dengan prestasi akademik unggul.', 'registration_start' => '2026-01-15', 'registration_end' => '2026-06-30', 'fee' => 200000, 'color' => 'info', 'quota' => 200, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Prestasi'] ?? 3, 'code' => 'PRESTASI_OLAHRAGA', 'name' => 'Jalur Prestasi Olahraga', 'description' => 'Jalur bagi calon mahasiswa dengan prestasi olahraga.', 'registration_start' => '2026-01-15', 'registration_end' => '2026-07-15', 'fee' => 150000, 'color' => 'success', 'quota' => 100, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Prestasi'] ?? 3, 'code' => 'PRESTASI_SENI', 'name' => 'Jalur Prestasi Seni & Budaya', 'description' => 'Jalur bagi calon mahasiswa dengan prestasi seni.', 'registration_start' => '2026-02-01', 'registration_end' => '2026-07-15', 'fee' => 150000, 'color' => 'danger', 'quota' => 100, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Prestasi'] ?? 3, 'code' => 'PRESTASI_KEAGAMAAN', 'name' => 'Jalur Prestasi Keagamaan', 'description' => 'Jalur bagi calon mahasiswa dengan prestasi keagamaan.', 'registration_start' => '2026-02-01', 'registration_end' => '2026-06-30', 'fee' => 125000, 'color' => 'primary', 'quota' => 80, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Prestasi'] ?? 3, 'code' => 'PRESTASI_SAINS', 'name' => 'Jalur Prestasi Sains & Riset', 'description' => 'Jalur bagi calon mahasiswa dengan prestasi olimpiade sains.', 'registration_start' => '2026-01-15', 'registration_end' => '2026-05-31', 'fee' => 175000, 'color' => 'warning', 'quota' => 120, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Prestasi'] ?? 3, 'code' => 'PRESTASI_KEWIRAUSAHAAN', 'name' => 'Jalur Prestasi Kewirausahaan', 'description' => 'Jalur bagi calon mahasiswa dengan prestasi wirausaha.', 'registration_start' => '2026-02-01', 'registration_end' => '2026-07-31', 'fee' => 200000, 'color' => 'info', 'quota' => 90, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            // SELEKSI INTERNASIONAL
-            ['kategori_jalur_id' => $kategoris['Seleksi Internasional'] ?? 4, 'code' => 'INTERNASIONAL', 'name' => 'Jalur Internasional (IUP)', 'description' => 'Jalur pendaftaran bagi calon mahasiswa internasional.', 'registration_start' => '2026-03-01', 'registration_end' => '2026-07-31', 'fee' => 1000000, 'color' => 'primary', 'quota' => 100, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Internasional'] ?? 4, 'code' => 'INTERNASIONAL_SAT', 'name' => 'Jalur Internasional (SAT/ACT)', 'description' => 'Jalur bagi calon mahasiswa dengan skor SAT/ACT.', 'registration_start' => '2026-04-01', 'registration_end' => '2026-08-15', 'fee' => 850000, 'color' => 'success', 'quota' => 75, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Internasional'] ?? 4, 'code' => 'INTERNASIONAL_EXCHANGE', 'name' => 'Jalur Pertukaran Mahasiswa', 'description' => 'Jalur bagi calon mahasiswa program pertukaran internasional.', 'registration_start' => '2026-03-15', 'registration_end' => '2026-06-30', 'fee' => 500000, 'color' => 'warning', 'quota' => 50, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Internasional'] ?? 4, 'code' => 'INTERNASIONAL_BEASISWA', 'name' => 'Jalur Beasiswa Internasional', 'description' => 'Jalur bagi calon mahasiswa asing dengan beasiswa penuh.', 'registration_start' => '2026-02-01', 'registration_end' => '2026-05-30', 'fee' => 200000, 'color' => 'danger', 'quota' => 30, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Internasional'] ?? 4, 'code' => 'INTERNASIONAL_DIPLOMA', 'name' => 'Jalur Double Degree Internasional', 'description' => 'Jalur program double degree dengan universitas mitra.', 'registration_start' => '2026-03-01', 'registration_end' => '2026-06-15', 'fee' => 1500000, 'color' => 'info', 'quota' => 40, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            // SELEKSI KERJASAMA
-            ['kategori_jalur_id' => $kategoris['Seleksi Kerjasama'] ?? 5, 'code' => 'ALIH_JENJANG', 'name' => 'Alih Jenjang (Transfer)', 'description' => 'Jalur pendaftaran bagi calon mahasiswa pindahan.', 'registration_start' => null, 'registration_end' => null, 'fee' => 400000, 'color' => 'secondary', 'quota' => null, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Kerjasama'] ?? 5, 'code' => 'KERJASAMA_INDUSTRI', 'name' => 'Jalur Kerjasama Industri', 'description' => 'Jalur pendaftaran melalui kerjasama dengan perusahaan mitra.', 'registration_start' => '2026-04-01', 'registration_end' => '2026-08-31', 'fee' => 300000, 'color' => 'primary', 'quota' => 150, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Kerjasama'] ?? 5, 'code' => 'KERJASAMA_PEMDA', 'name' => 'Jalur Kerjasama Pemda', 'description' => 'Jalur pendaftaran melalui kerjasama dengan pemerintah daerah.', 'registration_start' => '2026-02-01', 'registration_end' => '2026-06-30', 'fee' => 150000, 'color' => 'success', 'quota' => 200, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Kerjasama'] ?? 5, 'code' => 'KERJASAMA_PESANTREN', 'name' => 'Jalur Kerjasama Pondok Pesantren', 'description' => 'Jalur khusus bagi lulusan pondok pesantren mitra.', 'registration_start' => '2026-03-01', 'registration_end' => '2026-07-15', 'fee' => 250000, 'color' => 'warning', 'quota' => 180, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Kerjasama'] ?? 5, 'code' => 'KERJASAMA_SMA', 'name' => 'Jalur Kerjasama SMA/SMK Mitra', 'description' => 'Jalur khusus bagi lulusan SMA/SMK mitra kampus.', 'registration_start' => '2026-01-15', 'registration_end' => '2026-04-30', 'fee' => 200000, 'color' => 'info', 'quota' => 300, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Kerjasama'] ?? 5, 'code' => 'KERJASAMA_KORPORASI', 'name' => 'Jalur Kerjasama Korporasi', 'description' => 'Jalur bagi karyawan/keluarga dari perusahaan korporasi mitra.', 'registration_start' => '2026-05-01', 'registration_end' => '2026-09-30', 'fee' => 350000, 'color' => 'dark', 'quota' => 120, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            ['kategori_jalur_id' => $kategoris['Seleksi Kerjasama'] ?? 5, 'code' => 'KERJASAMA_DAERAH_3T', 'name' => 'Jalur Afirmasi Daerah 3T', 'description' => 'Jalur afirmasi bagi calon mahasiswa dari daerah tertinggal.', 'registration_start' => '2026-01-15', 'registration_end' => '2026-08-31', 'fee' => 50000, 'color' => 'danger', 'quota' => 250, 'is_active' => true, 'created_at' => $now, 'updated_at' => $now],
+            // ── 1: SNBP ──
+            [
+                'code'                => 'SNBP',
+                'name'                => 'Seleksi Nasional Berdasarkan Prestasi',
+                'description'         => 'Jalur seleksi nasional berdasarkan prestasi akademik dan non-akademik siswa.',
+                'kategori_jalur_id'   => $kategoriIds['Seleksi Nasional'] ?? 1,
+                'form_pendaftaran_id' => $forms[0] ?? null,
+                'periode_id'          => $periodeId,
+                'registration_start'  => '2026-01-15',
+                'registration_end'    => '2026-02-28',
+                'fee'                 => 250000,
+                'color'               => 'primary',
+                'quota'               => 500,
+                'jumlah_pilihan_prodi'=> 3,
+                'is_active'           => true,
+                'gunakan_berkas'      => true,
+                'template_berkas_id'  => $templateBerkas[0] ?? null,
+                'metode_pengumuman'   => 'langsung',
+            ],
+            // ── 2: SNBT ──
+            [
+                'code'                => 'SNBT',
+                'name'                => 'Seleksi Nasional Berdasarkan Tes',
+                'description'         => 'Jalur seleksi nasional berdasarkan hasil tes kemampuan akademik dengan ujian online.',
+                'kategori_jalur_id'   => $kategoriIds['Seleksi Nasional'] ?? 1,
+                'form_pendaftaran_id' => $forms[0] ?? null,
+                'periode_id'          => $periodeId,
+                'registration_start'  => '2026-03-01',
+                'registration_end'    => '2026-04-30',
+                'fee'                 => 300000,
+                'color'               => 'success',
+                'quota'               => 800,
+                'jumlah_pilihan_prodi'=> 2,
+                'is_active'           => true,
+                'gunakan_ujian'       => true,
+                'paket_soal_id'       => $paketSoals[0] ?? null,
+                'gunakan_berkas'      => true,
+                'template_berkas_id'  => $templateBerkas[0] ?? null,
+                'metode_pengumuman'   => 'langsung',
+            ],
+            // ── 3: MANDIRI ──
+            [
+                'code'                => 'MANDIRI',
+                'name'                => 'Jalur Mandiri Reguler',
+                'description'         => 'Jalur pendaftaran mandiri reguler dengan tes ujian online dan wawancara.',
+                'kategori_jalur_id'   => $kategoriIds['Seleksi Mandiri'] ?? 2,
+                'form_pendaftaran_id' => $forms[0] ?? null,
+                'periode_id'          => $periodeId,
+                'registration_start'  => '2026-05-01',
+                'registration_end'    => '2026-07-31',
+                'fee'                 => 500000,
+                'color'               => 'warning',
+                'quota'               => 300,
+                'jumlah_pilihan_prodi'=> 2,
+                'is_active'           => true,
+                'gunakan_ujian'       => true,
+                'paket_soal_id'       => $paketSoals[1] ?? null,
+                'gunakan_berkas'      => true,
+                'template_berkas_id'  => $templateBerkas[0] ?? null,
+                'gunakan_wawancara'   => true,
+                'metode_pengumuman'   => 'ditahan',
+            ],
+            // ── 4: PRESTASI ──
+            [
+                'code'                => 'PRESTASI',
+                'name'                => 'Jalur Prestasi Akademik',
+                'description'         => 'Jalur pendaftaran bagi calon mahasiswa dengan prestasi akademik unggul tanpa tes.',
+                'kategori_jalur_id'   => $kategoriIds['Seleksi Prestasi'] ?? 3,
+                'form_pendaftaran_id' => $forms[0] ?? null,
+                'periode_id'          => $periodeId,
+                'registration_start'  => '2026-01-15',
+                'registration_end'    => '2026-06-30',
+                'fee'                 => 200000,
+                'color'               => 'info',
+                'quota'               => 200,
+                'jumlah_pilihan_prodi'=> 1,
+                'is_active'           => true,
+                'gunakan_berkas'      => true,
+                'template_berkas_id'  => $templateBerkas[4] ?? null,
+                'metode_pengumuman'   => 'langsung',
+            ],
+            // ── 5: KIP KULIAH ──
+            [
+                'code'                => 'KIP_KULIAH',
+                'name'                => 'Jalur KIP Kuliah',
+                'description'         => 'Jalur pendaftaran khusus bagi penerima Kartu Indonesia Pintar (KIP) Kuliah.',
+                'kategori_jalur_id'   => $kategoriIds['Seleksi Kerjasama'] ?? 5,
+                'form_pendaftaran_id' => $forms[0] ?? null,
+                'periode_id'          => $periodeId,
+                'registration_start'  => '2026-02-01',
+                'registration_end'    => '2026-08-31',
+                'fee'                 => 100000,
+                'color'               => 'danger',
+                'quota'               => 500,
+                'jumlah_pilihan_prodi'=> 2,
+                'is_active'           => true,
+                'gunakan_ujian'       => true,
+                'paket_soal_id'       => $paketSoals[3] ?? null,
+                'gunakan_berkas'      => true,
+                'template_berkas_id'  => $templateBerkas[1] ?? null,
+                'metode_pengumuman'   => 'ditahan',
+            ],
         ];
 
-        DB::table('registration_paths')->insert($paths);
+        foreach ($paths as $data) {
+            $path = RegistrationPath::create($data);
 
-        $this->command->info('30 registration paths seeded successfully for infinite scroll testing!');
+            // Attach 2 program studi ke pivot
+            if (!empty($programStudis)) {
+                $selected = array_slice($programStudis, 0, min(2, count($programStudis)));
+                $path->programStudis()->sync($selected);
+            }
+        }
+
+        $this->command->info('5 registration paths seeded successfully.');
     }
 }

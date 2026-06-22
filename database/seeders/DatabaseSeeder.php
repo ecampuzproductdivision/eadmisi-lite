@@ -35,6 +35,10 @@ class DatabaseSeeder extends Seeder
             PeriodeMenuSeeder::class,
             PeriodeSeeder::class,
             WawancaraMenuSeeder::class,
+            SyaratBerkasSeeder::class,
+            PaketSoalSeeder::class,
+            CrmLeadSeeder::class,
+            CrmLeadMenuSeeder::class,
             TestDataStikesSeeder::class,
         ]);
     }

@@ -5,7 +5,7 @@
     <a href="{{ route('syarat-berkas.kelola-dokumen', $t->id) }}" class="text-reset text-decoration-none fw-semibold">
       {{ $t->nama_template }}
     </a>
-    @if($t->deskripsi)<br><small class="text-muted">{{ Str::limit($t->deskripsi,80) }}</small>@endif
+    @if($t->deskripsi)<br><span class="text-muted">{{ Str::limit($t->deskripsi,80) }}</span>@endif
   </td>
   <td class="text-center">{{ $t->syarat_dokumens_count }}</td>
   <td>

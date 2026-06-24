@@ -58,9 +58,11 @@
                 @endif
             </tbody>
         </table>
+    @endslot
+    @slot('pagination')
         <div id="pagination-container">
             @if($templates->hasPages())
-                <div class="card-footer bg-white border-0 py-3">{{ $templates->links() }}</div>
+                {{ $templates->links() }}
             @endif
         </div>
     @endslot

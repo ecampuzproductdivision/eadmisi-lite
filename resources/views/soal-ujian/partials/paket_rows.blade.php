@@ -6,7 +6,7 @@
         {{ $paket->nama_paket }}
       </a>
       @if($paket->deskripsi)
-        <br><small class="text-muted">{{ Str::limit($paket->deskripsi, 80) }}</small>
+        <br><span class="text-muted">{{ Str::limit($paket->deskripsi, 80) }}</span>
       @endif
     </td>
     <td class="text-center">{{ $paket->soal_ujians_count }}</td>

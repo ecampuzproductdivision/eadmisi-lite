@@ -53,20 +53,20 @@
                 @forelse($logs as $log)
                     <tr>
                         <td>
-                            <div class="fw-semibold small">{{ $log->created_at->format('d M Y') }}</div>
-                            <small class="text-muted">{{ $log->created_at->format('H:i:s') }}</small>
+                            <div class="fw-semibold">{{ $log->created_at->format('d M Y') }}</div>
+                            <div class="text-muted">{{ $log->created_at->format('H:i:s') }}</div>
                         </td>
                         <td>
                             @if($log->user)
                                 <div class="d-flex align-items-center gap-2">
                                     <img src="{{ $log->user->avatar_url }}" class="avatar avatar-xs rounded-circle" alt="">
                                     <div>
-                                        <div class="fw-semibold small">{{ $log->user->name }}</div>
-                                        <small class="text-muted">{{ $log->user->email }}</small>
+                                        <div class="fw-semibold">{{ $log->user->name }}</div>
+                                        <div class="text-muted">{{ $log->user->email }}</div>
                                     </div>
                                 </div>
                             @else
-                                <span class="text-muted small">System</span>
+                                <span class="text-muted">System</span>
                             @endif
                         </td>
                         <td>
@@ -83,9 +83,9 @@
                         </td>
                         <td><span class="badge bg-light text-dark border">{{ ucfirst($log->module) }}</span></td>
                         <td>
-                            <div class="small">{{ $log->description }}</div>
+                            <div>{{ $log->description }}</div>
                         </td>
-                        <td><code class="small">{{ $log->ip_address }}</code></td>
+                        <td><code>{{ $log->ip_address }}</code></td>
                     </tr>
                 @empty
                     <tr>
@@ -97,6 +97,8 @@
                 @endforelse
             </tbody>
         </table>
+    @endslot
+    @slot('pagination')
         @if($logs->hasPages())
             {{ $logs->links() }}
         @endif

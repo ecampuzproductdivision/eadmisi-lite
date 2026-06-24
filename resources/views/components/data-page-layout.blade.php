@@ -101,9 +101,9 @@
     </div>
 
     {{-- Main Card: Filters + Table (merged) --}}
-    <div class="card border-1 shadow-sm px-4 py-4">
-        {{-- Filter & Export Row --}}
-        <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-end mb-4">
+    <div class="card border-1 shadow-sm px-4 py-4 data-page-card">
+        {{-- Filter & Export Row (Non-scrollable) --}}
+        <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-end mb-4 data-page-filters">
             <div class="col-md-8 col-12">
                 <div class="row g-2">
                     {{ $filters ?? '' }}
@@ -116,9 +116,9 @@
             @endif
         </form>
 
-        {{-- Table Content --}}
+        {{-- Table Content (Scrollable) --}}
         @if(isset($table))
-            <div class="table-responsive">
+            <div class="table-responsive data-page-table-scroll">
                 {{ $table }}
             </div>
         @else
@@ -127,7 +127,7 @@
 
         {{-- Pagination --}}
         @if(isset($pagination))
-            <div class="mt-3">
+            <div class="mt-3 data-page-pagination">
                 {{ $pagination }}
             </div>
         @endif

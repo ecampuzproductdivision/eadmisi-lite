@@ -65,8 +65,10 @@
                 @endforelse
             </tbody>
         </table>
+    @endslot
+    @slot('pagination')
         @if($permissions->hasPages())
-            <div class="card-footer bg-white border-0 py-3">{{ $permissions->links() }}</div>
+            {{ $permissions->links() }}
         @endif
     @endslot
 @endcomponent

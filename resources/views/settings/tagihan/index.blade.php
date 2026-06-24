@@ -122,9 +122,10 @@
                 @endforelse
             </tbody>
         </table>
-
+    @endslot
+    @slot('pagination')
         @if($payments->hasPages())
-            <div class="card-footer bg-white border-0 py-3">{{ $payments->links() }}</div>
+            {{ $payments->links() }}
         @endif
     @endslot
 @endcomponent

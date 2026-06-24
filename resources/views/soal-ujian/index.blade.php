@@ -66,9 +66,11 @@
             </div>
         </div>
 
+    @endslot
+    @slot('pagination')
         <div id="pagination-container">
             @if($pakets->hasPages())
-                <div class="card-footer bg-white border-0 py-3">{{ $pakets->links() }}</div>
+                {{ $pakets->links() }}
             @endif
         </div>
     @endslot

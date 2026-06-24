@@ -239,11 +239,9 @@
 }
 /* === End Tag Input Styles === */
 
-/* Sticky Header and Filter Utility */
+/* Sticky Header and Filter Utility - DISABLED: no longer sticky */
 .sticky-header-filter {
-  position: sticky;
-  top: 60px;
-  z-index: 990;
+  /* position: sticky; - removed to prevent overlapping issues */
   background-color: var(--bs-body-bg);
   padding-top: 0rem;
   padding-bottom: 0;
@@ -251,6 +249,31 @@
   margin-bottom: 0;
 }
 
+/* === Data Page: Scrollable Table Container === */
+/* The card itself scrolls with the page normally */
+/* Only the table area inside is scrollable with a fixed max-height */
+.data-page-table-scroll {
+  max-height: 400px; /* Default fallback, JS will calculate precise height */
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+}
+/* When inside the scrollable container, make thead sticky */
+.data-page-table-scroll .table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.data-page-table-scroll .table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #f8fafc;
+  box-shadow: 0 2px 2px -1px rgba(0,0,0,0.1);
+}
+[data-bs-theme="dark"] .data-page-table-scroll .table thead th {
+  background-color: #1e293b;
+  box-shadow: 0 2px 2px -1px rgba(0,0,0,0.3);
+}
 /* === Consistent Table Styling === */
 .table-ead tbody td {
   font-size: 0.875rem;
@@ -315,64 +338,52 @@
     <script src="{{ asset('assets/js/vendors/chart.js') }}"></script>
     <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
 
-    <!-- Global Sticky Table Header Logic -->
+    <!-- Data Page: Dynamic Table Scroll Height Calculator -->
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        function updateTableHeaders() {
-          const filter = document.querySelector('.sticky-header-filter');
-          let topOffset = 60; // navbar height
-          
-          if (filter) {
-            // Calculate height of the filter + its margin-bottom
-            const style = window.getComputedStyle(filter);
-            const marginBottom = parseFloat(style.marginBottom) || 0;
-            topOffset = 60 + filter.offsetHeight + marginBottom;
-          }
-          
-          const ths = document.querySelectorAll('.table:not(.no-sticky-global) thead th');
-          if (ths.length > 0) {
-            ths.forEach(th => {
-              th.style.position = 'sticky';
-              th.style.top = topOffset + 'px';
-              th.style.zIndex = '800'; // Below the filter (990)
-            });
+        function calculateTableScrollHeight() {
+          const scrollContainers = document.querySelectorAll('.data-page-table-scroll');
+          if (!scrollContainers.length) return;
+
+          // Use the card's top position relative to viewport
+          scrollContainers.forEach(container => {
+            const card = container.closest('.data-page-card');
+            if (!card) return;
             
-            // To make position:sticky work relative to window, ancestor cannot clip overflow
-            if (window.innerWidth >= 992) {
-              document.querySelectorAll('.table-responsive:not(.no-sticky-global)').forEach(div => {
-                div.style.overflowX = 'visible';
-              });
-            } else {
-              document.querySelectorAll('.table-responsive:not(.no-sticky-global)').forEach(div => {
-                div.style.overflowX = 'auto';
-              });
+            const cardRect = card.getBoundingClientRect();
+            const cardTop = cardRect.top;
+            const cardPaddingTop = parseFloat(getComputedStyle(card).paddingTop) || 0;
+            const cardPaddingBottom = parseFloat(getComputedStyle(card).paddingBottom) || 0;
+            
+            // Find filters and pagination within this card
+            const filters = card.querySelector('.data-page-filters');
+            const pagination = card.querySelector('.data-page-pagination');
+            
+            let filtersHeight = 0;
+            if (filters) {
+              filtersHeight = filters.offsetHeight + (parseFloat(getComputedStyle(filters).marginBottom) || 0);
             }
-          }
-        }
-
-        updateTableHeaders();
-        window.addEventListener('resize', updateTableHeaders);
-
-        // Manage background colors for dark mode switching
-        function updateHeaderColors() {
-          const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-          const bgColor = isDark ? '#1e293b' : '#f8f9fa';
-          document.querySelectorAll('.table:not(.no-sticky-global) thead th').forEach(th => {
-            th.style.backgroundColor = bgColor;
-            // Add a subtle bottom border to distinguish sticky header
-            th.style.boxShadow = isDark ? '0 1px 0 #334155' : '0 1px 0 #e2e8f0';
+            
+            let paginationHeight = 0;
+            if (pagination) {
+              paginationHeight = pagination.offsetHeight + (parseFloat(getComputedStyle(pagination).marginTop) || 0);
+            }
+            
+            const bottomMargin = 16; // safe margin at bottom
+            const availableHeight = window.innerHeight - cardTop - cardPaddingTop - cardPaddingBottom - filtersHeight - paginationHeight - bottomMargin;
+            
+            container.style.maxHeight = Math.max(150, availableHeight) + 'px';
           });
         }
+
+        calculateTableScrollHeight();
+        window.addEventListener('resize', calculateTableScrollHeight);
         
-        updateHeaderColors();
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.attributeName === 'data-bs-theme') {
-                    updateHeaderColors();
-                }
-            });
+        // Recalculate when sidebar toggles (collapsed/expanded)
+        const sidebarObserver = new MutationObserver(function() {
+          calculateTableScrollHeight();
         });
-        observer.observe(document.documentElement, { attributes: true });
+        sidebarObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
       });
     </script>
     

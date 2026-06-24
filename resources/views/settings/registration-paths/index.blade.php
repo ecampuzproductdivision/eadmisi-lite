@@ -65,7 +65,7 @@
                     <td class="fw-semibold">{{ $path->name }}</td>
                     <td>@if($path->kategori)<span class="badge bg-dark-subtle text-dark px-3 py-2">{{ $path->kategori->nama }}</span>@else<span class="text-muted">—</span>@endif</td>
                     <td>Rp {{ number_format($path->fee, 0, ',', '.') }}</td>
-                    <td>@if($path->registration_start && $path->registration_end)<small>{{ \Carbon\Carbon::parse($path->registration_start)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($path->registration_end)->format('d/m/Y') }}</small>@else<span class="text-muted">—</span>@endif</td>
+                    <td>@if($path->registration_start && $path->registration_end){{ \Carbon\Carbon::parse($path->registration_start)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($path->registration_end)->format('d/m/Y') }}@else<span class="text-muted">—</span>@endif</td>
                     <td>@if($path->quota)<span class="fw-semibold">{{ $path->quota }}</span>@else<span class="text-muted">∞</span>@endif</td>
                     <td>@if($path->is_active)<span class="badge bg-success-subtle text-success px-3 py-2">Aktif</span>@else<span class="badge bg-danger-subtle text-danger px-3 py-2">Nonaktif</span>@endif</td>
                     <td>

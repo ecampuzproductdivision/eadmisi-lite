@@ -143,9 +143,10 @@
                 </tbody>
             </table>
         </div>
-
+    @endslot
+    @slot('pagination')
         @if($registrations->hasPages())
-            <div class="card-footer bg-white border-0 py-3">{{ $registrations->links() }}</div>
+            {{ $registrations->links() }}
         @endif
     @endslot
 @endcomponent

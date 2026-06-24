@@ -97,13 +97,20 @@
                 @endif
             </tbody>
         </table>
-    @endslot
-    @slot('pagination')
-        @if($leads->hasPages())
-            {{ $leads->links() }}
-        @endif
+        <div id="loading-spinner" class="d-none text-center py-3">
+            <div class="spinner-border text-primary" role="status" style="width: 1.5rem; height: 1.5rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
     @endslot
 @endcomponent
+
+@include('components.infinite-scroll-script', [
+    'tableBodyId' => 'leads-table-body',
+    'spinnerId' => 'loading-spinner',
+    'nextPageUrl' => $leads->nextPageUrl(),
+    'hasMore' => $leads->hasMorePages(),
+])
 
 <!-- Detail & Catatan Modal -->
 <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">

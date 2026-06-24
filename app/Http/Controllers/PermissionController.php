@@ -7,9 +7,18 @@ use Illuminate\Http\Request;
 
 class PermissionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $permissions = Permission::paginate(10);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('settings.permissions.partials.permission_rows', compact('permissions'))->render(),
+                'next_page' => $permissions->nextPageUrl(),
+                'has_more' => $permissions->hasMorePages(),
+            ]);
+        }
+
         return view('settings.permissions.index', compact('permissions'));
     }
 

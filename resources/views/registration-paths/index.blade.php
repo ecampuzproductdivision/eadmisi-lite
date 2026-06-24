@@ -70,46 +70,18 @@
                 @endif
             </tbody>
         </table>
-        <div id="pagination-container">
-            @if($paths->hasPages())
-                <div class="card-footer bg-white border-0 py-3">{{ $paths->links() }}</div>
-            @endif
+        <div id="loading-spinner" class="d-none text-center py-3">
+            <div class="spinner-border text-primary" role="status" style="width: 1.5rem; height: 1.5rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         </div>
     @endslot
 @endcomponent
 
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    let nextPageUrl = '{{ $paths->nextPageUrl() }}';
-    let hasMore = {{ $paths->hasMorePages() ? 'true' : 'false' }};
-    let isLoading = false;
-    const spinner = document.getElementById('loading-spinner');
-    const paginationContainer = document.getElementById('pagination-container');
-    const tableBody = document.getElementById('paths-table-body');
-    if (paginationContainer) paginationContainer.classList.add('d-none');
-
-    function handleScroll() {
-        if (isLoading || !hasMore || !nextPageUrl) return;
-        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100) loadMore();
-    }
-
-    function loadMore() {
-        isLoading = true; if (spinner) spinner.classList.remove('d-none');
-        fetch(nextPageUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-        .then(response => response.json())
-        .then(data => {
-            if (data.html) {
-                const tempDiv = document.createElement('tbody');
-                tempDiv.innerHTML = data.html;
-                tempDiv.querySelectorAll('tr').forEach(row => tableBody.appendChild(row));
-            }
-            nextPageUrl = data.next_page; hasMore = data.has_more; isLoading = false; if (spinner) spinner.classList.add('d-none');
-        })
-        .catch(error => { console.error('Error:', error); isLoading = false; if (spinner) spinner.classList.add('d-none'); });
-    }
-    window.addEventListener('scroll', handleScroll);
-});
-</script>
-@endpush
+@include('components.infinite-scroll-script', [
+    'tableBodyId' => 'paths-table-body',
+    'spinnerId' => 'loading-spinner',
+    'nextPageUrl' => $paths->nextPageUrl(),
+    'hasMore' => $paths->hasMorePages(),
+])
 @endsection

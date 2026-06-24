@@ -8,9 +8,32 @@ use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pages = Page::with('menu')->orderBy('sort_order')->paginate(10);
+        $query = Page::with('menu')->orderBy('sort_order');
+
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('page_name', 'like', "%{$s}%")
+                  ->orWhere('page_code', 'like', "%{$s}%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->status === 'active');
+        }
+
+        $pages = $query->paginate(10);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('settings.pages.partials.page_rows', compact('pages'))->render(),
+                'next_page' => $pages->nextPageUrl(),
+                'has_more' => $pages->hasMorePages(),
+            ]);
+        }
+
         return view('settings.pages.index', compact('pages'));
     }
 

@@ -16,12 +16,10 @@ class TagihanController extends Controller
         $query = Payment::with(['registration.registrationPath', 'registration', 'user'])
             ->orderBy('created_at', 'desc');
 
-        // Filter by status
         if ($request->filled('status')) {
             $query->where('transaction_status', $request->status);
         }
 
-        // Search by name or invoice number
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -36,6 +34,14 @@ class TagihanController extends Controller
         }
 
         $payments = $query->paginate(15)->withQueryString();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('settings.tagihan.partials.payment_rows', compact('payments'))->render(),
+                'next_page' => $payments->nextPageUrl(),
+                'has_more' => $payments->hasMorePages(),
+            ]);
+        }
 
         return view('settings.tagihan.index', compact('payments'));
     }

@@ -27,9 +27,17 @@ class ActivityLogController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        $logs = $query->paginate(20);
+        $logs = $query->paginate(20)->withQueryString();
         $modules = ActivityLog::select('module')->distinct()->pluck('module');
         $actions = ActivityLog::select('action')->distinct()->pluck('action');
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('settings.logs.partials.log_rows', compact('logs'))->render(),
+                'next_page' => $logs->nextPageUrl(),
+                'has_more' => $logs->hasMorePages(),
+            ]);
+        }
 
         return view('settings.logs.index', compact('logs', 'modules', 'actions'));
     }

@@ -74,17 +74,22 @@
                 @endif
             </tbody>
         </table>
-    @endslot
-    @slot('pagination')
-        <div id="pagination-container">
-            @if($users->hasPages())
-                {{ $users->links() }}
-            @endif
+        <div id="loading-spinner" class="d-none text-center py-3">
+            <div class="spinner-border text-primary" role="status" style="width: 1.5rem; height: 1.5rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         </div>
     @endslot
 @endcomponent
 
-@push('scripts')
+@include('components.infinite-scroll-script', [
+    'tableBodyId' => 'user-table-body',
+    'spinnerId' => 'loading-spinner',
+    'nextPageUrl' => $users->nextPageUrl(),
+    'hasMore' => $users->hasMorePages(),
+])
+
+<!-- Register status toggle for infinite-loaded rows -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     function registerStatusToggle(toggle) {
@@ -106,35 +111,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     document.querySelectorAll('.status-toggle').forEach(registerStatusToggle);
 
-    let nextPageUrl = '{{ $users->nextPageUrl() }}';
-    let hasMore = {{ $users->hasMorePages() ? 'true' : 'false' }};
-    let isLoading = false;
-    const spinner = document.getElementById('loading-spinner');
-    const paginationContainer = document.getElementById('pagination-container');
+    // Observe for new rows loaded via infinite scroll and register their toggles
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            mutation.addedNodes.forEach(function(node) {
+                if (node.nodeType === 1) {
+                    node.querySelectorAll('.status-toggle').forEach(registerStatusToggle);
+                }
+            });
+        });
+    });
     const tableBody = document.getElementById('user-table-body');
-    if (paginationContainer) paginationContainer.classList.add('d-none');
-
-    function handleScroll() {
-        if (isLoading || !hasMore || !nextPageUrl) return;
-        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100) loadMoreUsers();
-    }
-
-    function loadMoreUsers() {
-        isLoading = true; if (spinner) spinner.classList.remove('d-none');
-        fetch(nextPageUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-        .then(response => response.json())
-        .then(data => {
-            if (data.html) {
-                const tempDiv = document.createElement('tbody');
-                tempDiv.innerHTML = data.html;
-                tempDiv.querySelectorAll('tr').forEach(row => { tableBody.appendChild(row); const toggle = row.querySelector('.status-toggle'); if (toggle) registerStatusToggle(toggle); });
-            }
-            nextPageUrl = data.next_page; hasMore = data.has_more; isLoading = false; if (spinner) spinner.classList.add('d-none');
-        })
-        .catch(error => { console.error('Error:', error); isLoading = false; if (spinner) spinner.classList.add('d-none'); });
-    }
-    window.addEventListener('scroll', handleScroll);
+    if (tableBody) observer.observe(tableBody, { childList: true, subtree: false });
 });
 </script>
-@endpush
 @endsection

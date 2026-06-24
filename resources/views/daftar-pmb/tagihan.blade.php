@@ -22,7 +22,7 @@
       @endif
 
       @if($registrations->isEmpty())
-        <div class="card border-0 shadow-sm">
+        <div class="card border-1 shadow-sm">
           <div class="card-body p-5 text-center">
             <div class="mb-4">
               <div class="rounded-circle bg-warning-subtle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
@@ -38,7 +38,7 @@
         </div>
       @else
         <!-- Header Info -->
-        <div class="card border-0 shadow-sm mb-4">
+        <div class="card border-1 shadow-sm mb-4">
           <div class="card-body p-4">
             <div class="d-flex align-items-center gap-3">
               <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
@@ -78,7 +78,7 @@
           $fee = $registration->registrationPath?->fee ?? 0;
         @endphp
         <!-- Tagihan Card per Jalur -->
-        <div class="card border-0 shadow-sm mb-4">
+        <div class="card border-1 shadow-sm mb-4">
           <div class="card-header bg-light py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
             <h5 class="fw-bold mb-0">
               <i class="ti ti-road text-primary me-2"></i>{{ $registration->registrationPath?->name ?? '-' }}
@@ -157,7 +157,7 @@
         @endforeach
 
         <!-- Informasi -->
-        <div class="card border-0 shadow-sm mb-4 bg-info-subtle">
+        <div class="card border-1 shadow-sm mb-4 bg-info-subtle">
           <div class="card-body p-4">
             <div class="d-flex align-items-start gap-3">
               <i class="ti ti-info-circle fs-3 text-info flex-shrink-0 mt-1"></i>

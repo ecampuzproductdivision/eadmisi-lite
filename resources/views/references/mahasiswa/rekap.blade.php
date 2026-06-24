@@ -2,7 +2,7 @@
 
 @section('content')
 <main class="p-2">
-  <div class="card border-0 shadow-sm mb-4">
+  <div class="card border-1 shadow-sm mb-4">
     <div class="card-body p-4">
       <div class="row align-items-center">
         <div class="col">
@@ -25,7 +25,7 @@
   <!-- Summary Cards -->
   <div class="row g-3 mb-4">
     <div class="col-md-4">
-      <div class="card border-0 shadow-sm rounded-4 h-100">
+      <div class="card border-1 shadow-sm rounded-4 h-100">
         <div class="card-body p-4 d-flex align-items-center gap-3">
           <div class="rounded-3 bg-primary-subtle p-3"><i class="ti ti-users fs-1 text-primary"></i></div>
           <div>
@@ -36,7 +36,7 @@
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card border-0 shadow-sm rounded-4 h-100">
+      <div class="card border-1 shadow-sm rounded-4 h-100">
         <div class="card-body p-4 d-flex align-items-center gap-3">
           <div class="rounded-3 bg-success-subtle p-3"><i class="ti ti-user-check fs-1 text-success"></i></div>
           <div>
@@ -47,7 +47,7 @@
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card border-0 shadow-sm rounded-4 h-100">
+      <div class="card border-1 shadow-sm rounded-4 h-100">
         <div class="card-body p-4 d-flex align-items-center gap-3">
           <div class="rounded-3 bg-warning-subtle p-3"><i class="ti ti-calendar-off fs-1 text-warning"></i></div>
           <div>
@@ -62,7 +62,7 @@
   <!-- Charts -->
   <div class="row g-4">
     <div class="col-md-7">
-      <div class="card border-0 shadow-sm rounded-4">
+      <div class="card border-1 shadow-sm rounded-4">
         <div class="card-header bg-white border-bottom py-3 rounded-top-4">
           <h5 class="fw-bold mb-0 text-primary"><i class="ti ti-chart-bar me-2"></i>Distribusi per Angkatan</h5>
         </div>
@@ -72,7 +72,7 @@
       </div>
     </div>
     <div class="col-md-5">
-      <div class="card border-0 shadow-sm rounded-4">
+      <div class="card border-1 shadow-sm rounded-4">
         <div class="card-header bg-white border-bottom py-3 rounded-top-4">
           <h5 class="fw-bold mb-0 text-primary"><i class="ti ti-chart-pie me-2"></i>Distribusi Jalur Masuk</h5>
         </div>
@@ -84,7 +84,7 @@
   </div>
 
   <!-- Detail Table per Angkatan -->
-  <div class="card border-0 shadow-sm rounded-4 mt-4">
+  <div class="card border-1 shadow-sm rounded-4 mt-4">
     <div class="card-header bg-white border-bottom py-3 rounded-top-4">
       <h5 class="fw-bold mb-0 text-primary"><i class="ti ti-table me-2"></i>Detail per Angkatan</h5>
     </div>

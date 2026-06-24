@@ -1,61 +1,70 @@
 @extends('layouts.app')
 
 @section('content')
-<main class="p-6">
-  <div class="row mb-6 align-items-center">
-    <div class="col-md-6 col-12">
-      <h1 class="mb-1 fw-bold">Master Syarat Berkas</h1>
-      <p class="mb-0 text-muted">Kelola template persyaratan dokumen untuk jalur pendaftaran.</p>
-    </div>
-    <div class="col-md-6 col-12 text-md-end mt-3 mt-md-0">
-      <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalTambahTemplate">
-        <i class="ti ti-plus fs-4"></i> Tambah Template
-      </button>
-    </div>
-  </div>
-
-  @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <i class="ti ti-circle-check fs-4 me-2"></i>
-      {{ session('success') }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-  @endif
-
-  <div class="card border-0 shadow-sm">
-    <div class="card-body p-4">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead class="bg-light">
-            <tr>
-              <th style="width:50px;">No</th>
-              <th>Nama Template</th>
-              <th style="width:100px;" class="text-center">Jumlah Dokumen</th>
-              <th style="width:100px;">Status</th>
-              <th style="width:320px;">Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="template-table-body">
-            @if($templates->isEmpty())
-              <tr>
-                <td colspan="5" class="text-center py-5">
-                  <i class="ti ti-file-text text-muted" style="font-size:3rem;"></i>
-                  <p class="mt-3 mb-0 text-muted">Belum ada template syarat berkas.</p>
-                  <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#modalTambahTemplate">Tambah Template Pertama</button>
-                </td>
-              </tr>
-            @else
-              @include('syarat-berkas.partials.template_rows')
-            @endif
-          </tbody>
+@component('components.data-page-layout')
+    @slot('breadcrumbs', [
+        ['label' => 'Home', 'url' => route('home')],
+        ['label' => 'Settings', 'url' => '#'],
+        ['label' => 'Master Syarat Berkas', 'active' => true],
+    ])
+    @slot('title', 'Master Syarat Berkas')
+    @slot('description', 'Kelola template persyaratan dokumen untuk jalur pendaftaran.')
+    @slot('actions')
+        <button type="button" class="btn btn-dark d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalTambahTemplate">
+            <i class="ti ti-plus fs-4"></i> Tambah Template
+        </button>
+    @endslot
+    @slot('filters')
+        <div class="col-md-4 col-12">
+            <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0"><i class="ti ti-search text-muted"></i></span>
+                <input type="text" name="search" class="form-control border-start-0" placeholder="Cari nama template..." value="{{ request('search') }}">
+            </div>
+        </div>
+        <div class="col-md-3 col-12">
+            <select name="status" class="form-select">
+                <option value="">Semua Status</option>
+                <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-12 d-flex gap-2">
+            <button type="submit" class="btn btn-primary"><i class="ti ti-filter"></i> Terapkan</button>
+            <a href="{{ route('syarat-berkas.index') }}" class="btn btn-subtle-primary px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
+        </div>
+    @endslot
+    @slot('table')
+        <table class="table align-middle text-nowrap mb-0 table-hover table-ead">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col" class="py-3" style="width:50px;">No</th>
+                    <th scope="col" class="py-3">Nama Template</th>
+                    <th scope="col" class="py-3 text-center" style="width:100px;">Jumlah Dokumen</th>
+                    <th scope="col" class="py-3" style="width:100px;">Status</th>
+                    <th scope="col" class="py-3 text-end" style="width:320px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="template-table-body">
+                @if($templates->isEmpty())
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <i class="ti ti-file-text text-muted" style="font-size:3rem;"></i>
+                            <p class="mt-3 mb-0 text-muted">Belum ada template syarat berkas.</p>
+                            <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#modalTambahTemplate">Tambah Template Pertama</button>
+                        </td>
+                    </tr>
+                @else
+                    @include('syarat-berkas.partials.template_rows')
+                @endif
+            </tbody>
         </table>
-      </div>
-      <div id="pagination-container">
-        @if($templates->hasPages())<div class="mt-3">{{ $templates->links() }}</div>@endif
-      </div>
-    </div>
-  </div>
-</main>
+        <div id="pagination-container">
+            @if($templates->hasPages())
+                <div class="card-footer bg-white border-0 py-3">{{ $templates->links() }}</div>
+            @endif
+        </div>
+    @endslot
+@endcomponent
 
 <!-- Modal Tambah Template -->
 <div class="modal fade" id="modalTambahTemplate" tabindex="-1" aria-hidden="true">

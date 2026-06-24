@@ -4,7 +4,7 @@
 <main class="p-2">
 
   {{-- ========== HEADER ========== --}}
-  <div class="card border-0 mb-3 shadow-xs">
+  <div class="card border-1 mb-3 shadow-xs">
     <div class="card-body p-3 p-md-4">
       <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
         <div>
@@ -92,7 +92,7 @@
   @endphp
   <div class="row g-3 mb-3">
     <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 10px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background:#e3f2fd;"><i class="ti ti-books text-primary fs-3"></i></div>
           <div>
@@ -103,7 +103,7 @@
       </div>
     </div>
     <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 10px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background:#e8f5e9;"><i class="ti ti-stack text-success fs-3"></i></div>
           <div>
@@ -114,7 +114,7 @@
       </div>
     </div>
     <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 10px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background:#fff3e0;"><i class="ti ti-category text-warning fs-3"></i></div>
           <div>
@@ -125,7 +125,7 @@
       </div>
     </div>
     <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 10px;">
         <div class="card-body p-3">
           <div class="text-muted small fw-semibold mb-1">Kelengkapan SKS</div>
           <div class="d-flex align-items-center gap-2">
@@ -145,7 +145,7 @@
 
     {{-- ===== SEMESTER BOARD (SCROLLABLE) ===== --}}
     <div class="flex-grow-1 overflow-hidden">
-      <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 12px;">
         <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
           <h6 class="fw-bold mb-0 text-dark"><i class="ti ti-layout-columns me-2 text-primary"></i>Semester Board</h6>
           @if(!$isReadOnly)
@@ -174,7 +174,7 @@
                 @endphp
                 <div class="semester-column" data-semester="{{ $semester->nomor_semester }}" style="width: 210px; min-width: 210px;">
                   {{-- Column Header --}}
-                  <div class="card border-0 mb-2" style="border-radius: 10px; background: #f8fafd;">
+                  <div class="card border-1 mb-2" style="border-radius: 10px; background: #f8fafd;">
                     <div class="card-body p-2 text-center">
                       <div class="fw-bold text-dark small">{{ $semester->label_semester ?: 'Semester '.$semester->nomor_semester }}</div>
                       <div class="text-muted" style="font-size: 10px;">{{ $semester->jenis_semester ?? '' }}</div>
@@ -258,7 +258,7 @@
       </div>
 
       {{-- ===== KELOMPOK MK ANALYSIS ===== --}}
-      <div class="card border-0 shadow-sm mt-3" style="border-radius: 12px;">
+      <div class="card border-1 shadow-sm mt-3" style="border-radius: 12px;">
         <div class="card-header bg-white border-bottom py-3 px-4">
           <h6 class="fw-bold mb-0 text-dark"><i class="ti ti-chart-bar me-2 text-info"></i>Analisis Distribusi SKS per Kelompok MK</h6>
         </div>
@@ -322,7 +322,7 @@
 
     {{-- ===== CATALOG SIDEBAR ===== --}}
     <div style="width: 240px; min-width: 240px; flex-shrink: 0;">
-      <div class="card border-0 shadow-sm sticky-top" style="border-radius: 12px; top: 70px;">
+      <div class="card border-1 shadow-sm sticky-top" style="border-radius: 12px; top: 70px;">
         <div class="card-header bg-white border-bottom py-3 px-3">
           <h6 class="fw-bold mb-1 text-dark" style="font-size: 13px;"><i class="ti ti-books me-2 text-primary"></i>Katalog Mata Kuliah</h6>
           <p class="text-muted mb-0" style="font-size: 10px;">{{ $catalogCourses->count() }} MK belum ditambahkan</p>

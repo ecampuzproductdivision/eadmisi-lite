@@ -18,7 +18,7 @@
   {{-- ============================================================ --}}
   {{-- HEADER BANNER                                                --}}
   {{-- ============================================================ --}}
-  <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); border-radius: 20px; overflow: hidden; position: relative;">
+  <div class="card border-1 shadow-sm mb-4" style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%); border-radius: 20px; overflow: hidden; position: relative;">
     <div style="position:absolute;top:0;right:0;width:300px;height:200px;background:rgba(224,231,255,0.06);border-radius:50%;transform:translate(30%,-30%);"></div>
     <div style="position:absolute;bottom:0;left:20%;width:200px;height:150px;background:rgba(99,102,241,0.08);border-radius:50%;"></div>
     <div class="card-body p-4 p-md-5 text-white position-relative">
@@ -66,7 +66,7 @@
   {{-- ============================================================ --}}
   {{-- FILTER SECTION                                               --}}
   {{-- ============================================================ --}}
-  <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
+  <div class="card border-1 shadow-sm mb-4" style="border-radius: 16px;">
     <div class="card-body p-3 p-md-4">
       <form action="{{ route('rps-review.index') }}" method="GET" class="row g-3 align-items-end">
         <div class="col-md-3 col-12">
@@ -109,7 +109,7 @@
           </select>
         </div>
         <div class="col-md-2 col-12 d-flex gap-2">
-          <button type="submit" class="btn btn-dark w-100 py-2"><i class="ti ti-filter me-1"></i> Filter</button>
+          <button type="submit" class="btn btn-dark py-2"><i class="ti ti-filter me-1"></i> Filter</button>
           <a href="{{ route('rps-review.index') }}" class="btn btn-light py-2 px-3" title="Reset"><i class="ti ti-refresh"></i></a>
         </div>
       </form>
@@ -119,7 +119,7 @@
   {{-- ============================================================ --}}
   {{-- QUEUE TABLE                                                  --}}
   {{-- ============================================================ --}}
-  <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
+  <div class="card border-1 shadow-sm" style="border-radius: 16px; overflow: hidden;">
     <div class="table-responsive no-sticky-global">
       <table class="table no-sticky-global align-middle mb-0" style="min-width: 800px;">
         <thead class="table-light">

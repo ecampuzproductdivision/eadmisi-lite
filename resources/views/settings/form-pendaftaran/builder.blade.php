@@ -38,7 +38,7 @@
       <div class="row g-4">
         <!-- Left: Field Palette -->
         <div class="col-lg-3">
-          <div class="card border-0 shadow-sm sticky-top" style="top: 80px;">
+          <div class="card border-1 shadow-sm sticky-top" style="top: 80px;">
             <div class="card-header bg-light py-3">
               <h6 class="fw-bold mb-0"><i class="ti ti-box me-2"></i>Tambah Field</h6>
             </div>
@@ -65,7 +65,7 @@
         <!-- Right: Form Canvas -->
         <div class="col-lg-9">
           <!-- Form Title Card -->
-          <div class="card border-0 shadow-sm mb-4" style="border-top: 8px solid #f63a4c !important; border-radius: 12px;">
+          <div class="card border-1 shadow-sm mb-4" style="border-top: 8px solid #f63a4c !important; border-radius: 12px;">
             <div class="card-body p-4">
               <div class="d-flex align-items-start gap-3">
                 <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
@@ -108,7 +108,7 @@
               @endif
               <div class="sortable-fields" data-section="{{ $sectionName }}">
                 @foreach($sectionFields as $field)
-                <div class="field-item card border-0 shadow-sm mb-2" data-field-id="{{ $field->id }}" data-sort="{{ $field->sort_order }}" style="border-radius: 8px; {{ !$field->is_active ? 'opacity: 0.5;' : '' }}">
+                <div class="field-item card border-1 shadow-sm mb-2" data-field-id="{{ $field->id }}" data-sort="{{ $field->sort_order }}" style="border-radius: 8px; {{ !$field->is_active ? 'opacity: 0.5;' : '' }}">
                   <div class="card-body py-3 px-4">
                     <div class="d-flex align-items-center gap-3">
                       <div class="drag-handle text-muted" title="Drag to reorder"><i class="ti ti-grip-vertical fs-5"></i></div>
@@ -395,7 +395,7 @@ function renderPreview(fields) {
   const body=document.getElementById('previewBody');
   const keys=Object.keys(fields);
   if(!keys.length||keys.every(k=>!fields[k].length)){body.innerHTML='<div class="text-center py-5"><i class="ti ti-file-off text-muted fs-1"></i><p class="mt-2 text-muted">Belum ada field</p></div>';return;}
-  let html=`<div class="card border-0 shadow-sm" style="border-top:8px solid #f63a4c;"><div class="card-body p-4"><div class="d-flex align-items-center gap-3 mb-4"><div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width:40px;height:40px;"><i class="ti ti-file-text text-primary"></i></div><div><h4 class="fw-bold mb-0">{{ $form->nama }}</h4></div></div><form><div class="row g-3">`;
+  let html=`<div class="card border-1 shadow-sm" style="border-top:8px solid #f63a4c;"><div class="card-body p-4"><div class="d-flex align-items-center gap-3 mb-4"><div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width:40px;height:40px;"><i class="ti ti-file-text text-primary"></i></div><div><h4 class="fw-bold mb-0">{{ $form->nama }}</h4></div></div><form><div class="row g-3">`;
   keys.forEach(s=>{
     const sf=fields[s]; if(!sf||!sf.length)return;
     if(s) html+=`<div class="col-12"><hr><h6 class="fw-bold text-uppercase small text-muted">${s}</h6></div>`;

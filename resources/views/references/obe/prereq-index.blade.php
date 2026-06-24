@@ -4,7 +4,7 @@
 <main class="p-2">
 
   {{-- ===== HEADER ===== --}}
-  <div class="card border-0 mb-4 shadow-xs">
+  <div class="card border-1 mb-4 shadow-xs">
     <div class="card-body p-4">
       <div class="d-flex justify-content-between align-items-center mb-2">
         <div>
@@ -26,7 +26,7 @@
   </div>
 
   {{-- ===== INFO BANNER ===== --}}
-  <div class="card border-0 mb-4 shadow-sm" style="border-radius: 12px; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-left: 4px solid #22c55e !important;">
+  <div class="card border-1 mb-4 shadow-sm" style="border-radius: 12px; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-left: 4px solid #22c55e !important;">
     <div class="card-body p-4">
       <div class="d-flex align-items-start gap-3">
         <div class="p-2 bg-white rounded-3 shadow-sm">
@@ -43,7 +43,7 @@
   </div>
 
   {{-- ===== FILTER ===== --}}
-  <div class="card border-0 shadow-sm mb-4">
+  <div class="card border-1 shadow-sm mb-4">
     <div class="card-body p-3">
       <form action="{{ route('obe.prereq.index') }}" method="GET" class="row g-3 align-items-end">
         <div class="col-md-5">
@@ -70,7 +70,7 @@
           </select>
         </div>
         <div class="col-md-2 d-flex gap-2">
-          <button type="submit" class="btn btn-primary w-100"><i class="ti ti-filter me-1"></i>Filter</button>
+          <button type="submit" class="btn btn-primary"><i class="ti ti-filter me-1"></i>Filter</button>
           <a href="{{ route('obe.prereq.index') }}" class="btn btn-light border px-3" title="Reset"><i class="ti ti-refresh"></i></a>
         </div>
       </form>
@@ -97,7 +97,7 @@
           $pct       = $totalMk > 0 ? round(($berPreq / $totalMk) * 100) : 0;
         @endphp
         <div class="col-xl-4 col-lg-6">
-          <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden prereq-card"
+          <div class="card border-1 shadow-sm h-100 position-relative overflow-hidden prereq-card"
                style="border-radius: 14px; transition: box-shadow 0.2s, transform 0.2s;">
             {{-- Status bar --}}
             <div style="height: 4px; background: {{ $kur->kurIsAktif ? '#22c55e' : '#64748b' }};"></div>
@@ -160,7 +160,7 @@
 
               {{-- Action button --}}
               <a href="{{ route('curiculum.prereq.workspace', $kur->kurKode) }}"
-                 class="btn btn-primary w-100 fw-semibold d-flex align-items-center justify-content-center gap-2">
+                 class="btn btn-primary fw-semibold d-flex align-items-center justify-content-center gap-2">
                 <i class="ti ti-git-branch fs-5"></i>
                 Kelola Prasyarat Mata Kuliah
                 <i class="ti ti-chevron-right fs-6 ms-auto"></i>

@@ -1,16 +1,57 @@
 @extends('layouts.app')
 
 @section('content')
-<main class="p-6">
-  <div class="row mb-6 align-items-center">
-    <div class="col-md-6 col-12">
-      <h1 class="mb-1 fw-bold">Periode Akademik</h1>
-      <p class="mb-0 text-muted">Kelola tahun akademik dan semester aktif untuk pendaftaran mahasiswa baru.</p>
+<main class="p-2">
+  <div class="sticky-header-filter">
+    <div class="row mb-2 align-items-center">
+      <div class="col-md-6 col-12">
+        <h3 class="mb-1 fw-bold">Periode Akademik</h3>
+        <p class="mb-0 text-muted small">Kelola tahun akademik dan semester aktif untuk pendaftaran mahasiswa baru.</p>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Periode Akademik</li>
+          </ol>
+        </nav>
+      </div>
+      <div class="col-md-6 col-12 text-md-end mt-3 mt-md-0">
+        <button type="button" class="btn btn-dark d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#periodeModal">
+          <i class="ti ti-plus fs-4"></i> Tambah Periode Baru
+        </button>
+      </div>
     </div>
-    <div class="col-md-6 col-12 text-md-end mt-3 mt-md-0">
-      <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#periodeModal">
-        <i class="ti ti-plus fs-4"></i> Tambah Periode Baru
-      </button>
+
+    <div class="card mb-2 border-0 shadow-sm">
+      <div class="card-body py-3">
+        <form action="{{ route('periode.index') }}" method="GET" class="row g-2 align-items-end">
+          <div class="col-md-4 col-12">
+            <div class="input-group">
+              <span class="input-group-text bg-transparent border-end-0"><i class="ti ti-search text-muted"></i></span>
+              <input type="text" name="search" class="form-control border-start-0" placeholder="Cari tahun akademik..." value="{{ request('search') }}">
+            </div>
+          </div>
+          <div class="col-md-2 col-12">
+            <select name="semester" class="form-select">
+              <option value="">-- Semester --</option>
+              <option value="Ganjil" {{ request('semester') == 'Ganjil' ? 'selected' : '' }}>Ganjil</option>
+              <option value="Genap" {{ request('semester') == 'Genap' ? 'selected' : '' }}>Genap</option>
+              <option value="Pendek" {{ request('semester') == 'Pendek' ? 'selected' : '' }}>Pendek</option>
+            </select>
+          </div>
+          <div class="col-md-2 col-12 d-flex gap-2">
+            <button type="submit" class="btn btn-primary"><i class="ti ti-filter"></i> Terapkan</button>
+            <a href="{{ route('periode.index') }}" class="btn btn-subtle-primary px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
+          </div>
+          <div class="col-md-4 col-12 d-flex gap-2 justify-content-md-end">
+            <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.location.href='{{ route('periode.index') }}?export=xls'">
+              <i class="ti ti-file-spreadsheet"></i> .xls
+            </a>
+            <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.print()">
+              <i class="ti ti-printer"></i> Print
+            </a>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -30,10 +71,10 @@
     </div>
   @endif
 
-  <div class="card border-0 shadow-sm">
+  <div class="card border-1 shadow-sm">
     <div class="card-body p-4">
       <div class="table-responsive">
-        <table class="table table-hover align-middle">
+        <table class="table table-hover align-middle table-ead">
           <thead class="bg-light">
             <tr>
               <th style="width: 60px;">No</th>
@@ -129,14 +170,10 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <!-- ID field for edit mode -->
           <input type="hidden" name="periode_id" id="periode_id" value="">
-
-          <!-- Tahun Akademik (Combobox / Dropdown) -->
           <div class="mb-3">
             <label for="tahun_akademik" class="form-label">Tahun Akademik <span class="text-danger">*</span></label>
-            <select class="form-select @error('tahun_akademik') is-invalid @enderror"
-                    id="tahun_akademik" name="tahun_akademik" required>
+            <select class="form-select @error('tahun_akademik') is-invalid @enderror" id="tahun_akademik" name="tahun_akademik" required>
               <option value="">-- Pilih Tahun Akademik --</option>
               @php
                 $currentYear = date('Y');
@@ -152,12 +189,9 @@
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
-
-          <!-- Periode Semester -->
           <div class="mb-3">
             <label for="semester" class="form-label">Periode Semester <span class="text-danger">*</span></label>
-            <select class="form-select @error('semester') is-invalid @enderror"
-                    id="semester" name="semester" required>
+            <select class="form-select @error('semester') is-invalid @enderror" id="semester" name="semester" required>
               <option value="">-- Pilih Semester --</option>
               <option value="Ganjil" {{ old('semester') === 'Ganjil' ? 'selected' : '' }}>Ganjil</option>
               <option value="Genap" {{ old('semester') === 'Genap' ? 'selected' : '' }}>Genap</option>
@@ -167,17 +201,11 @@
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
-
-          <!-- Status Aktif (Toggle Switch) -->
           <div class="mb-3">
             <label class="form-label">Status Aktif</label>
             <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" role="switch"
-                     id="status_aktif" name="status_aktif" value="1"
-                     {{ old('status_aktif') ? 'checked' : '' }}>
-              <label class="form-check-label" for="status_aktif">
-                Aktifkan periode ini
-              </label>
+              <input class="form-check-input" type="checkbox" role="switch" id="status_aktif" name="status_aktif" value="1" {{ old('status_aktif') ? 'checked' : '' }}>
+              <label class="form-check-label" for="status_aktif">Aktifkan periode ini</label>
             </div>
             <small class="text-muted">Hanya satu periode yang dapat aktif dalam satu waktu.</small>
           </div>
@@ -203,7 +231,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const semesterField = document.getElementById('semester');
   const statusField = document.getElementById('status_aktif');
 
-  // Handle edit: populate modal with data
   periodeModal.addEventListener('show.bs.modal', function(event) {
     const button = event.relatedTarget;
     const id = button.getAttribute('data-id');
@@ -212,17 +239,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const statusAktif = button.getAttribute('data-status-aktif');
 
     if (id) {
-      // Edit mode
       modalTitle.textContent = 'Edit Periode Akademik';
       btnSave.textContent = 'Perbarui';
       idField.value = id;
       tahunField.value = tahunAkademik;
       semesterField.value = semester;
       statusField.checked = statusAktif === 'true';
-
-      // Update form action for update
       form.action = '{{ route("periode.update", ":id") }}'.replace(':id', id);
-      // Add PUT method
       if (!form.querySelector('input[name="_method"]')) {
         const methodInput = document.createElement('input');
         methodInput.type = 'hidden';
@@ -231,7 +254,6 @@ document.addEventListener('DOMContentLoaded', function() {
         form.appendChild(methodInput);
       }
     } else {
-      // Create mode
       modalTitle.textContent = 'Tambah Periode Akademik';
       btnSave.textContent = 'Simpan';
       idField.value = '';
@@ -239,16 +261,11 @@ document.addEventListener('DOMContentLoaded', function() {
       semesterField.value = '';
       statusField.checked = false;
       form.action = '{{ route("periode.store") }}';
-
-      // Remove method override if exists
       const methodInput = form.querySelector('input[name="_method"]');
-      if (methodInput) {
-        methodInput.remove();
-      }
+      if (methodInput) methodInput.remove();
     }
   });
 
-  // Reset form when modal is closed (to clear validation state)
   periodeModal.addEventListener('hidden.bs.modal', function() {
     form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
   });

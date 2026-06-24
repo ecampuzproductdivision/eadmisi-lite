@@ -460,7 +460,7 @@
             <div class="row g-4">
                 @forelse($facilities as $f)
                 <div class="col-lg-3 col-md-6">
-                    <div class="card border-0 shadow-sm h-100">
+                    <div class="card border-1 shadow-sm h-100">
                         <div class="card-body text-center p-5">
                             <i class="ti {{ $f->kode_icon }} fs-1 text-danger mb-3 d-block"></i>
                             <h6 class="fw-bold">{{ $f->nama_fasilitas }}</h6>

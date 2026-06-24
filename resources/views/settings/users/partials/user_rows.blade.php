@@ -6,7 +6,7 @@
           {{ strtoupper(substr($user->name, 0, 2)) }}
         </div>
         <div>
-          <h5 class="mb-0 fw-semibold">{{ $user->name }}</h5>
+          <span class="mb-0 fw-semibold">{{ $user->name }}</span>
         </div>
       </div>
     </td>

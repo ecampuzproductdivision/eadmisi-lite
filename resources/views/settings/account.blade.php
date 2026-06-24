@@ -46,7 +46,7 @@
   <!-- Tab Navigation -->
   <div class="row mb-6">
     <div class="col-12">
-      <div class="card border-0">
+      <div class="card border-1">
         <div class="card-body p-0">
           <ul class="nav nav-line-bottom" id="settingsTab" role="tablist">
             <li class="nav-item" role="presentation">
@@ -78,7 +78,7 @@
       <div class="row g-6">
         <!-- Left Side: Profile Form -->
         <div class="col-lg-8 col-12">
-          <div class="card border-0 shadow-sm">
+          <div class="card border-1 shadow-sm">
             <div class="card-header bg-white border-bottom border-light py-4 px-5">
               <h4 class="mb-0 fw-bold">Informasi Profil</h4>
             </div>
@@ -131,7 +131,7 @@
 
         <!-- Right Side: Preview -->
         <div class="col-lg-4 col-12">
-          <div class="card border-0 shadow-sm text-center py-6 px-5 h-100 d-flex flex-column align-items-center justify-content-center">
+          <div class="card border-1 shadow-sm text-center py-6 px-5 h-100 d-flex flex-column align-items-center justify-content-center">
             <h4 class="mb-4 fw-bold">Preview</h4>
             <div class="position-relative mb-4">
               <img src="{{ $user->avatar_url ?? '/assets/images/avatar/avatar-1.jpg' }}" alt="Profile Avatar" class="rounded-circle shadow" style="width: 140px; height: 140px; object-fit: cover; border: 4px solid #fff;">
@@ -153,7 +153,7 @@
     <div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
       <div class="row">
         <div class="col-lg-8 col-12 mx-auto">
-          <div class="card border-0 shadow-sm">
+          <div class="card border-1 shadow-sm">
             <div class="card-header bg-white border-bottom border-light py-4 px-5 d-flex justify-content-between align-items-center">
               <h4 class="mb-0 fw-bold">Ubah Password</h4>
               <i class="ti ti-shield-lock text-muted fs-3"></i>
@@ -231,7 +231,7 @@
     <div class="tab-pane fade" id="avatar" role="tabpanel" aria-labelledby="avatar-tab">
       <div class="row">
         <div class="col-lg-8 col-12 mx-auto">
-          <div class="card border-0 shadow-sm">
+          <div class="card border-1 shadow-sm">
             <div class="card-header bg-white border-bottom border-light py-4 px-5 d-flex justify-content-between align-items-center">
               <h4 class="mb-0 fw-bold">Ubah Avatar</h4>
               <i class="ti ti-camera text-muted fs-3"></i>

@@ -3,7 +3,7 @@
 @section('content')
 <main class="p-2">
   <!-- Header Card -->
-  <div class="card border-0 mb-4 shadow-xs">
+  <div class="card border-1 mb-4 shadow-xs">
     <div class="card-body p-4">
       <div class="d-flex justify-content-between align-items-center mb-2">
         <div>
@@ -57,7 +57,7 @@
   @endif
 
   <!-- Dynamic Validasi SN-Dikti Checklist Banner -->
-  <div class="card border-0 mb-4 shadow-sm" style="border-radius: 12px; background: linear-gradient(135deg, #f8fafd 0%, #edf4fc 100%);">
+  <div class="card border-1 mb-4 shadow-sm" style="border-radius: 12px; background: linear-gradient(135deg, #f8fafd 0%, #edf4fc 100%);">
     <div class="card-body p-4">
       <div class="d-flex align-items-start gap-3">
         <div class="p-3 bg-white rounded-3 shadow-xs">
@@ -95,7 +95,7 @@
   </div>
 
   <!-- Main Tabs Navigation -->
-  <div class="card border-0 shadow-xs mb-4">
+  <div class="card border-1 shadow-xs mb-4">
     <div class="card-header bg-white border-bottom-0 pb-0">
       <ul class="nav nav-tabs nav-line-tabs border-bottom-0 gap-4" id="cplWorkspaceTabs" role="tablist">
         <li class="nav-item" role="presentation">

@@ -160,7 +160,7 @@
       <div class="col-lg-4">
         <div class="sticky-sidebar">
           <!-- Card Bantuan -->
-          <div class="card border-0 shadow-sm mb-3" style="background: linear-gradient(135deg, #e8f0fe 0%, #f0f4ff 100%);">
+          <div class="card border-1 shadow-sm mb-3" style="background: linear-gradient(135deg, #e8f0fe 0%, #f0f4ff 100%);">
             <div class="card-body p-4">
               <div class="d-flex align-items-center mb-3">
                 <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 44px; height: 44px;">
@@ -172,14 +172,14 @@
                 </div>
               </div>
               <p class="text-muted mb-3" style="font-size: 0.85rem;">Jika mengalami kendala dalam proses pendaftaran, jangan ragu untuk menghubungi kami.</p>
-              <a href="#" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 py-2">
+              <a href="#" class="btn btn-primary d-flex align-items-center justify-content-center gap-2 py-2">
                 <i class="ti ti-brand-whatsapp"></i> Chat Admin WhatsApp
               </a>
             </div>
           </div>
 
           <!-- Card Tips -->
-          <div class="card border-0 shadow-sm mb-3">
+          <div class="card border-1 shadow-sm mb-3">
             <div class="card-body p-4">
               <h6 class="fw-bold mb-3"><i class="ti ti-lightbulb text-warning me-2"></i>Tips Mengisi Formulir</h6>
               <ul class="list-unstyled mb-0" style="font-size: 0.85rem;">
@@ -204,7 +204,7 @@
           </div>
 
           <!-- Card FAQ -->
-          <div class="card border-0 shadow-sm">
+          <div class="card border-1 shadow-sm">
             <div class="card-body p-4">
               <h6 class="fw-bold mb-3"><i class="ti ti-help-circle text-info me-2"></i>Pertanyaan Umum</h6>
               <div class="accordion accordion-flush" id="faqAccordion">

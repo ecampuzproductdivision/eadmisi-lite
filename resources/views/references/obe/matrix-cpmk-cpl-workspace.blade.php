@@ -4,7 +4,7 @@
 <main class="p-2">
 
   {{-- ========== HEADER ========== --}}
-  <div class="card border-0 mb-3 shadow-xs">
+  <div class="card border-1 mb-3 shadow-xs">
     <div class="card-body p-3 p-md-4">
       <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
         <div>
@@ -116,7 +116,7 @@
   @endphp
   <div class="row g-3 mb-3">
     <div class="col-md-3 col-6">
-      <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 10px;">
         <div class="card-body p-3">
           <div class="text-muted small fw-semibold mb-1">CPL Tercover (Min 1 CPMK)</div>
           <div class="d-flex align-items-center justify-content-between">
@@ -130,7 +130,7 @@
       </div>
     </div>
     <div class="col-md-3 col-6">
-      <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 10px;">
         <div class="card-body p-3">
           <div class="text-muted small fw-semibold mb-1">CPMK Terpetakan (Min 1 CPL)</div>
           <div class="d-flex align-items-center justify-content-between">
@@ -144,7 +144,7 @@
       </div>
     </div>
     <div class="col-md-3 col-6">
-      <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 10px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background:#eef4ff;"><i class="ti ti-chart-pie text-primary fs-3"></i></div>
           <div>
@@ -155,7 +155,7 @@
       </div>
     </div>
     <div class="col-md-3 col-6">
-      <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 10px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background:#ffebee;"><i class="ti ti-alert-triangle text-danger fs-3"></i></div>
           <div>
@@ -170,7 +170,7 @@
   </div>
 
   {{-- ========== GRID MATRIX AREA ========== --}}
-  <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+  <div class="card border-1 shadow-sm" style="border-radius: 12px; overflow: hidden;">
     <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
       <h6 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
         <i class="ti ti-layout-grid-add text-primary"></i>
@@ -317,7 +317,7 @@
   </div>
 
   {{-- ========== BOTTOM ANALYTICS & SIMULATION PANEL ========== --}}
-  <div class="card border-0 shadow-sm mt-3" style="border-radius: 12px;">
+  <div class="card border-1 shadow-sm mt-3" style="border-radius: 12px;">
     <div class="card-header bg-white border-bottom p-0">
       <ul class="nav nav-tabs card-header-tabs m-0 border-0" id="analysisTab" role="tablist">
         <li class="nav-item">

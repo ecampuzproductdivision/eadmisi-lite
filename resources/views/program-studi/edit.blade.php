@@ -25,7 +25,7 @@
     </div>
   @endif
 
-  <div class="card border-0 shadow-sm">
+  <div class="card border-1 shadow-sm">
     <div class="card-body p-5">
       <form action="{{ route('program-studi.update', $programStudi) }}" method="POST">
         @csrf

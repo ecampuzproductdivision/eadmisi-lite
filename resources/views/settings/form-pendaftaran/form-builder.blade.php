@@ -35,7 +35,7 @@
       <div class="row g-4">
         <!-- Left Column: Field Palette -->
         <div class="col-lg-3">
-          <div class="card border-0 shadow-sm sticky-top" style="top: 80px;">
+          <div class="card border-1 shadow-sm sticky-top" style="top: 80px;">
             <div class="card-header bg-light py-3">
               <h6 class="fw-bold mb-0"><i class="ti ti-box me-2"></i>Tambah Field</h6>
             </div>
@@ -65,7 +65,7 @@
         <!-- Right Column: Form Canvas (Google Forms Style) -->
         <div class="col-lg-9">
           <!-- Form Title Card -->
-          <div class="card border-0 shadow-sm mb-4" style="border-top: 8px solid #f63a4c !important; border-radius: 12px;">
+          <div class="card border-1 shadow-sm mb-4" style="border-top: 8px solid #f63a4c !important; border-radius: 12px;">
             <div class="card-body p-4">
               <div class="d-flex align-items-start gap-3">
                 <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
@@ -111,7 +111,7 @@
                 @endif
                 <div class="sortable-fields" data-section="{{ $sectionName }}">
                   @foreach($sectionFields as $field)
-                  <div class="field-item card border-0 shadow-sm mb-2" data-field-id="{{ $field->id }}" data-sort="{{ $field->sort_order }}" style="border-radius: 8px; {{ !$field->is_active ? 'opacity: 0.6;' : '' }}">
+                  <div class="field-item card border-1 shadow-sm mb-2" data-field-id="{{ $field->id }}" data-sort="{{ $field->sort_order }}" style="border-radius: 8px; {{ !$field->is_active ? 'opacity: 0.6;' : '' }}">
                     <div class="card-body py-3 px-4">
                       <div class="d-flex align-items-center gap-3">
                         <!-- Drag Handle -->
@@ -620,7 +620,7 @@ function renderPreview(fields) {
   }
 
   let html = `
-    <div class="card border-0 shadow-sm" style="border-top: 8px solid #f63a4c;">
+    <div class="card border-1 shadow-sm" style="border-top: 8px solid #f63a4c;">
       <div class="card-body p-4">
         <div class="d-flex align-items-center gap-3 mb-4">
           <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">

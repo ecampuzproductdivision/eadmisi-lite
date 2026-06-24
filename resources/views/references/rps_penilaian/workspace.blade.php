@@ -129,7 +129,7 @@
                     <label class="form-label text-muted small fw-bold">Deskripsi Tugas</label>
                     <textarea id="edit_desc" class="form-control" rows="4" placeholder="Jelaskan rincian instruksi tugas asesmen..."></textarea>
                   </div>
-                  <button type="submit" class="btn btn-dark w-100 py-2 fw-bold">Simpan Komponen</button>
+                  <button type="submit" class="btn btn-dark py-2 fw-bold">Simpan Komponen</button>
                 </form>
               </div>
             </div>
@@ -256,7 +256,7 @@
                     @endforeach
                   </div>
 
-                  <button type="submit" class="btn btn-dark w-100 py-2 fw-bold mt-4">Simpan Rubrik Kriteria</button>
+                  <button type="submit" class="btn btn-dark py-2 fw-bold mt-4">Simpan Rubrik Kriteria</button>
                 </form>
               </div>
 
@@ -367,7 +367,7 @@
                     <label class="form-label text-muted small fw-bold">Konsekuensi Kelalaian</label>
                     <textarea id="policy_consequence" class="form-control" rows="2" placeholder="Misal: Dinyatakan tidak lulus MK meskipun nilai akhir mencukupi..." required></textarea>
                   </div>
-                  <button type="button" class="btn btn-dark w-100 py-2 fw-bold" id="btn-add-policy-tolist">Tambahkan Syarat</button>
+                  <button type="button" class="btn btn-dark py-2 fw-bold" id="btn-add-policy-tolist">Tambahkan Syarat</button>
                 </form>
               </div>
             </div>

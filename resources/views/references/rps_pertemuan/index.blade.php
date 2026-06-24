@@ -18,7 +18,7 @@
   {{-- ============================================================ --}}
   {{-- HEADER BANNER                                                --}}
   {{-- ============================================================ --}}
-  <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1a2e52 100%); border-radius: 20px; overflow: hidden; position: relative;">
+  <div class="card border-1 shadow-sm mb-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1a2e52 100%); border-radius: 20px; overflow: hidden; position: relative;">
     <div style="position:absolute;top:0;right:0;width:300px;height:200px;background:rgba(99,102,241,0.08);border-radius:50%;transform:translate(30%,-30%);"></div>
     <div style="position:absolute;bottom:0;left:20%;width:200px;height:150px;background:rgba(34,197,94,0.05);border-radius:50%;"></div>
     <div class="card-body p-4 p-md-5 text-white position-relative">
@@ -60,7 +60,7 @@
   {{-- ============================================================ --}}
   {{-- FILTER SECTION                                               --}}
   {{-- ============================================================ --}}
-  <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
+  <div class="card border-1 shadow-sm mb-4" style="border-radius: 16px;">
     <div class="card-body p-3 p-md-4">
       <form action="{{ route('rps-pertemuan.index') }}" method="GET" class="row g-3 align-items-end">
         <div class="col-md-4 col-12">
@@ -92,7 +92,7 @@
           </select>
         </div>
         <div class="col-md-2 col-12 d-flex gap-2">
-          <button type="submit" class="btn btn-dark w-100 py-2"><i class="ti ti-filter me-1"></i> Filter</button>
+          <button type="submit" class="btn btn-dark py-2"><i class="ti ti-filter me-1"></i> Filter</button>
           <a href="{{ route('rps-pertemuan.index') }}" class="btn btn-light py-2 px-3" title="Reset"><i class="ti ti-refresh"></i></a>
         </div>
       </form>
@@ -103,7 +103,7 @@
   {{-- RPS CARDS GRID                                               --}}
   {{-- ============================================================ --}}
   @if($rpsList->isEmpty())
-    <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+    <div class="card border-1 shadow-sm" style="border-radius: 16px;">
       <div class="card-body py-5 text-center">
         <i class="ti ti-book-off fs-1 text-muted d-block mb-3" style="font-size: 4rem !important; color: #cbd5e1 !important;"></i>
         <h5 class="fw-bold text-slate-700 mb-1">Tidak Ada RPS Ditemukan</h5>
@@ -128,7 +128,7 @@
           $pctColor = $rps->pct_realisasi >= 80 ? '#22c55e' : ($rps->pct_realisasi >= 50 ? '#f59e0b' : '#ef4444');
         @endphp
         <div class="col-xl-4 col-md-6 col-12">
-          <div class="card border-0 shadow-sm h-100" style="border-radius: 16px; transition: transform 0.2s, box-shadow 0.2s; border-top: 4px solid {{ $sc['border'] }} !important;"
+          <div class="card border-1 shadow-sm h-100" style="border-radius: 16px; transition: transform 0.2s, box-shadow 0.2s; border-top: 4px solid {{ $sc['border'] }} !important;"
                onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,0.12)'"
                onmouseout="this.style.transform='';this.style.boxShadow=''">
             <div class="card-body p-4">
@@ -199,7 +199,7 @@
 
               {{-- CTA --}}
               <a href="{{ route('rps-pertemuan.workspace', $rps->id_rps) }}"
-                 class="btn w-100 fw-semibold d-inline-flex align-items-center justify-content-center gap-2"
+                 class="btn fw-semibold d-inline-flex align-items-center justify-content-center gap-2"
                  style="background:linear-gradient(135deg,#6366f1,#4f46e5);color:white;border:none;border-radius:10px;padding:10px;font-size:0.87rem;transition:opacity 0.2s;"
                  onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
                 <i class="ti ti-layout-grid"></i>

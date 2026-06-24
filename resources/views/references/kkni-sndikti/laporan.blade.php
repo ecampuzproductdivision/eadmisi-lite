@@ -2,7 +2,7 @@
 
 @section('content')
 <main class="p-2">
-  <div class="card border-0 shadow-sm mb-6">
+  <div class="card border-1 shadow-sm mb-6">
     <div class="card-body p-4">
       <div class="row mb-4 align-items-center">
         <div class="col-md-6 col-12">
@@ -24,7 +24,7 @@
       </div>
 
       <!-- Filter Jenjang -->
-      <div class="card border-0 bg-light mb-4">
+      <div class="card border-1 bg-light mb-4">
         <div class="card-body">
           <form method="GET" action="{{ route('kkni-sndikti.laporan') }}" class="row g-3 align-items-end">
             <div class="col-md-3">
@@ -50,7 +50,7 @@
       <!-- Ringkasan Statistik -->
       <div class="row g-3 mb-4">
         <div class="col-md-4">
-          <div class="card border-0 shadow-sm h-100">
+          <div class="card border-1 shadow-sm h-100">
             <div class="card-body text-center py-4">
               <h6 class="text-muted mb-2">Total Butir Wajib</h6>
               <h2 class="fw-bold mb-0 text-primary">{{ $totalWajib }}</h2>
@@ -59,7 +59,7 @@
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card border-0 shadow-sm h-100">
+          <div class="card border-1 shadow-sm h-100">
             <div class="card-body text-center py-4">
               <h6 class="text-muted mb-2">Butir Sikap Wajib</h6>
               <h2 class="fw-bold mb-0 text-danger">{{ isset($butirWajib['Sikap']) ? count($butirWajib['Sikap']) : 0 }}</h2>
@@ -68,7 +68,7 @@
           </div>
         </div>
         <div class="col-md-4">
-          <div class="card border-0 shadow-sm h-100">
+          <div class="card border-1 shadow-sm h-100">
             <div class="card-body text-center py-4">
               <h6 class="text-muted mb-2">Butir KU Wajib</h6>
               <h2 class="fw-bold mb-0 text-success">{{ isset($butirWajib['Keterampilan Umum']) ? count($butirWajib['Keterampilan Umum']) : 0 }}</h2>
@@ -80,7 +80,7 @@
 
       <!-- Tabel Cross-Check per Kategori -->
       @foreach($butirWajib as $kategori => $butirs)
-      <div class="card border-0 shadow-sm mb-4">
+      <div class="card border-1 shadow-sm mb-4">
         <div class="card-header bg-white border-bottom py-3 d-flex align-items-center justify-content-between">
           <h5 class="fw-bold mb-0">
             @php
@@ -147,7 +147,7 @@
       @endforeach
 
       <!-- Badge Status Keseluruhan -->
-      <div class="card border-0 shadow-sm bg-light">
+      <div class="card border-1 shadow-sm bg-light">
         <div class="card-body p-4 text-center">
           <h5 class="fw-bold mb-2">Status Keseluruhan</h5>
           <p class="text-muted mb-0">

@@ -4,7 +4,7 @@
 <main class="p-2">
 
   {{-- ========== HEADER ========== --}}
-  <div class="card border-0 mb-3 shadow-xs">
+  <div class="card border-1 mb-3 shadow-xs">
     <div class="card-body p-3 p-md-4">
       <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
         <div>
@@ -133,7 +133,7 @@
   @endphp
   <div class="row g-3 mb-3">
     <div class="col-md-3 col-6">
-      <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 10px;">
         <div class="card-body p-3">
           <div class="text-muted small fw-semibold mb-1">CPL Tercover (Min 1 MK)</div>
           <div class="d-flex align-items-center justify-content-between">
@@ -147,7 +147,7 @@
       </div>
     </div>
     <div class="col-md-3 col-6">
-      <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 10px;">
         <div class="card-body p-3">
           <div class="text-muted small fw-semibold mb-1">MK Terpetakan (Min 1 CPL)</div>
           <div class="d-flex align-items-center justify-content-between">
@@ -161,7 +161,7 @@
       </div>
     </div>
     <div class="col-md-3 col-6">
-      <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 10px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background:#eef4ff;"><i class="ti ti-chart-pie text-primary fs-3"></i></div>
           <div>
@@ -172,7 +172,7 @@
       </div>
     </div>
     <div class="col-md-3 col-6">
-      <div class="card border-0 shadow-sm" style="border-radius: 10px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 10px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background:#fff3e0;"><i class="ti ti-alert-triangle text-warning fs-3"></i></div>
           <div>
@@ -187,7 +187,7 @@
   </div>
 
   {{-- ========== GRID MATRIX AREA ========== --}}
-  <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+  <div class="card border-1 shadow-sm" style="border-radius: 12px; overflow: hidden;">
     <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
       <h6 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
         <i class="ti ti-layout-grid-add text-primary"></i>
@@ -332,7 +332,7 @@
   {{-- ========== COVERAGE WARNING REPORT PANEL ========== --}}
   <div class="row g-3 mt-2">
     <div class="col-md-6">
-      <div class="card border-0 shadow-sm" style="border-radius: 12px; height: 100%;">
+      <div class="card border-1 shadow-sm" style="border-radius: 12px; height: 100%;">
         <div class="card-header bg-white border-bottom py-3 px-4">
           <h6 class="fw-bold mb-0 text-dark"><i class="ti ti-help-circle text-primary me-2"></i>Status Coverage CPL</h6>
         </div>
@@ -363,7 +363,7 @@
     </div>
 
     <div class="col-md-6">
-      <div class="card border-0 shadow-sm" style="border-radius: 12px; height: 100%;">
+      <div class="card border-1 shadow-sm" style="border-radius: 12px; height: 100%;">
         <div class="card-header bg-white border-bottom py-3 px-4">
           <h6 class="fw-bold mb-0 text-dark"><i class="ti ti-alert-triangle text-warning me-2"></i>Status Mata Kuliah Tanpa Pemetaan</h6>
         </div>

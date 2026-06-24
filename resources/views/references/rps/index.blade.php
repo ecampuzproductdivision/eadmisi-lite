@@ -23,7 +23,7 @@
   @endif
 
   <!-- Header Banner -->
-  <div class="card border-0 shadow-sm mb-4" style="background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 16px;">
+  <div class="card border-1 shadow-sm mb-4" style="background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 16px;">
     <div class="card-body p-4 text-white">
       <div class="row align-items-center">
         <div class="col-md-8">
@@ -54,7 +54,7 @@
   @endphp
   <div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm h-100" style="border-radius:14px; border-left: 4px solid #6366f1 !important;">
+      <div class="card border-1 shadow-sm h-100" style="border-radius:14px; border-left: 4px solid #6366f1 !important;">
         <div class="card-body p-3">
           <div class="d-flex align-items-center gap-3">
             <div class="d-flex align-items-center justify-content-center rounded-3" style="width:44px;height:44px;background:rgba(99,102,241,0.1);">
@@ -69,7 +69,7 @@
       </div>
     </div>
     <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm h-100" style="border-radius:14px; border-left: 4px solid #f59e0b !important;">
+      <div class="card border-1 shadow-sm h-100" style="border-radius:14px; border-left: 4px solid #f59e0b !important;">
         <div class="card-body p-3">
           <div class="d-flex align-items-center gap-3">
             <div class="d-flex align-items-center justify-content-center rounded-3" style="width:44px;height:44px;background:rgba(245,158,11,0.1);">
@@ -84,7 +84,7 @@
       </div>
     </div>
     <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm h-100" style="border-radius:14px; border-left: 4px solid #f97316 !important;">
+      <div class="card border-1 shadow-sm h-100" style="border-radius:14px; border-left: 4px solid #f97316 !important;">
         <div class="card-body p-3">
           <div class="d-flex align-items-center gap-3">
             <div class="d-flex align-items-center justify-content-center rounded-3" style="width:44px;height:44px;background:rgba(249,115,22,0.1);">
@@ -99,7 +99,7 @@
       </div>
     </div>
     <div class="col-6 col-md-3">
-      <div class="card border-0 shadow-sm h-100" style="border-radius:14px; border-left: 4px solid #22c55e !important;">
+      <div class="card border-1 shadow-sm h-100" style="border-radius:14px; border-left: 4px solid #22c55e !important;">
         <div class="card-body p-3">
           <div class="d-flex align-items-center gap-3">
             <div class="d-flex align-items-center justify-content-center rounded-3" style="width:44px;height:44px;background:rgba(34,197,94,0.1);">
@@ -116,7 +116,7 @@
   </div>
 
   <!-- Filter & Table Card -->
-  <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+  <div class="card border-1 shadow-sm" style="border-radius: 16px;">
     <div class="card-body p-4">
       <form action="{{ route('rps.index') }}" method="GET" class="row g-3 mb-4">
         <!-- Search -->
@@ -155,7 +155,7 @@
 
         <!-- Submit & Reset -->
         <div class="col-md-2 col-12 d-flex align-items-end gap-2">
-          <button type="submit" class="btn btn-dark w-100 py-2"><i class="ti ti-filter me-1"></i> Filter</button>
+          <button type="submit" class="btn btn-dark py-2"><i class="ti ti-filter me-1"></i> Filter</button>
           <a href="{{ route('rps.index') }}" class="btn btn-light py-2 px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
         </div>
       </form>

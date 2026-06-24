@@ -2,7 +2,7 @@
 
 @section('content')
 <main class="p-2">
-  <div class="card border-0 shadow-sm mb-6">
+  <div class="card border-1 shadow-sm mb-6">
     <div class="card-body p-4">
       <div class="row mb-4 align-items-center">
         <div class="col-md-6 col-12">
@@ -25,7 +25,7 @@
       </div>
 
       <!-- Ringkasan Regulasi Baru -->
-      <div class="card border-0 shadow-sm mb-4" style="border-left: 4px solid #198754 !important;">
+      <div class="card border-1 shadow-sm mb-4" style="border-left: 4px solid #198754 !important;">
         <div class="card-body">
           <div class="d-flex align-items-center mb-3">
             <i class="ti ti-file-text fs-4 text-success me-2"></i>
@@ -39,7 +39,7 @@
 
       <!-- Perbandingan dengan Regulasi Lama -->
       @if($regulasiLama)
-      <div class="card border-0 shadow-sm mb-4" style="border-left: 4px solid #dc3545 !important;">
+      <div class="card border-1 shadow-sm mb-4" style="border-left: 4px solid #dc3545 !important;">
         <div class="card-body">
           <div class="d-flex align-items-center mb-3">
             <i class="ti ti-history fs-4 text-danger me-2"></i>
@@ -53,7 +53,7 @@
 
       <!-- Preview Diff Butir SN-Dikti -->
       @if(isset($diffButir) && count($diffButir) > 0)
-      <div class="card border-0 shadow-sm mb-4">
+      <div class="card border-1 shadow-sm mb-4">
         <div class="card-header bg-white py-3">
           <h5 class="fw-bold mb-0"><i class="ti ti-diff me-2"></i> Perbandingan Butir SN-Dikti</h5>
         </div>
@@ -140,7 +140,7 @@
       @endif
 
       <!-- Dampak Prodi -->
-      <div class="card border-0 shadow-sm mb-4">
+      <div class="card border-1 shadow-sm mb-4">
         <div class="card-body">
           <h5 class="fw-bold mb-3"><i class="ti ti-users me-2"></i> Daftar Prodi Terdampak</h5>
           <p>{{ $dampakProdi['pesan'] }}</p>
@@ -164,7 +164,7 @@
       </div>
 
       <!-- Form Aktivasi -->
-      <div class="card border-0 shadow-sm" style="border-left: 4px solid #198754 !important;">
+      <div class="card border-1 shadow-sm" style="border-left: 4px solid #198754 !important;">
         <div class="card-body p-4">
           <h5 class="fw-bold mb-3 text-success">
             <i class="ti ti-toggle-left me-2"></i> Konfirmasi Aktivasi Regulasi

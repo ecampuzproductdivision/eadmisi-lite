@@ -14,7 +14,7 @@
 
   <div class="row g-4">
     <div class="col-lg-8">
-      <div class="card border-0 shadow-sm">
+      <div class="card border-1 shadow-sm">
         <div class="card-body p-5">
           <div class="d-flex align-items-center gap-3 mb-4">
             <div>
@@ -127,7 +127,7 @@
     </div>
 
     <div class="col-lg-4">
-      <div class="card border-0 shadow-sm">
+      <div class="card border-1 shadow-sm">
         <div class="card-body p-4">
           <h5 class="fw-bold mb-3">Aksi</h5>
           <div class="d-flex flex-column gap-2">
@@ -137,7 +137,7 @@
             <form action="{{ route('registration-paths.destroy', $registrationPath) }}" method="POST" onsubmit="return confirm('Hapus jalur {{ $registrationPath->name }}?')">
               @csrf
               @method('DELETE')
-              <button type="submit" class="btn btn-danger w-100 d-inline-flex align-items-center gap-2 justify-content-center">
+              <button type="submit" class="btn btn-danger d-inline-flex align-items-center gap-2 justify-content-center">
                 <i class="ti ti-trash fs-4"></i> Hapus Jalur
               </button>
             </form>

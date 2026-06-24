@@ -208,7 +208,7 @@
                 </div>
               </div>
               <p class="text-muted mb-3" style="font-size: 0.85rem;">Jika mengalami kendala dalam proses upload dokumen, jangan ragu untuk menghubungi kami.</p>
-              <a href="#" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 py-2">
+              <a href="#" class="btn btn-primary d-flex align-items-center justify-content-center gap-2 py-2">
                 <i class="ti ti-brand-whatsapp"></i> Chat Admin WhatsApp
               </a>
             </div>

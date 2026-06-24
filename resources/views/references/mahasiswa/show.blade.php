@@ -109,7 +109,7 @@
   </div>
 
   <!-- Tabbed Content -->
-  <div class="card border-0">
+  <div class="card border-1">
     <div class="card-header bg-white border-bottom-0 pt-3 pb-0 px-4">
       <ul class="nav nav-lb-tab border-bottom" id="mhsTabs" role="tablist">
         <li class="nav-item" role="presentation">
@@ -471,7 +471,7 @@
           <div class="col-6"><label class="form-label">Kota</label><input type="text" name="kota_sekolah_pt" class="form-control"></div>
         </div>
       </div>
-      <div class="modal-footer border-top-0 pt-0"><button type="submit" class="btn btn-primary w-100">Simpan</button></div>
+      <div class="modal-footer border-top-0 pt-0"><button type="submit" class="btn btn-primary">Simpan</button></div>
     </form>
   </div>
 </div>
@@ -492,7 +492,7 @@
         <div class="mb-3"><label class="form-label">Alasan</label><textarea name="alasan" class="form-control" rows="2"></textarea></div>
         <div class="mb-3"><label class="form-label">No. SK Perubahan</label><input type="text" name="no_sk_perubahan" class="form-control"></div>
       </div>
-      <div class="modal-footer border-top-0 pt-0"><button type="submit" class="btn btn-primary w-100">Simpan</button></div>
+      <div class="modal-footer border-top-0 pt-0"><button type="submit" class="btn btn-primary">Simpan</button></div>
     </form>
   </div>
 </div>
@@ -514,7 +514,7 @@
           <select name="jenis_keterikatan" class="form-select" required>@foreach(['Migrasi', 'Transfer'] as $jk)<option value="{{ $jk }}">{{ $jk }}</option>@endforeach</select></div>
         <div class="mb-3"><label class="form-label">Catatan</label><textarea name="catatan" class="form-control" rows="2"></textarea></div>
       </div>
-      <div class="modal-footer border-top-0 pt-0"><button type="submit" class="btn btn-primary w-100">Simpan</button></div>
+      <div class="modal-footer border-top-0 pt-0"><button type="submit" class="btn btn-primary">Simpan</button></div>
     </form>
   </div>
 </div>
@@ -539,7 +539,7 @@
             <select name="status_pengajuan" class="form-select" required>@foreach(['Diajukan', 'Disetujui', 'Ditolak', 'Dibatalkan'] as $sp)<option value="{{ $sp }}">{{ $sp }}</option>@endforeach</select></div>
         </div>
       </div>
-      <div class="modal-footer border-top-0 pt-0"><button type="submit" class="btn btn-primary w-100">Simpan</button></div>
+      <div class="modal-footer border-top-0 pt-0"><button type="submit" class="btn btn-primary">Simpan</button></div>
     </form>
   </div>
 </div>
@@ -565,7 +565,7 @@
         <div class="mb-3"><label class="form-label">Penyelenggara <span class="text-danger">*</span></label><input type="text" name="penyelenggara" class="form-control" required></div>
         <div class="mb-3"><label class="form-label">Keterangan</label><textarea name="keterangan" class="form-control" rows="2"></textarea></div>
       </div>
-      <div class="modal-footer border-top-0 pt-0"><button type="submit" class="btn btn-primary w-100">Simpan</button></div>
+      <div class="modal-footer border-top-0 pt-0"><button type="submit" class="btn btn-primary">Simpan</button></div>
     </form>
   </div>
 </div>
@@ -593,7 +593,7 @@
         <div class="mb-3"><label class="form-label">Status <span class="text-danger">*</span></label>
           <select name="status_beasiswa" class="form-select" required>@foreach(['Aktif', 'Selesai', 'Dicabut'] as $sb)<option value="{{ $sb }}">{{ $sb }}</option>@endforeach</select></div>
       </div>
-      <div class="modal-footer border-top-0 pt-0"><button type="submit" class="btn btn-primary w-100">Simpan</button></div>
+      <div class="modal-footer border-top-0 pt-0"><button type="submit" class="btn btn-primary">Simpan</button></div>
     </form>
   </div>
 </div>
@@ -620,7 +620,7 @@
         <div class="mb-3"><label class="form-label">Metode <span class="text-danger">*</span></label>
           <select name="metode" class="form-select" required>@foreach(['Tatap Muka', 'Daring', 'Telepon'] as $m)<option value="{{ $m }}">{{ $m }}</option>@endforeach</select></div>
       </div>
-      <div class="modal-footer border-top-0 pt-0"><button type="submit" class="btn btn-primary w-100">Simpan</button></div>
+      <div class="modal-footer border-top-0 pt-0"><button type="submit" class="btn btn-primary">Simpan</button></div>
     </form>
   </div>
 </div>

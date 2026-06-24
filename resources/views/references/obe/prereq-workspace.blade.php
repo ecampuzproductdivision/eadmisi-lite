@@ -6,7 +6,7 @@
   {{-- ============================================================
        HEADER
        ============================================================ --}}
-  <div class="card border-0 mb-3 shadow-xs">
+  <div class="card border-1 mb-3 shadow-xs">
     <div class="card-body p-3 p-md-4">
       <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
         <div>
@@ -71,7 +71,7 @@
        ============================================================ --}}
   <div class="row g-3 mb-3">
     <div class="col-md-3 col-6">
-      <div class="card border-0 shadow-sm h-100" style="border-radius:10px;">
+      <div class="card border-1 shadow-sm h-100" style="border-radius:10px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background:#f0fdf4;">
             <i class="ti ti-books text-success fs-3"></i>
@@ -84,7 +84,7 @@
       </div>
     </div>
     <div class="col-md-3 col-6">
-      <div class="card border-0 shadow-sm h-100" style="border-radius:10px;">
+      <div class="card border-1 shadow-sm h-100" style="border-radius:10px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background:#eff6ff;">
             <i class="ti ti-git-branch text-primary fs-3"></i>
@@ -97,7 +97,7 @@
       </div>
     </div>
     <div class="col-md-3 col-6">
-      <div class="card border-0 shadow-sm h-100" style="border-radius:10px;">
+      <div class="card border-1 shadow-sm h-100" style="border-radius:10px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background:#faf5ff;">
             <i class="ti ti-list-check text-purple fs-3"></i>
@@ -110,7 +110,7 @@
       </div>
     </div>
     <div class="col-md-3 col-6">
-      <div class="card border-0 shadow-sm h-100" style="border-radius:10px;">
+      <div class="card border-1 shadow-sm h-100" style="border-radius:10px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background: {{ $dagValid ? '#f0fdf4' : '#fef2f2' }};">
             <i class="ti ti-{{ $dagValid ? 'circle-check text-success' : 'alert-triangle text-danger' }} fs-3"></i>
@@ -153,7 +153,7 @@
          TAB 1: TABEL PRASYARAT
          ============================================================ --}}
     <div class="tab-pane fade show active" id="tab-tabel" role="tabpanel">
-      <div class="card border-0 shadow-sm" style="border-radius: 0 12px 12px 12px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 0 12px 12px 12px;">
         <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
           <h6 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
             <i class="ti ti-table text-primary"></i>
@@ -366,7 +366,7 @@
          TAB 2: DEPENDENCY GRAPH (vis.js)
          ============================================================ --}}
     <div class="tab-pane fade" id="tab-graph" role="tabpanel">
-      <div class="card border-0 shadow-sm" style="border-radius: 0 12px 12px 12px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 0 12px 12px 12px;">
         <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
           <h6 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
             <i class="ti ti-chart-dots-3 text-primary"></i>
@@ -413,7 +413,7 @@
          TAB 3: SIMULASI KRS
          ============================================================ --}}
     <div class="tab-pane fade" id="tab-simulator" role="tabpanel">
-      <div class="card border-0 shadow-sm" style="border-radius: 0 12px 12px 12px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 0 12px 12px 12px;">
         <div class="card-header bg-white py-3 px-4">
           <h6 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
             <i class="ti ti-user-check text-primary"></i>
@@ -455,7 +455,7 @@
                     </select>
                   </div>
 
-                  <button class="btn btn-primary w-100 fw-semibold" onclick="runSimulation()">
+                  <button class="btn btn-primary fw-semibold" onclick="runSimulation()">
                     <i class="ti ti-player-play me-2"></i>Jalankan Simulasi
                   </button>
 

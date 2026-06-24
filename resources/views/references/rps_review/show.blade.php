@@ -49,7 +49,7 @@
       <div class="tab-content" id="rpsContentTabsContent">
         {{-- 1. IDENTITAS TAB --}}
         <div class="tab-pane fade show active" id="identitas" role="tabpanel">
-          <div class="card border-0 bg-light p-4 mb-4" style="border-radius: 12px;">
+          <div class="card border-1 bg-light p-4 mb-4" style="border-radius: 12px;">
             <h5 class="fw-bold text-dark mb-3"><i class="ti ti-info-circle text-primary me-1"></i> Deskripsi Mata Kuliah</h5>
             <p class="text-slate-700 mb-0" style="line-height: 1.6; text-align: justify;">
               {{ $rps->deskripsi_mk ?: 'Belum ada deskripsi yang diinput.' }}
@@ -465,7 +465,7 @@
             <textarea class="form-control" name="catatan_keputusan" rows="3" placeholder="Masukkan alasan keputusan (wajib jika ditolak atau dikembalikan)..."></textarea>
           </div>
 
-          <button type="submit" class="btn btn-dark w-100 py-2 fw-bold" id="btn-submit-decision">Simpan &amp; Terapkan Keputusan</button>
+          <button type="submit" class="btn btn-dark py-2 fw-bold" id="btn-submit-decision">Simpan &amp; Terapkan Keputusan</button>
         </div>
       </form>
     </div>

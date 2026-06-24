@@ -221,7 +221,7 @@
 
     {{-- ========================= LEFT: PERTEMUAN TIMELINE ========================= --}}
     <div class="col-xl-8 col-12">
-      <div class="card border-0 shadow-sm" style="border-radius:16px;">
+      <div class="card border-1 shadow-sm" style="border-radius:16px;">
         <div class="card-header border-0 bg-transparent p-4 pb-2 d-flex align-items-center justify-content-between">
           <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
             <i class="ti ti-list-numbers text-primary"></i> Timeline 16 Pertemuan
@@ -354,7 +354,7 @@
     <div class="col-xl-4 col-12">
 
       {{-- CPMK Heatmap --}}
-      <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;">
+      <div class="card border-1 shadow-sm mb-4" style="border-radius:16px;">
         <div class="card-header border-0 bg-transparent p-4 pb-2">
           <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
             <i class="ti ti-grid-dots text-primary"></i> Heatmap CPMK × Pertemuan
@@ -386,7 +386,7 @@
       </div>
 
       {{-- Compliance Rate Card --}}
-      <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;">
+      <div class="card border-1 shadow-sm mb-4" style="border-radius:16px;">
         <div class="card-header border-0 bg-transparent p-4 pb-2">
           <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
             <i class="ti ti-chart-pie text-success"></i> Analitik Realisasi
@@ -441,7 +441,7 @@
       </div>
 
       {{-- DOSEN LIST --}}
-      <div class="card border-0 shadow-sm" style="border-radius:16px;">
+      <div class="card border-1 shadow-sm" style="border-radius:16px;">
         <div class="card-header border-0 bg-transparent p-4 pb-2">
           <h6 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
             <i class="ti ti-users text-warning"></i> Tim Dosen Pengampu

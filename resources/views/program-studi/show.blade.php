@@ -12,7 +12,7 @@
     </div>
   </div>
 
-  <div class="card border-0 shadow-sm">
+  <div class="card border-1 shadow-sm">
     <div class="card-body p-5">
       <div class="row g-4">
         <div class="col-md-4">

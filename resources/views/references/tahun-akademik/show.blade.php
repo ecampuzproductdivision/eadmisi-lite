@@ -3,7 +3,7 @@
 @section('content')
 <main class="p-2">
   <!-- Header Card -->
-  <div class="card border-0 mb-6">
+  <div class="card border-1 mb-6">
     <div class="card-body p-4">
       <div class="row align-items-center">
         <div class="col">
@@ -72,7 +72,7 @@
       <!-- Info Cards Row -->
       <div class="row g-4 mb-6">
         <div class="col-md-3">
-          <div class="card border-0 shadow-sm">
+          <div class="card border-1 shadow-sm">
             <div class="card-body text-center py-4">
               @php
                 $statusLabels = ['PERSIAPAN' => 'Persiapan', 'AKTIF' => 'Aktif', 'SELESAI' => 'Selesai', 'DIARSIPKAN' => 'Diarsipkan'];
@@ -89,7 +89,7 @@
           </div>
         </div>
         <div class="col-md-3">
-          <div class="card border-0 shadow-sm">
+          <div class="card border-1 shadow-sm">
             <div class="card-body text-center py-4">
               <h6 class="text-muted mb-2">Jenis Semester</h6>
               @php
@@ -103,7 +103,7 @@
           </div>
         </div>
         <div class="col-md-3">
-          <div class="card border-0 shadow-sm">
+          <div class="card border-1 shadow-sm">
             <div class="card-body text-center py-4">
               <h6 class="text-muted mb-2">Periode Kegiatan</h6>
               <h3 class="fw-bold mb-0">{{ $ta->periodes->count() }}</h3>
@@ -112,7 +112,7 @@
           </div>
         </div>
         <div class="col-md-3">
-          <div class="card border-0 shadow-sm">
+          <div class="card border-1 shadow-sm">
             <div class="card-body text-center py-4">
               <h6 class="text-muted mb-2">Minggu Efektif</h6>
               <h3 class="fw-bold mb-0">{{ $ta->jumlah_minggu_efektif }}</h3>

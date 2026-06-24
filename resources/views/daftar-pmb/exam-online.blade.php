@@ -45,7 +45,7 @@
         </div>
 
         <!-- Exam Info Card -->
-        <div class="card border-0 shadow-sm mb-4">
+        <div class="card border-1 shadow-sm mb-4">
           <div class="card-body p-5">
             <h4 class="fw-bold mb-4"><i class="ti ti-info-circle text-primary me-2"></i>Informasi Ujian</h4>
             
@@ -162,7 +162,7 @@
       <div class="col-lg-8">
         
         <!-- Timer Bar -->
-        <div class="card border-0 shadow-sm mb-4 sticky-top" style="top: 80px; z-index: 100;">
+        <div class="card border-1 shadow-sm mb-4 sticky-top" style="top: 80px; z-index: 100;">
           <div class="card-body py-3 px-4">
             <div class="d-flex align-items-center justify-content-between">
               <div class="d-flex align-items-center gap-3">
@@ -190,7 +190,7 @@
 
         <!-- Question Card -->
         @if($currentQuestion)
-        <div class="card border-0 shadow-sm mb-4">
+        <div class="card border-1 shadow-sm mb-4">
           <div class="card-body p-5">
             <div class="d-flex align-items-center gap-2 mb-3">
               <span class="badge bg-{{ $currentQuestion->category == 'Numerik' ? 'primary' : ($currentQuestion->category == 'Verbal' ? 'success' : 'warning') }}-subtle text-{{ $currentQuestion->category == 'Numerik' ? 'primary' : ($currentQuestion->category == 'Verbal' ? 'success' : 'warning') }} px-3 py-2">
@@ -247,7 +247,7 @@
         </div>
 
         <!-- Question Navigator -->
-        <div class="card border-0 shadow-sm mb-4">
+        <div class="card border-1 shadow-sm mb-4">
           <div class="card-body p-4">
             <h6 class="fw-bold mb-3">Navigasi Soal</h6>
             <div class="d-flex flex-wrap gap-2">

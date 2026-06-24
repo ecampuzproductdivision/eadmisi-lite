@@ -19,7 +19,7 @@
       </div>
 
       <!-- Main Creation Form Card -->
-      <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 16px;">
         <div class="card-header bg-dark text-white p-4" style="border-top-left-radius: 16px; border-top-right-radius: 16px;">
           <h4 class="fw-bold mb-1"><i class="ti ti-circle-plus text-warning me-2"></i> Inisialisasi RPS Baru</h4>
           <p class="text-white-50 mb-0">Lengkapi data awal untuk mulai menyusun Rencana Pembelajaran Semester.</p>

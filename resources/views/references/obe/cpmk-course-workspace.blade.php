@@ -3,7 +3,7 @@
 @section('content')
 <main class="p-2">
   <!-- Header Card -->
-  <div class="card border-0 mb-4 shadow-xs">
+  <div class="card border-1 mb-4 shadow-xs">
     <div class="card-body p-4">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
         <div>
@@ -66,7 +66,7 @@
   <div class="row g-4">
     <!-- Left Panel: CPMK and Sub-CPMK list -->
     <div class="col-xl-8 col-lg-7">
-      <div class="card border-0 shadow-sm mb-4">
+      <div class="card border-1 shadow-sm mb-4">
         <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
           <h6 class="fw-bold text-dark mb-0"><i class="ti ti-list me-1 text-primary"></i> Struktur Capaian Pembelajaran (CPMK & Sub-CPMK)</h6>
           <small class="text-muted">Klik baris CPMK untuk melihat rincian Sub-CPMK</small>
@@ -283,7 +283,7 @@
     <!-- Right Panel: Analysis and Logs -->
     <div class="col-xl-4 col-lg-5">
       <!-- Bloom Taxonomy Analysis -->
-      <div class="card border-0 shadow-sm mb-4">
+      <div class="card border-1 shadow-sm mb-4">
         <div class="card-header bg-white py-3 border-0">
           <h6 class="fw-bold text-dark mb-0"><i class="ti ti-chart-bar me-1 text-primary"></i> Analisis Distribusi Taksonomi Bloom</h6>
         </div>
@@ -318,7 +318,7 @@
       </div>
 
       <!-- Audit Trail / Changelogs -->
-      <div class="card border-0 shadow-sm">
+      <div class="card border-1 shadow-sm">
         <div class="card-header bg-white py-3 border-0">
           <h6 class="fw-bold text-dark mb-0"><i class="ti ti-history me-1 text-primary"></i> Riwayat Perubahan (Audit Trail)</h6>
         </div>

@@ -250,6 +250,38 @@
   margin-top: -0.5rem;
   margin-bottom: 0;
 }
+
+/* === Consistent Table Styling === */
+.table-ead tbody td {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #334155;
+  vertical-align: middle;
+}
+[data-bs-theme="dark"] .table-ead tbody td {
+  color: #cbd5e1;
+}
+.table-ead thead th {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #64748b;
+  background-color: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  vertical-align: middle;
+}
+[data-bs-theme="dark"] .table-ead thead th {
+  color: #94a3b8;
+  background-color: #1e293b;
+  border-bottom-color: #334155;
+}
+.table-ead.table-dotted tbody tr {
+  border-bottom: 1px dotted #dee2e6 !important;
+}
+.table-ead.table-dotted tbody tr:last-child {
+  border-bottom: none !important;
+}
 </style>
   </head>
 

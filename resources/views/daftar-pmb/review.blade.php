@@ -46,7 +46,7 @@
 
       @if($registration)
       <!-- Card Data Pribadi -->
-      <div class="card border-0 shadow-sm mb-4">
+      <div class="card border-1 shadow-sm mb-4">
         <div class="card-header bg-light py-3">
           <h5 class="fw-bold mb-0">
             <i class="ti ti-user text-primary me-2"></i>Data Pribadi
@@ -83,7 +83,7 @@
       </div>
 
       <!-- Card Kontak & Alamat -->
-      <div class="card border-0 shadow-sm mb-4">
+      <div class="card border-1 shadow-sm mb-4">
         <div class="card-header bg-light py-3">
           <h5 class="fw-bold mb-0">
             <i class="ti ti-mail text-primary me-2"></i>Kontak & Alamat
@@ -112,7 +112,7 @@
       </div>
 
       <!-- Card Pendidikan -->
-      <div class="card border-0 shadow-sm mb-4">
+      <div class="card border-1 shadow-sm mb-4">
         <div class="card-header bg-light py-3">
           <h5 class="fw-bold mb-0">
             <i class="ti ti-school text-primary me-2"></i>Pendidikan Terakhir
@@ -137,7 +137,7 @@
       </div>
 
       <!-- Card Program Studi & Jalur -->
-      <div class="card border-0 shadow-sm mb-4">
+      <div class="card border-1 shadow-sm mb-4">
         <div class="card-header bg-light py-3">
           <h5 class="fw-bold mb-0">
             <i class="ti ti-book text-primary me-2"></i>Program Studi & Jalur Pendaftaran
@@ -173,7 +173,7 @@
 
       <!-- Card Hasil Ujian -->
       @if($examResult)
-      <div class="card border-0 shadow-sm mb-4">
+      <div class="card border-1 shadow-sm mb-4">
         <div class="card-header bg-light py-3">
           <h5 class="fw-bold mb-0">
             <i class="ti ti-pencil text-primary me-2"></i>Hasil Ujian
@@ -209,7 +209,7 @@
 
       <!-- Dokumen Terupload -->
       @if($documentLabels && count($documentLabels) > 0)
-      <div class="card border-0 shadow-sm mb-4">
+      <div class="card border-1 shadow-sm mb-4">
         <div class="card-header bg-light py-3">
           <h5 class="fw-bold mb-0">
             <i class="ti ti-file text-primary me-2"></i>Dokumen Terupload

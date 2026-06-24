@@ -86,7 +86,7 @@
   {{-- ============================================================ --}}
   {{-- HEADER BANNER                                                --}}
   {{-- ============================================================ --}}
-  <div class="card border-0 shadow-sm mb-4" style="background:linear-gradient(135deg,#0f1f3d 0%,#1a3a6e 50%,#0d3b6e 100%);border-radius:20px;overflow:hidden;position:relative;">
+  <div class="card border-1 shadow-sm mb-4" style="background:linear-gradient(135deg,#0f1f3d 0%,#1a3a6e 50%,#0d3b6e 100%);border-radius:20px;overflow:hidden;position:relative;">
     <div style="position:absolute;top:0;right:0;width:320px;height:220px;background:rgba(56,189,248,0.07);border-radius:50%;transform:translate(30%,-30%);"></div>
     <div style="position:absolute;bottom:-30px;left:15%;width:200px;height:200px;background:rgba(99,102,241,0.06);border-radius:50%;"></div>
     <div class="card-body p-4 p-md-5 text-white position-relative">
@@ -140,7 +140,7 @@
   {{-- ============================================================ --}}
   {{-- FILTER & ACTION BAR                                          --}}
   {{-- ============================================================ --}}
-  <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;">
+  <div class="card border-1 shadow-sm mb-4" style="border-radius:16px;">
     <div class="card-body p-3 p-md-4">
       <form action="{{ route('jadwal-kuliah.index') }}" method="GET" class="row g-3 align-items-end">
         <div class="col-md-3 col-12">
@@ -224,7 +224,7 @@
   {{-- ============================================================ --}}
   {{-- DATA TABLE                                                   --}}
   {{-- ============================================================ --}}
-  <div class="card border-0 shadow-sm" style="border-radius:16px;overflow:hidden;">
+  <div class="card border-1 shadow-sm" style="border-radius:16px;overflow:hidden;">
     <div class="card-body p-0">
       <div class="no-sticky-global" style="overflow-x:auto;">
         <table class="table table-hover table-premium no-sticky-global mb-0" style="min-width:1000px;">

@@ -18,7 +18,7 @@
 
         @if($registrations->isEmpty())
           <!-- No Access -->
-          <div class="card border-0 shadow-sm">
+          <div class="card border-1 shadow-sm">
             <div class="card-body p-5 text-center">
               <div class="mb-4">
                 <div class="rounded-circle bg-warning-subtle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
@@ -39,7 +39,7 @@
           </div>
         @else
           <!-- Daftar Jalur yang sudah Lunas -->
-          <div class="card border-0 shadow-sm mb-4">
+          <div class="card border-1 shadow-sm mb-4">
             <div class="card-body p-4">
               <h5 class="fw-bold mb-3"><i class="ti ti-road text-primary me-2"></i>Pilih Jalur Pendaftaran</h5>
               <p class="text-muted mb-0 small">Pilih salah satu jalur pendaftaran yang sudah lunas untuk memulai tes online.</p>
@@ -54,7 +54,7 @@
               $badgeClass = $examResult ? 'bg-success' : 'bg-info';
             @endphp
 
-            <div class="card border-0 shadow-sm mb-3">
+            <div class="card border-1 shadow-sm mb-3">
               <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
                   <div class="d-flex align-items-center gap-3">
@@ -99,7 +99,7 @@
       <div class="col-lg-8">
         
         <!-- Timer Bar -->
-        <div class="card border-0 shadow-sm mb-4 sticky-top" style="top: 80px; z-index: 100;">
+        <div class="card border-1 shadow-sm mb-4 sticky-top" style="top: 80px; z-index: 100;">
           <div class="card-body py-3 px-4">
             <div class="d-flex align-items-center justify-content-between">
               <div class="d-flex align-items-center gap-3">
@@ -127,7 +127,7 @@
 
         <!-- Question Card -->
         @if($currentQuestion)
-        <div class="card border-0 shadow-sm mb-4">
+        <div class="card border-1 shadow-sm mb-4">
           <div class="card-body p-5">
             <div class="d-flex align-items-center gap-2 mb-3">
               <span class="badge bg-{{ $currentQuestion->category == 'Numerik' ? 'primary' : ($currentQuestion->category == 'Verbal' ? 'success' : 'warning') }}-subtle text-{{ $currentQuestion->category == 'Numerik' ? 'primary' : ($currentQuestion->category == 'Verbal' ? 'success' : 'warning') }} px-3 py-2">
@@ -184,7 +184,7 @@
         </div>
 
         <!-- Question Navigator -->
-        <div class="card border-0 shadow-sm mb-4">
+        <div class="card border-1 shadow-sm mb-4">
           <div class="card-body p-4">
             <h6 class="fw-bold mb-3">Navigasi Soal</h6>
             <div class="d-flex flex-wrap gap-2">

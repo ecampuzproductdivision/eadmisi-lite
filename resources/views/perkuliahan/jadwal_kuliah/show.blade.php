@@ -31,7 +31,7 @@
   {{-- ============================================================ --}}
   {{-- HEADER CARD                                                  --}}
   {{-- ============================================================ --}}
-  <div class="card border-0 shadow-sm mb-4" style="background:linear-gradient(135deg,#0f1f3d 0%,#1a3a6e 50%,#0d3b6e 100%);border-radius:20px;overflow:hidden;position:relative;">
+  <div class="card border-1 shadow-sm mb-4" style="background:linear-gradient(135deg,#0f1f3d 0%,#1a3a6e 50%,#0d3b6e 100%);border-radius:20px;overflow:hidden;position:relative;">
     <div style="position:absolute;top:0;right:0;width:300px;height:200px;background:rgba(56,189,248,0.07);border-radius:50%;transform:translate(30%,-30%);"></div>
     <div class="card-body p-4 p-md-5 text-white position-relative">
       <div class="row align-items-start">
@@ -111,7 +111,7 @@
             @if($jadwal->status_jadwal === 'Draft' && !$jadwal->isSelesai())
               <form action="{{ route('jadwal-kuliah.publikasikan', $jadwal->id_jadwal) }}" method="POST">
                 @csrf
-                <button type="submit" class="btn w-100" style="background:#38bdf8;color:#0f172a;border-radius:10px;font-weight:600;" onclick="return confirm('Publikasikan jadwal {{ $jadwal->kode_kelas }}?')">
+                <button type="submit" class="btn" style="background:#38bdf8;color:#0f172a;border-radius:10px;font-weight:600;" onclick="return confirm('Publikasikan jadwal {{ $jadwal->kode_kelas }}?')">
                   <i class="ti ti-send me-1"></i>Publikasikan
                 </button>
               </form>
@@ -165,7 +165,7 @@
     <div class="col-lg-5">
 
       {{-- Detail Jadwal --}}
-      <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;">
+      <div class="card border-1 shadow-sm mb-4" style="border-radius:16px;">
         <div class="card-header bg-transparent border-0 pb-0 pt-4 px-4">
           <h6 class="fw-bold mb-0" style="color:#1e293b;"><i class="ti ti-info-circle me-2 text-primary"></i>Detail Jadwal</h6>
         </div>
@@ -227,7 +227,7 @@
       </div>
 
       {{-- Tim Dosen --}}
-      <div class="card border-0 shadow-sm" style="border-radius:16px;">
+      <div class="card border-1 shadow-sm" style="border-radius:16px;">
         <div class="card-header bg-transparent border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
           <h6 class="fw-bold mb-0" style="color:#1e293b;"><i class="ti ti-users me-2 text-primary"></i>Tim Pengampu</h6>
           @if(!$jadwal->isSelesai())
@@ -285,7 +285,7 @@
     <div class="col-lg-7">
 
       {{-- Sesi Jadwal (Multi Sesi) --}}
-      <div class="card border-0 shadow-sm mb-4" style="border-radius:16px;">
+      <div class="card border-1 shadow-sm mb-4" style="border-radius:16px;">
         <div class="card-header bg-transparent border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
           <h6 class="fw-bold mb-0" style="color:#1e293b;"><i class="ti ti-calendar-repeat me-2 text-primary"></i>Sesi Jadwal</h6>
           <span class="badge" style="background:rgba(99,102,241,0.1);color:#6366f1;border-radius:8px;font-size:0.75rem;">{{ $jadwal->sesiJadwal->count() }} sesi</span>
@@ -314,7 +314,7 @@
       </div>
 
       {{-- Log Perubahan --}}
-      <div class="card border-0 shadow-sm" style="border-radius:16px;">
+      <div class="card border-1 shadow-sm" style="border-radius:16px;">
         <div class="card-header bg-transparent border-0 pb-0 pt-4 px-4">
           <h6 class="fw-bold mb-0" style="color:#1e293b;"><i class="ti ti-history me-2 text-primary"></i>Riwayat Perubahan</h6>
         </div>

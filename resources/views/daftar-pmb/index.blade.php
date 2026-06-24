@@ -44,7 +44,7 @@
 
   <!-- Empty State -->
   <div id="emptyContainer" class="text-center py-8 d-none">
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card border-1 shadow-sm rounded-4">
       <div class="card-body py-8">
         <i class="ti ti-road-off text-muted" style="font-size: 4rem;"></i>
         <h4 class="fw-bold mt-4 text-muted">Belum Ada Jalur Tersedia</h4>

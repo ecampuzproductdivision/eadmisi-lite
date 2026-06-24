@@ -3,7 +3,7 @@
 @section('content')
 <main class="p-2">
   <!-- Header Card -->
-  <div class="card border-0 mb-6">
+  <div class="card border-1 mb-6">
     <div class="card-body p-4">
       <div class="row align-items-center">
         <div class="col">
@@ -539,7 +539,7 @@
                 </select>
               </div>
               <div class="col-md-4">
-                <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">
+                <button type="submit" class="btn btn-primary fw-semibold py-2">
                   <i class="ti ti-copy me-1"></i> Salin Template
                 </button>
               </div>

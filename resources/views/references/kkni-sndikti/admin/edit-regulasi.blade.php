@@ -17,7 +17,7 @@
     </div>
   @endif
 
-  <div class="card border-0 shadow-sm mb-6">
+  <div class="card border-1 shadow-sm mb-6">
     <div class="card-body p-4">
       <div class="row mb-4 align-items-center">
         <div class="col-md-6 col-12">
@@ -170,7 +170,7 @@
           @endif
 
           @forelse($kkniLevels as $level)
-          <div class="card border-0 bg-light mb-3">
+          <div class="card border-1 bg-light mb-3">
             <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
               <h6 class="fw-bold mb-0">
                 <span class="badge bg-primary me-2 rounded-pill">Level {{ $level->level }}</span>
@@ -253,7 +253,7 @@
             <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="butir-{{ $jenjang }}">
               @foreach(['Sikap', 'Keterampilan Umum'] as $kategori)
                 @php $items = $butirByJenjang[$jenjang][$kategori] ?? collect(); @endphp
-                <div class="card border-0 bg-light mb-3">
+                <div class="card border-1 bg-light mb-3">
                   <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
                     <h6 class="fw-bold mb-0">{{ $kategori }} <span class="badge bg-secondary ms-1">{{ $items->count() }} butir</span></h6>
                   </div>

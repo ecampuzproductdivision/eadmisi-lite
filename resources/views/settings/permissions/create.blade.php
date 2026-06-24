@@ -14,7 +14,7 @@
 
   <div class="row justify-content-center">
     <div class="col-xl-8 col-12">
-      <div class="card border-0 shadow-sm">
+      <div class="card border-1 shadow-sm">
         <div class="card-body p-5">
           <form action="{{ route('permissions.store') }}" method="POST" class="needs-validation" novalidate>
             @csrf

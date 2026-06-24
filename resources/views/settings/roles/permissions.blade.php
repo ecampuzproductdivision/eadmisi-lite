@@ -32,7 +32,7 @@
     </div>
 
     <!-- Matrix Grid Card -->
-    <div class="card border-0 shadow-sm">
+    <div class="card border-1 shadow-sm">
       <div class="table-responsive">
         <table class="table align-middle text-nowrap mb-0 table-hover">
           <thead class="table-light">

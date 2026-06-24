@@ -13,7 +13,7 @@
   </div>
 
   <!-- Matrix Card -->
-  <div class="card border-0 shadow-sm">
+  <div class="card border-1 shadow-sm">
     <div class="table-responsive">
       <table class="table align-middle text-nowrap mb-0 table-hover table-bordered">
         <thead class="table-light">

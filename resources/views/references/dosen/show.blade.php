@@ -17,7 +17,7 @@
     </div>
   @endif
 
-  <div class="card border-0 shadow-lg mb-4">
+  <div class="card border-1 shadow-lg mb-4">
     <div class="card-body p-4">
       <div class="row align-items-center">
         <div class="col-md-auto text-center text-md-start mb-3 mb-md-0">
@@ -216,7 +216,7 @@
             <div class="tab-pane fade" id="kompetensi" role="tabpanel">
               <div class="row g-4">
                 <div class="col-md-6">
-                  <div class="card border-0 card-lg">
+                  <div class="card border-1 card-lg">
                     <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center rounded-top-4">
                       <h5 class="fw-bold mb-0">Keahlian</h5>
                       <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#modalAddKeahlian">
@@ -255,7 +255,7 @@
                 </div>
                 
                 <div class="col-md-6">
-                  <div class="card border-0 card-lg">
+                  <div class="card border-1 card-lg">
                     <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center rounded-top-4">
                       <h5 class="fw-bold mb-0">Sertifikasi Profesional</h5>
                       <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#modalAddSertifikasi">
@@ -335,7 +335,7 @@
         </div>
       </div>
       <div class="modal-footer border-top-0 pt-0">
-        <button type="submit" class="btn btn-primary w-100">Simpan</button>
+        <button type="submit" class="btn btn-primary">Simpan</button>
       </div>
     </form>
   </div>

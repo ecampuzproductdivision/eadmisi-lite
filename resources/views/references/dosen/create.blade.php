@@ -2,7 +2,7 @@
 
 @section('content')
 <main class="p-2">
-  <div class="card border-0 mb-6">
+  <div class="card border-1 mb-6">
     <div class="card-body py-4">
       <div class="row align-items-center">
         <div class="col">
@@ -198,7 +198,7 @@
 
       <!-- Kontak & Sertifikasi -->
       <div class="col-12">
-        <div class="card border-0 shadow-sm">
+        <div class="card border-1 shadow-sm">
           <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
             <h5 class="mb-0 fw-bold"><i class="ti ti-certificate text-primary me-2"></i>Kontak & Sertifikasi</h5>
           </div>

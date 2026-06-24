@@ -9,7 +9,7 @@
       </a>
     </td>
     <td>
-      <div class="text-truncate" style="max-width:220px;" title="{{ $lead->pertanyaan }}">
+      <div class="text-truncate" title="{{ $lead->pertanyaan }}">
         {{ $lead->pertanyaan }}
       </div>
     </td>

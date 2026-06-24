@@ -119,7 +119,7 @@
               <tr>
                 <td class="fw-semibold">{{ $reg->nama_lengkap ?: ($reg->user->name ?? '-') }}</td>
                 <td><span class="badge bg-dark-subtle text-dark px-2">{{ $reg->registrationPath->name ?? '-' }}</span></td>
-                <td><small>{{ $reg->created_at->format('d/m/Y H:i') }}</small></td>
+                <td>{{ $reg->created_at->format('d/m/Y H:i') }}</td>
                 <td>
                   <a href="{{ route('pendaftaran.show', $reg->id) }}" class="btn btn-sm btn-outline-primary border-0" title="Detail">
                     <i class="ti ti-arrow-right"></i>
@@ -164,7 +164,7 @@
                     <i class="ti ti-brand-whatsapp me-1"></i>{{ $lead->whatsapp }}
                   </a>
                 </td>
-                <td><small>{{ $lead->created_at->format('d/m/Y H:i') }}</small></td>
+                <td>{{ $lead->created_at->format('d/m/Y H:i') }}</td>
                 <td>
                   <a href="{{ route('crm-leads.index') }}" class="btn btn-sm btn-outline-danger border-0" title="Kelola CRM">
                     <i class="ti ti-arrow-right"></i>

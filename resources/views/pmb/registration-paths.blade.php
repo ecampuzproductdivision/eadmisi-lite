@@ -274,7 +274,7 @@
                                 ` : ''}
 
                                 <div class="mt-3">
-                                    <a href="{{ route('register') }}" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2">
+                                    <a href="{{ route('register') }}" class="btn btn-primary d-flex align-items-center justify-content-center gap-2">
                                         <i class="ti ti-user-plus"></i> Daftar via ${path.code}
                                     </a>
                                 </div>

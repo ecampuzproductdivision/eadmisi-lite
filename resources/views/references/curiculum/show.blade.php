@@ -3,7 +3,7 @@
 @section('content')
 <main class="p-2">
   <!-- Header & Breadcrumbs -->
-  <div class="card border-0 mb-2">
+  <div class="card border-1 mb-2">
     <div class="card-body p-4">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>

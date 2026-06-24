@@ -41,13 +41,13 @@
           <table class="table table-hover align-middle mb-0 no-sticky-global">
             <thead class="bg-light">
               <tr>
-                <th class="ps-4 py-3 small fw-semibold">#</th>
-                <th class="py-3 small fw-semibold">Jalur Pendaftaran</th>
-                <th class="py-3 small fw-semibold">Pilihan 1</th>
-                <th class="py-3 small fw-semibold">Pilihan 2</th>
-                <th class="py-3 small fw-semibold">Tgl Daftar</th>
-                <th class="py-3 small fw-semibold">Status</th>
-                <th class="pe-4 py-3 small fw-semibold text-end">Aksi</th>
+                <th class="ps-4 py-3 fw-semibold">#</th>
+                <th class="py-3 fw-semibold">Jalur Pendaftaran</th>
+                <th class="py-3 fw-semibold">Pilihan 1</th>
+                <th class="py-3 fw-semibold">Pilihan 2</th>
+                <th class="py-3 fw-semibold">Tgl Daftar</th>
+                <th class="py-3 fw-semibold">Status</th>
+                <th class="pe-4 py-3 fw-semibold text-end">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -66,20 +66,20 @@
                   $badge = $statusBadge[$registration->status] ?? ['bg-secondary', 'text-white', $registration->status];
                 @endphp
                 <tr>
-                  <td class="ps-4 py-3 text-muted small fw-semibold">{{ $loop->iteration }}</td>
+                  <td class="ps-4 py-3 text-muted fw-semibold">{{ $loop->iteration }}</td>
                   <td class="py-3">
                     <div class="d-flex align-items-center gap-2">
                       <div class="avatar avatar-sm bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                        <i class="ti ti-road text-primary small"></i>
+                        <i class="ti ti-road text-primary"></i>
                       </div>
-                      <span class="fw-semibold small">{{ $registration->registrationPath?->name ?? '-' }}</span>
+                      <span class="fw-semibold">{{ $registration->registrationPath?->name ?? '-' }}</span>
                     </div>
                   </td>
-                  <td class="py-3 small">{{ $registration->programStudi1?->nama ?? '-' }}</td>
-                  <td class="py-3 small">{{ $registration->programStudi2?->nama ?? '-' }}</td>
-                  <td class="py-3 small">{{ $registration->created_at->format('d/m/Y H:i') }}</td>
+                  <td class="py-3">{{ $registration->programStudi1?->nama ?? '-' }}</td>
+                  <td class="py-3">{{ $registration->programStudi2?->nama ?? '-' }}</td>
+                  <td class="py-3">{{ $registration->created_at->format('d/m/Y H:i') }}</td>
                   <td class="py-3">
-                    <span class="badge {{ $badge[0] }} {{ $badge[1] }} rounded-pill px-3 py-1 small fw-semibold">
+                    <span class="badge {{ $badge[0] }} {{ $badge[1] }} rounded-pill px-3 py-1 fw-semibold">
                       {{ $badge[2] }}
                     </span>
                   </td>

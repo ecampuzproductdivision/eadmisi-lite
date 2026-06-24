@@ -21,7 +21,7 @@
   <!-- ================================================================ -->
   <!-- PRD 13.1 — DASHBOARD REFERENSI                                    -->
   <!-- ================================================================ -->
-  <div class="card border-0 mb-6">
+  <div class="card border-1 mb-6">
     <div class="card-body bg-white py-4">
       <div class="row mb-4 align-items-center">
         <div class="col-md-6 col-12">
@@ -162,7 +162,7 @@
 
   <!-- Riwayat Perubahan Terbaru -->
   @if($recentChanges->count() > 0)
-  <div class="card border-0 bg-light mt-4">
+  <div class="card border-1 bg-light mt-4">
     <div class="card-body p-3">
       <h6 class="fw-bold mb-2 d-flex align-items-center">
         <i class="ti ti-history me-2"></i> Riwayat Perubahan Terbaru
@@ -382,7 +382,7 @@
 
     <!-- ========== TAB 2: REFERENSI SN-Dikti ========== -->
     <div class="tab-pane fade" id="sndikti" role="tabpanel" aria-labelledby="sndikti-tab">
-      <div class="card border-0 shadow-sm">
+      <div class="card border-1 shadow-sm">
         <div class="card-body p-4">
 
           <!-- PRD 13.3: Selector Versi -->
@@ -446,7 +446,7 @@
               <div class="row g-3">
                 @foreach($kategoriMeta as $kategori => $meta)
                 <div class="col-md-6">
-                  <div class="card border-0 h-100">
+                  <div class="card border-1 h-100">
                     <div class="card-header bg-white border-bottom py-2 d-flex align-items-center justify-content-between">
                       <h6 class="fw-bold mb-0"><i class="ti {{ $meta['icon'] }} text-{{ $meta['color'] }} me-1"></i> {{ $kategori }}</h6>
                       <span class="badge bg-{{ $meta['color'] }}">{{ $dataJenjang[$kategori]->count() }} butir</span>
@@ -484,7 +484,7 @@
 
     <!-- ========== TAB 3: PEMETAAN JENJANG ========== -->
     <div class="tab-pane fade" id="pemetaan" role="tabpanel" aria-labelledby="pemetaan-tab">
-      <div class="card border-0 shadow-sm">
+      <div class="card border-1 shadow-sm">
         <div class="card-body p-4">
           <h5 class="fw-bold mb-4">
             <i class="ti ti-mapping me-2"></i> Pemetaan Jenjang Pendidikan Tinggi
@@ -493,7 +493,7 @@
           <div class="row g-4 mb-4">
             @foreach($pemetaanJenjang as $p)
             <div class="col-md-4 col-6">
-              <div class="card border-0 shadow-sm h-100">
+              <div class="card border-1 shadow-sm h-100">
                 <div class="card-body text-center py-4">
                   <span class="badge bg-dark fs-6 mb-2">{{ $p->jenjang }}</span>
                   <h2 class="fw-bold mb-1 text-primary">Level {{ $p->level_kkni }}</h2>
@@ -515,7 +515,7 @@
           </div>
 
           <!-- Ringkasan Minimum Butir per Jenjang -->
-          <div class="card border-0 bg-light">
+          <div class="card border-1 bg-light">
             <div class="card-body py-3">
               <h6 class="fw-bold mb-2">Ringkasan Minimum Butir Wajib SN-Dikti</h6>
               <div class="table-responsive">
@@ -550,7 +550,7 @@
 
     <!-- ========== TAB 4: KELOLA REGULASI ========== -->
     <div class="tab-pane fade" id="kelola" role="tabpanel" aria-labelledby="kelola-tab">
-      <div class="card border-0 shadow-sm">
+      <div class="card border-1 shadow-sm">
         <div class="card-body p-4">
           <div class="d-flex justify-content-between align-items-center mb-4">
             <h5 class="fw-bold mb-0">

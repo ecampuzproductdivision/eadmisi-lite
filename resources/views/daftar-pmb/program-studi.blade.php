@@ -116,7 +116,7 @@
       <div class="col-lg-4">
         <div class="sticky-sidebar">
           <!-- Card Data Terisi -->
-          <div class="card border-0 shadow-sm mb-3 bg-success-subtle">
+          <div class="card border-1 shadow-sm mb-3 bg-success-subtle">
             <div class="card-body p-4">
               <div class="d-flex align-items-center mb-3">
                 <div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-3" style="width: 44px; height: 44px;">
@@ -133,7 +133,7 @@
           </div>
 
           <!-- Card Bantuan -->
-          <div class="card border-0 shadow-sm mb-3" style="background: linear-gradient(135deg, #e8f0fe 0%, #f0f4ff 100%);">
+          <div class="card border-1 shadow-sm mb-3" style="background: linear-gradient(135deg, #e8f0fe 0%, #f0f4ff 100%);">
             <div class="card-body p-4">
               <div class="d-flex align-items-center mb-3">
                 <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 44px; height: 44px;">
@@ -145,7 +145,7 @@
                 </div>
               </div>
               <p class="text-muted mb-3" style="font-size: 0.85rem;">Jika bingung memilih program studi, konsultasikan dengan admin kami.</p>
-              <a href="#" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 py-2">
+              <a href="#" class="btn btn-primary d-flex align-items-center justify-content-center gap-2 py-2">
                 <i class="ti ti-brand-whatsapp"></i> Chat Admin WhatsApp
               </a>
             </div>

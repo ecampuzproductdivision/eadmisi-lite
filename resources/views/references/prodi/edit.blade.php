@@ -3,7 +3,7 @@
 @section('content')
 <main class="p-2">
   <!-- Header Card -->
-  <div class="card border-0 mb-6">
+  <div class="card border-1 mb-6">
     <div class="card-body p-4">
       <div class="row align-items-center">
         <div class="col">

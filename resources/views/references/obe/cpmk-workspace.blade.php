@@ -3,7 +3,7 @@
 @section('content')
 <main class="p-2">
   <!-- Header Card -->
-  <div class="card border-0 mb-4 shadow-xs">
+  <div class="card border-1 mb-4 shadow-xs">
     <div class="card-body p-4">
       <div class="d-flex justify-content-between align-items-center mb-2">
         <div>
@@ -37,7 +37,7 @@
   <!-- Summary Cards -->
   <div class="row g-3 mb-4">
     <div class="col-md-3">
-      <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
+      <div class="card border-1 shadow-sm h-100" style="border-radius: 12px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background: #e8f5e9;">
             <i class="ti ti-book text-success fs-3"></i>
@@ -50,7 +50,7 @@
       </div>
     </div>
     <div class="col-md-3">
-      <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
+      <div class="card border-1 shadow-sm h-100" style="border-radius: 12px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background: #e3f2fd;">
             <i class="ti ti-circle-check text-primary fs-3"></i>
@@ -63,7 +63,7 @@
       </div>
     </div>
     <div class="col-md-3">
-      <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
+      <div class="card border-1 shadow-sm h-100" style="border-radius: 12px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background: #fff3e0;">
             <i class="ti ti-alert-triangle text-warning fs-3"></i>
@@ -76,7 +76,7 @@
       </div>
     </div>
     <div class="col-md-3">
-      <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
+      <div class="card border-1 shadow-sm h-100" style="border-radius: 12px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background: #fce4ec;">
             <i class="ti ti-x text-danger fs-3"></i>
@@ -91,7 +91,7 @@
   </div>
 
   <!-- Course Table Card -->
-  <div class="card border-0 shadow-sm">
+  <div class="card border-1 shadow-sm">
     <div class="card-header bg-white py-3 border-0">
       <h6 class="fw-bold text-dark mb-0"><i class="ti ti-list me-1 text-primary"></i> Daftar Mata Kuliah & Status Kelengkapan CPMK</h6>
     </div>

@@ -2,7 +2,7 @@
 
 @section('content')
 <main class="p-2">
-  <div class="card border-0 shadow-sm mb-4">
+  <div class="card border-1 shadow-sm mb-4">
     <div class="card-body py-4">
       <div class="row align-items-center">
         <div class="col-md-7 col-12">
@@ -99,7 +99,7 @@
   <!-- Charts Row -->
   <div class="row g-4 mb-4">
     <div class="col-lg-5">
-      <div class="card border-0 shadow-sm h-100">
+      <div class="card border-1 shadow-sm h-100">
         <div class="card-body p-4">
           <h5 class="fw-bold mb-4"><i class="ti ti-school me-2 text-primary"></i>Kualifikasi Pendidikan</h5>
           <div id="chart-pendidikan" style="min-height: 300px;"></div>
@@ -108,7 +108,7 @@
     </div>
 
     <div class="col-lg-7">
-      <div class="card border-0 shadow-sm h-100">
+      <div class="card border-1 shadow-sm h-100">
         <div class="card-body p-4">
           <h5 class="fw-bold mb-4"><i class="ti ti-medal me-2 text-primary"></i>Distribusi Jabatan Fungsional</h5>
           <div id="chart-jabatan" style="min-height: 300px;"></div>
@@ -119,7 +119,7 @@
 
   <!-- Expiring Certifications Alert -->
   @if($expiringCertifications->isNotEmpty())
-    <div class="card border-0 shadow-sm mb-4 rekap-alert-card">
+    <div class="card border-1 shadow-sm mb-4 rekap-alert-card">
       <div class="card-header border-bottom-0 pt-4 pb-2 rekap-alert-card__header">
         <h5 class="fw-bold mb-0 text-warning"><i class="ti ti-alert-triangle me-2"></i>Sertifikasi Akan Berakhir (H-90)</h5>
       </div>

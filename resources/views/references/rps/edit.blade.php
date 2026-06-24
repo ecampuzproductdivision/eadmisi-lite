@@ -17,7 +17,7 @@
   </div>
 
   <!-- Header Card -->
-  <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px; background: #0f172a; color: white;">
+  <div class="card border-1 shadow-sm mb-4" style="border-radius: 16px; background: #0f172a; color: white;">
     <div class="card-body p-4">
       <div class="row align-items-center">
         <div class="col-lg-8 col-12">
@@ -50,7 +50,7 @@
   <div class="row">
     <!-- Left Form Section (Tabs) -->
     <div class="col-xl-9 col-lg-8 col-12 mb-4">
-      <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+      <div class="card border-1 shadow-sm" style="border-radius: 16px;">
         <div class="card-header bg-white border-bottom p-0">
           <!-- Navigation Tabs -->
           <ul class="nav nav-tabs border-0 flex-nowrap overflow-auto" id="rpsTabs" role="tablist" style="padding: 10px 15px 0 15px;">
@@ -420,7 +420,7 @@
                   $bobotStatus = abs($totalBobot - 100) < 0.01 ? 'success' : ($totalBobot > 100 ? 'danger' : 'warning');
                   $penCount = $rps->penilaian->count();
                 @endphp
-                <div class="card border-0 mb-4" style="border-radius:12px; background: linear-gradient(135deg, {{ $bobotStatus === 'success' ? '#f0fdf4, #dcfce7' : ($bobotStatus === 'danger' ? '#fef2f2, #fee2e2' : '#fffbeb, #fef3c7') }});">
+                <div class="card border-1 mb-4" style="border-radius:12px; background: linear-gradient(135deg, {{ $bobotStatus === 'success' ? '#f0fdf4, #dcfce7' : ($bobotStatus === 'danger' ? '#fef2f2, #fee2e2' : '#fffbeb, #fef3c7') }});">
                   <div class="card-body p-3">
                     <div class="row align-items-center g-3">
                       <div class="col-auto">
@@ -742,7 +742,7 @@
 
     <!-- Right Summary Section (Checklist & Info Panel) -->
     <div class="col-xl-3 col-lg-4 col-12">
-      <div class="card border-0 shadow-sm" style="border-radius: 16px; position:sticky; top: 80px; z-index: 10;">
+      <div class="card border-1 shadow-sm" style="border-radius: 16px; position:sticky; top: 80px; z-index: 10;">
         {{-- Progress ring header --}}
         @php
           $sidePassedCount = count(array_filter($checklist));

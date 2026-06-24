@@ -3,7 +3,7 @@
 @section('content')
 <main class="p-2">
   <!-- Header Card -->
-  <div class="card border-0 mb-4 shadow-xs">
+  <div class="card border-1 mb-4 shadow-xs">
     <div class="card-body p-4">
       <div class="d-flex justify-content-between align-items-center mb-2">
         <div>
@@ -27,7 +27,7 @@
   </div>
 
   <!-- Info Banner -->
-  <div class="card border-0 mb-4 shadow-sm" style="border-radius: 12px; background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%); border-left: 4px solid #0d6efd !important;">
+  <div class="card border-1 mb-4 shadow-sm" style="border-radius: 12px; background: linear-gradient(135deg, #f0f7ff 0%, #e8f0fe 100%); border-left: 4px solid #0d6efd !important;">
     <div class="card-body p-4">
       <div class="d-flex align-items-start gap-3">
         <div class="p-2 bg-white rounded-3 shadow-sm">
@@ -44,7 +44,7 @@
   </div>
 
   <!-- Filter & Search -->
-  <div class="card border-0 shadow-sm mb-4">
+  <div class="card border-1 shadow-sm mb-4">
     <div class="card-body p-3">
       <form action="{{ route('obe.cpmk.index') }}" method="GET" class="row g-3 align-items-end">
         <div class="col-md-5">
@@ -64,7 +64,7 @@
           </select>
         </div>
         <div class="col-md-4 d-flex gap-2">
-          <button type="submit" class="btn btn-primary w-100"><i class="ti ti-filter me-1"></i> Filter</button>
+          <button type="submit" class="btn btn-primary"><i class="ti ti-filter me-1"></i> Filter</button>
           <a href="{{ route('obe.cpmk.index') }}" class="btn btn-light border px-3" title="Reset"><i class="ti ti-refresh"></i></a>
         </div>
       </form>
@@ -74,7 +74,7 @@
   <!-- Summary Stats -->
   <div class="row g-3 mb-4">
     <div class="col-md-4">
-      <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
+      <div class="card border-1 shadow-sm h-100" style="border-radius: 12px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background: #e8f5e9;">
             <i class="ti ti-book text-success fs-3"></i>
@@ -87,7 +87,7 @@
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
+      <div class="card border-1 shadow-sm h-100" style="border-radius: 12px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background: #e3f2fd;">
             <i class="ti ti-check-circle text-primary fs-3"></i>
@@ -100,7 +100,7 @@
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
+      <div class="card border-1 shadow-sm h-100" style="border-radius: 12px;">
         <div class="card-body p-3 d-flex align-items-center gap-3">
           <div class="p-2 rounded-3" style="background: #fff3e0;">
             <i class="ti ti-notebook text-warning fs-3"></i>
@@ -130,7 +130,7 @@
           $isAllComplete = $kurStats['total_mk'] > 0 && $kurStats['total_mk'] === $kurStats['complete'];
         @endphp
         <div class="col-xl-4 col-lg-6">
-          <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden" style="border-radius: 14px; transition: box-shadow 0.2s, transform 0.2s;" onmouseover="this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='';this.style.transform=''">
+          <div class="card border-1 shadow-sm h-100 position-relative overflow-hidden" style="border-radius: 14px; transition: box-shadow 0.2s, transform 0.2s;" onmouseover="this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)';this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='';this.style.transform=''">
             <div style="height: 4px; background: {{ $kur->kurIsAktif ? '#198754' : '#6c757d' }};"></div>
             <div class="card-body p-4">
               <div class="d-flex justify-content-between align-items-start mb-3">
@@ -182,7 +182,7 @@
 
               <!-- Action Button -->
               <a href="{{ route('curiculum.cpmk.workspace', $kur->kurKode) }}" 
-                 class="btn btn-primary w-100 fw-semibold d-flex align-items-center justify-content-center gap-2">
+                 class="btn btn-primary fw-semibold d-flex align-items-center justify-content-center gap-2">
                 <i class="ti ti-layout-grid fs-5"></i>
                 Kelola CPMK
                 <i class="ti ti-chevron-right fs-6 ms-auto"></i>

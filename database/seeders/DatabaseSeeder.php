@@ -40,6 +40,8 @@ class DatabaseSeeder extends Seeder
             CrmLeadSeeder::class,
             CrmLeadMenuSeeder::class,
             TestDataStikesSeeder::class,
+            LandingPageSeeder::class,
+            LandingPageSubMenuSeeder::class,
         ]);
     }
 }

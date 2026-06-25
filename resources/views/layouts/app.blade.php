@@ -319,6 +319,15 @@
 .table-ead.table-dotted tbody tr:last-child {
   border-bottom: none !important;
 }
+
+/* Navbar glass border bottom to solid */
+.navbar-glass {
+  border-bottom: 1px solid var(--bs-border-color, #e2e8f0) !important;
+}
+/* Expanded sidebar border right to solid */
+html.expanded #miniSidebar {
+  border-right: 1px solid var(--bs-border-color, #e2e8f0) !important;
+}
 </style>
   </head>
 

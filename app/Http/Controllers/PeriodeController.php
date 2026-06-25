@@ -22,7 +22,7 @@ class PeriodeController extends Controller
     public function index()
     {
         $periodes = Periode::orderBy('tahun_akademik', 'desc')
-            ->orderByRaw("FIELD(semester, 'Ganjil', 'Genap', 'Pendek')")
+            ->orderByRaw("CASE WHEN semester = 'Ganjil' THEN 1 WHEN semester = 'Genap' THEN 2 WHEN semester = 'Pendek' THEN 3 ELSE 4 END")
             ->paginate(10);
 
         return view('periode.index', compact('periodes'));

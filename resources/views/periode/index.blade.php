@@ -1,163 +1,128 @@
 @extends('layouts.app')
 
 @section('content')
-<main class="p-2">
-  <div class="sticky-header-filter">
-    <div class="row mb-2 align-items-center">
-      <div class="col-md-6 col-12">
-        <h3 class="mb-1 fw-bold">Periode Akademik</h3>
-        <p class="mb-0 text-muted small">Kelola tahun akademik dan semester aktif untuk pendaftaran mahasiswa baru.</p>
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Periode Akademik</li>
-          </ol>
-        </nav>
-      </div>
-      <div class="col-md-6 col-12 text-md-end mt-3 mt-md-0">
+@component('components.data-page-layout', ['data' => $periodes])
+    @slot('breadcrumbs', [
+        ['label' => 'Home', 'url' => route('home')],
+        ['label' => 'Periode Akademik', 'active' => true],
+    ])
+    @slot('title', 'Periode Akademik')
+    @slot('description', 'Kelola tahun akademik dan semester aktif untuk pendaftaran mahasiswa baru.')
+    @slot('actions')
         <button type="button" class="btn btn-dark d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#periodeModal">
-          <i class="ti ti-plus fs-4"></i> Tambah Periode Baru
+            <i class="ti ti-plus fs-4"></i> Tambah Periode Baru
         </button>
-      </div>
-    </div>
-
-    <div class="card mb-2 border-0 shadow-sm">
-      <div class="card-body py-3">
-        <form action="{{ route('periode.index') }}" method="GET" class="row g-2 align-items-end">
-          <div class="col-md-4 col-12">
+    @endslot
+    @slot('filters')
+        <div class="col-md-4 col-12">
             <div class="input-group">
-              <span class="input-group-text bg-transparent border-end-0"><i class="ti ti-search text-muted"></i></span>
-              <input type="text" name="search" class="form-control border-start-0" placeholder="Cari tahun akademik..." value="{{ request('search') }}">
+                <span class="input-group-text bg-transparent border-end-0"><i class="ti ti-search text-muted"></i></span>
+                <input type="text" name="search" class="form-control border-start-0" placeholder="Cari tahun akademik..." value="{{ request('search') }}">
             </div>
-          </div>
-          <div class="col-md-2 col-12">
+        </div>
+        <div class="col-md-3 col-12">
             <select name="semester" class="form-select">
-              <option value="">-- Semester --</option>
-              <option value="Ganjil" {{ request('semester') == 'Ganjil' ? 'selected' : '' }}>Ganjil</option>
-              <option value="Genap" {{ request('semester') == 'Genap' ? 'selected' : '' }}>Genap</option>
-              <option value="Pendek" {{ request('semester') == 'Pendek' ? 'selected' : '' }}>Pendek</option>
+                <option value="">-- Semester --</option>
+                <option value="Ganjil" {{ request('semester') == 'Ganjil' ? 'selected' : '' }}>Ganjil</option>
+                <option value="Genap" {{ request('semester') == 'Genap' ? 'selected' : '' }}>Genap</option>
+                <option value="Pendek" {{ request('semester') == 'Pendek' ? 'selected' : '' }}>Pendek</option>
             </select>
-          </div>
-          <div class="col-md-2 col-12 d-flex gap-2">
+        </div>
+        <div class="col-md-2 col-12 d-flex gap-2">
             <button type="submit" class="btn btn-primary"><i class="ti ti-filter"></i> Terapkan</button>
             <a href="{{ route('periode.index') }}" class="btn btn-subtle-primary px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
-          </div>
-          <div class="col-md-4 col-12 d-flex gap-2 justify-content-md-end">
-            <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.location.href='{{ route('periode.index') }}?export=xls'">
-              <i class="ti ti-file-spreadsheet"></i> .xls
-            </a>
-            <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.print()">
-              <i class="ti ti-printer"></i> Print
-            </a>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <i class="ti ti-circle-check fs-4 me-2"></i>
-      {{ session('success') }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-  @endif
-
-  @if($errors->any())
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      <i class="ti ti-alert-circle fs-4 me-2"></i>
-      {{ $errors->first() }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-  @endif
-
-  <div class="card border-1 shadow-sm">
-    <div class="card-body p-4">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle table-ead">
-          <thead class="bg-light">
-            <tr>
-              <th style="width: 60px;">No</th>
-              <th>Tahun Akademik</th>
-              <th>Periode Semester</th>
-              <th>Status Aktif</th>
-              <th style="width: 160px;">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            @forelse($periodes as $index => $periode)
-              <tr>
-                <td>{{ ($periodes->currentPage() - 1) * $periodes->perPage() + $index + 1 }}</td>
-                <td class="fw-semibold">{{ $periode->tahun_akademik }}</td>
-                <td>
-                  @if($periode->semester === 'Ganjil')
-                    <span class="badge bg-primary-subtle text-primary px-3 py-2">Ganjil</span>
-                  @elseif($periode->semester === 'Genap')
-                    <span class="badge bg-info-subtle text-info px-3 py-2">Genap</span>
-                  @else
-                    <span class="badge bg-warning-subtle text-warning px-3 py-2">Pendek</span>
-                  @endif
-                </td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <form action="{{ route('periode.toggle-active', $periode) }}" method="POST" class="m-0">
-                      @csrf
-                      <div class="form-check form-switch mb-0">
-                        <input type="checkbox" class="form-check-input" role="switch"
-                               {{ $periode->status_aktif ? 'checked' : '' }}
-                               onchange="this.form.submit()">
-                      </div>
-                    </form>
-                    @if($periode->status_aktif)
-                      <span class="badge bg-success-subtle text-success px-3 py-2">Aktif</span>
-                    @else
-                      <span class="badge bg-secondary-subtle text-secondary px-3 py-2">Nonaktif</span>
-                    @endif
-                  </div>
-                </td>
-                <td>
-                  <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-sm py-2 btn-white d-inline-flex align-items-center gap-1"
-                            data-bs-toggle="modal" data-bs-target="#periodeModal"
-                            data-id="{{ $periode->id }}"
-                            data-tahun-akademik="{{ $periode->tahun_akademik }}"
-                            data-semester="{{ $periode->semester }}"
-                            data-status-aktif="{{ $periode->status_aktif ? 'true' : 'false' }}">
-                      <i class="ti ti-pencil"></i>
-                    </button>
-                    <form action="{{ route('periode.destroy', $periode) }}" method="POST" onsubmit="return confirm('Hapus periode {{ $periode->label }}?')">
-                      @csrf
-                      @method('DELETE')
-                      <button type="submit" class="btn btn-sm py-2 btn-white d-inline-flex align-items-center gap-1">
-                        <i class="ti ti-trash"></i>
-                      </button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-            @empty
-              <tr>
-                <td colspan="6" class="text-center py-5">
-                  <i class="ti ti-calendar-off text-muted" style="font-size: 3rem;"></i>
-                  <p class="mt-3 mb-0 text-muted">Belum ada periode akademik.</p>
-                  <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#periodeModal">
-                    Tambah Periode Pertama
-                  </button>
-                </td>
-              </tr>
-            @endforelse
-          </tbody>
-        </table>
-      </div>
-
-      @if($periodes->hasPages())
-        <div class="mt-3">
-          {{ $periodes->links() }}
         </div>
-      @endif
-    </div>
-  </div>
-</main>
+    @endslot
+    @slot('exports')
+        <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.location.href='{{ route('periode.index') }}?export=xls'">
+            <i class="ti ti-file-spreadsheet"></i> .xls
+        </a>
+        <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.print()">
+            <i class="ti ti-printer"></i> Print
+        </a>
+    @endslot
+    @slot('table')
+        <table class="table align-middle table-hover table-ead">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col" class="py-3" style="width: 60px;">No</th>
+                    <th scope="col" class="py-3">Tahun Akademik</th>
+                    <th scope="col" class="py-3">Periode Semester</th>
+                    <th scope="col" class="py-3">Status Aktif</th>
+                    <th scope="col" class="py-3 text-end" style="width: 160px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="periode-table-body">
+                @forelse($periodes as $index => $periode)
+                    <tr>
+                        <td class="py-3">{{ ($periodes->currentPage() - 1) * $periodes->perPage() + $index + 1 }}</td>
+                        <td class="py-3 fw-semibold">{{ $periode->tahun_akademik }}</td>
+                        <td class="py-3">
+                            @if($periode->semester === 'Ganjil')
+                                <span class="badge bg-primary-subtle text-primary px-3 py-2">Ganjil</span>
+                            @elseif($periode->semester === 'Genap')
+                                <span class="badge bg-info-subtle text-info px-3 py-2">Genap</span>
+                            @else
+                                <span class="badge bg-warning-subtle text-warning px-3 py-2">Pendek</span>
+                            @endif
+                        </td>
+                        <td class="py-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <form action="{{ route('periode.toggle-active', $periode) }}" method="POST" class="m-0">
+                                    @csrf
+                                    <div class="form-check form-switch mb-0">
+                                        <input type="checkbox" class="form-check-input" role="switch"
+                                               {{ $periode->status_aktif ? 'checked' : '' }}
+                                               onchange="this.form.submit()">
+                                    </div>
+                                </form>
+                                @if($periode->status_aktif)
+                                    <span class="badge bg-success-subtle text-success px-3 py-2">Aktif</span>
+                                @else
+                                    <span class="badge bg-secondary-subtle text-secondary px-3 py-2">Nonaktif</span>
+                                @endif
+                            </div>
+                        </td>
+                        <td class="py-3 text-end">
+                            <div class="d-inline-flex gap-2">
+                                <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1"
+                                        data-bs-toggle="modal" data-bs-target="#periodeModal"
+                                        data-id="{{ $periode->id }}"
+                                        data-tahun-akademik="{{ $periode->tahun_akademik }}"
+                                        data-semester="{{ $periode->semester }}"
+                                        data-status-aktif="{{ $periode->status_aktif ? 'true' : 'false' }}">
+                                    <i class="ti ti-edit fs-5"></i>
+                                </button>
+                                <form action="{{ route('periode.destroy', $periode) }}" method="POST" onsubmit="return confirm('Hapus periode {{ $periode->label }}?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-light border text-danger d-inline-flex align-items-center gap-1">
+                                        <i class="ti ti-trash fs-5"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="text-center py-5">
+                            <i class="ti ti-calendar-off text-muted" style="font-size: 3rem;"></i>
+                            <p class="mt-3 mb-0 text-muted">Belum ada periode akademik.</p>
+                            <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#periodeModal">
+                                Tambah Periode Pertama
+                            </button>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+        @if($periodes->hasPages())
+            <div class="mt-3">
+                {{ $periodes->links() }}
+            </div>
+        @endif
+    @endslot
+@endcomponent
 
 <!-- Add/Edit Modal -->
 <div class="modal fade" id="periodeModal" tabindex="-1" aria-labelledby="periodeModalLabel" aria-hidden="true">

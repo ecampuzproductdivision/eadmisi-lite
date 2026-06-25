@@ -43,17 +43,17 @@
     @endslot
     @slot('table')
         <table class="table table-hover align-middle table-ead">
-            <thead class="bg-light">
+            <thead class="table-light">
                 <tr>
-                    <th style="width: 60px;">No</th>
-                    <th>Kode Prodi</th>
-                    <th>Nama Prodi</th>
-                    <th>Jurusan</th>
-                    <th>Jenjang</th>
-                    <th>Program</th>
-                    <th>Kelompok</th>
-                    <th>Status</th>
-                    <th style="width: 150px;">Aksi</th>
+                    <th scope="col" class="py-3" style="width: 60px;">No</th>
+                    <th scope="col" class="py-3">Kode Prodi</th>
+                    <th scope="col" class="py-3">Nama Prodi</th>
+                    <th scope="col" class="py-3">Jurusan</th>
+                    <th scope="col" class="py-3">Jenjang</th>
+                    <th scope="col" class="py-3">Program</th>
+                    <th scope="col" class="py-3">Kelompok</th>
+                    <th scope="col" class="py-3">Status</th>
+                    <th scope="col" class="py-3 text-end" style="width: 150px;">Aksi</th>
                 </tr>
             </thead>
             <tbody id="prodi-table-body">
@@ -70,59 +70,20 @@
                 @endif
             </tbody>
         </table>
-    @endslot
-    @slot('pagination')
-        @if($programStudis->hasPages())
-            {{ $programStudis->links() }}
-        @endif
+        <div id="scroll-sentinel" class="text-center py-2"></div>
+        <div id="loading-spinner" class="d-none text-center py-3">
+            <div class="spinner-border text-primary" role="status" style="width: 1.5rem; height: 1.5rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
     @endslot
 @endcomponent
 
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    let nextPageUrl = '{{ $programStudis->nextPageUrl() }}';
-    let hasMore = {{ $programStudis->hasMorePages() ? 'true' : 'false' }};
-    let isLoading = false;
-
-    const spinner = document.getElementById('loading-spinner');
-    const paginationContainer = document.getElementById('pagination-container');
-    const tableBody = document.getElementById('prodi-table-body');
-
-    if (paginationContainer) paginationContainer.classList.add('d-none');
-
-    function handleScroll() {
-        if (isLoading || !hasMore || !nextPageUrl) return;
-        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100) {
-            loadMore();
-        }
-    }
-
-    function loadMore() {
-        isLoading = true;
-        if (spinner) spinner.classList.remove('d-none');
-        fetch(nextPageUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-        .then(response => response.json())
-        .then(data => {
-            if (data.html) {
-                const tempDiv = document.createElement('tbody');
-                tempDiv.innerHTML = data.html;
-                tempDiv.querySelectorAll('tr').forEach(row => tableBody.appendChild(row));
-            }
-            nextPageUrl = data.next_page;
-            hasMore = data.has_more;
-            isLoading = false;
-            if (spinner) spinner.classList.add('d-none');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            isLoading = false;
-            if (spinner) spinner.classList.add('d-none');
-        });
-    }
-
-    window.addEventListener('scroll', handleScroll);
-});
-</script>
-@endpush
+@include('components.infinite-scroll-script', [
+    'tableBodyId' => 'prodi-table-body',
+    'spinnerId' => 'loading-spinner',
+    'sentinelId' => 'scroll-sentinel',
+    'nextPageUrl' => $programStudis->nextPageUrl(),
+    'hasMore' => $programStudis->hasMorePages(),
+])
 @endsection

@@ -29,7 +29,7 @@
                 @endforeach
             </select>
         </div>
-        <div class="col-md-3 col-12 d-flex gap-2">
+        <div class="col-md-2 col-12 d-flex gap-2">
             <button type="submit" class="btn btn-primary"><i class="ti ti-filter"></i> Terapkan</button>
             <a href="{{ route('registration-paths.index') }}" class="btn btn-subtle-primary px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
         </div>
@@ -44,46 +44,38 @@
     @endslot
     @slot('table')
         <table class="table table-hover align-middle table-ead">
-            <thead class="bg-light">
+            <thead class="table-light">
                 <tr>
-                    <th style="width: 60px;">No</th>
-                    <th>Kode</th>
-                    <th>Nama</th>
-                    <th>Kategori</th>
-                    <th>Biaya</th>
-                    <th>Periode</th>
-                    <th>Kuota</th>
-                    <th>Status</th>
-                    <th style="width: 150px;">Aksi</th>
+                    <th scope="col" class="py-3" style="width: 60px;">No</th>
+                    <th scope="col" class="py-3">Kode</th>
+                    <th scope="col" class="py-3">Nama</th>
+                    <th scope="col" class="py-3">Kategori</th>
+                    <th scope="col" class="py-3">Biaya</th>
+                    <th scope="col" class="py-3">Periode</th>
+                    <th scope="col" class="py-3">Kuota</th>
+                    <th scope="col" class="py-3">Status</th>
+                    <th scope="col" class="py-3 text-end" style="width: 150px;">Aksi</th>
                 </tr>
             </thead>
-            <tbody>
-                @forelse($paths as $path)
-                <tr>
-                    <td>{{ $loop->iteration + ($paths->currentPage() - 1) * $paths->perPage() }}</td>
-                    <td><span class="badge bg-{{ $path->color ?? 'secondary' }}-subtle text-{{ $path->color ?? 'secondary' }} px-3 py-2">{{ $path->code }}</span></td>
-                    <td class="fw-semibold">{{ $path->name }}</td>
-                    <td>@if($path->kategori)<span class="badge bg-dark-subtle text-dark px-3 py-2">{{ $path->kategori->nama }}</span>@else<span class="text-muted">—</span>@endif</td>
-                    <td>Rp {{ number_format($path->fee, 0, ',', '.') }}</td>
-                    <td>@if($path->registration_start && $path->registration_end){{ \Carbon\Carbon::parse($path->registration_start)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($path->registration_end)->format('d/m/Y') }}@else<span class="text-muted">—</span>@endif</td>
-                    <td>@if($path->quota)<span class="fw-semibold">{{ $path->quota }}</span>@else<span class="text-muted">∞</span>@endif</td>
-                    <td>@if($path->is_active)<span class="badge bg-success-subtle text-success px-3 py-2">Aktif</span>@else<span class="badge bg-danger-subtle text-danger px-3 py-2">Nonaktif</span>@endif</td>
-                    <td>
-                        <div class="d-flex gap-2">
-                            <a href="{{ route('registration-paths.show', $path) }}" class="btn btn-sm btn-info d-inline-flex align-items-center gap-1"><i class="ti ti-eye fs-5"></i></a>
-                            <a href="{{ route('registration-paths.edit', $path) }}" class="btn btn-sm btn-warning d-inline-flex align-items-center gap-1"><i class="ti ti-edit fs-5"></i></a>
-                            <form action="{{ route('registration-paths.destroy', $path) }}" method="POST" onsubmit="return confirm('Hapus {{ $path->name }}?')">@csrf @method('DELETE')<button type="submit" class="btn btn-sm btn-danger d-inline-flex align-items-center gap-1"><i class="ti ti-trash fs-5"></i></button></form>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr><td colspan="9" class="text-center py-5"><i class="ti ti-road-off text-muted" style="font-size: 3rem;"></i><p class="mt-3 mb-0 text-muted">Belum ada data.</p></td></tr>
-                @endforelse
+            <tbody id="path-table-body">
+                @include('registration-paths.partials.path_rows')
             </tbody>
         </table>
-        @if($paths->hasPages())
-            {{ $paths->links() }}
-        @endif
+        {{-- Sentinel element for infinite scroll --}}
+        <div id="scroll-sentinel" class="text-center py-2"></div>
+        <div id="loading-spinner" class="d-none text-center py-3">
+            <div class="spinner-border text-primary" role="status" style="width: 1.5rem; height: 1.5rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
     @endslot
 @endcomponent
+
+@include('components.infinite-scroll-script', [
+    'tableBodyId' => 'path-table-body',
+    'spinnerId' => 'loading-spinner',
+    'sentinelId' => 'scroll-sentinel',
+    'nextPageUrl' => $paths->nextPageUrl(),
+    'hasMore' => $paths->hasMorePages(),
+])
 @endsection

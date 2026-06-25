@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-@component('components.data-page-layout')
+@component('components.data-page-layout', ['data' => $registrations])
     @slot('breadcrumbs', [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Settings', 'url' => '#'],
@@ -30,25 +30,23 @@
         </div>
     @endslot
     @slot('table')
-        <div style="overflow-x: auto; max-width: 100%;">
-            <table class="table table-hover align-middle mb-0 table-ead" style="min-width: 1100px;">
-                <thead class="table-light">
-                    <tr>
-                        <th class="py-3">No</th>
-                        <th class="py-3">No. Pendaftaran</th>
-                        <th class="py-3">Nama Mahasiswa</th>
-                        <th class="py-3">Jalur</th>
-                        <th class="py-3">Jadwal Wawancara</th>
-                        <th class="py-3">Pewawancara</th>
-                        <th class="py-3">Status</th>
-                        <th class="py-3">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="wawancara-table-body">
-                    @include('wawancara.partials.wawancara_rows')
-                </tbody>
-            </table>
-        </div>
+        <table class="table table-hover align-middle mb-0 table-ead" style="min-width: 1100px;">
+            <thead class="table-light">
+                <tr>
+                    <th class="py-3">No</th>
+                    <th class="py-3">No. Pendaftaran</th>
+                    <th class="py-3">Nama Mahasiswa</th>
+                    <th class="py-3">Jalur</th>
+                    <th class="py-3">Jadwal Wawancara</th>
+                    <th class="py-3">Pewawancara</th>
+                    <th class="py-3">Status</th>
+                    <th class="py-3">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="wawancara-table-body">
+                @include('wawancara.partials.wawancara_rows')
+            </tbody>
+        </table>
         <div id="loading-spinner" class="d-none text-center py-3">
             <div class="spinner-border text-primary" role="status" style="width: 1.5rem; height: 1.5rem;">
                 <span class="visually-hidden">Loading...</span>

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-@component('components.data-page-layout')
+@component('components.data-page-layout', ['data' => $pages])
     @slot('breadcrumbs', [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Settings', 'url' => '#'],
@@ -58,18 +58,6 @@
                 @include('settings.pages.partials.page_rows')
             </tbody>
         </table>
-        <div id="loading-spinner" class="d-none text-center py-3">
-            <div class="spinner-border text-primary" role="status" style="width: 1.5rem; height: 1.5rem;">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-        </div>
     @endslot
 @endcomponent
-
-@include('components.infinite-scroll-script', [
-    'tableBodyId' => 'page-table-body',
-    'spinnerId' => 'loading-spinner',
-    'nextPageUrl' => $pages->nextPageUrl(),
-    'hasMore' => $pages->hasMorePages(),
-])
 @endsection

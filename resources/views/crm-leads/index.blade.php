@@ -1,39 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-@component('components.data-page-layout')
+@component('components.data-page-layout', ['data' => $leads])
     @slot('breadcrumbs', [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'CRM Leads', 'active' => true],
     ])
     @slot('title', 'CRM Leads')
     @slot('description', 'Kelola prospek dari formulir "Tanya Dulu" landing page.')
-    @slot('filters')
-        <div class="col-md-4 col-12">
-            <div class="input-group">
-                <span class="input-group-text bg-transparent border-end-0"><i class="ti ti-search text-muted"></i></span>
-                <input type="text" name="search" class="form-control border-start-0" placeholder="Cari nama/WA..." value="{{ request('search') }}">
-            </div>
-        </div>
-        <div class="col-md-3 col-12">
-            <select name="status" class="form-select">
-                <option value="">Semua Status</option>
-                <option value="New" {{ request('status') == 'New' ? 'selected' : '' }}>New</option>
-                <option value="In Progress" {{ request('status') == 'In Progress' ? 'selected' : '' }}>In Progress</option>
-                <option value="Responded" {{ request('status') == 'Responded' ? 'selected' : '' }}>Responded</option>
-                <option value="Converted" {{ request('status') == 'Converted' ? 'selected' : '' }}>Converted</option>
-            </select>
-        </div>
-        <div class="col-md-2 col-12 d-flex gap-2">
-            <button type="submit" class="btn btn-primary"><i class="ti ti-filter"></i> Terapkan</button>
-            <a href="{{ route('crm-leads.index') }}" class="btn btn-subtle-primary px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
-        </div>
-    @endslot
-    @slot('exports')
-        <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.location.href='{{ route('crm-leads.index') }}?export=xls'"><i class="ti ti-file-spreadsheet"></i> .xls</a>
-        <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.print()"><i class="ti ti-printer"></i> Print</a>
-    @endslot
-    @slot('table')
+    @slot('cards')
         {{-- Overview: Stat Cards --}}
         <div class="row g-4 mb-4">
             <div class="col-sm-6 col-xl-3">
@@ -77,6 +52,33 @@
                 </div>
             </div>
         </div>
+    @endslot
+    @slot('filters')
+        <div class="col-md-4 col-12">
+            <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0"><i class="ti ti-search text-muted"></i></span>
+                <input type="text" name="search" class="form-control border-start-0" placeholder="Cari nama/WA..." value="{{ request('search') }}">
+            </div>
+        </div>
+        <div class="col-md-3 col-12">
+            <select name="status" class="form-select">
+                <option value="">Semua Status</option>
+                <option value="New" {{ request('status') == 'New' ? 'selected' : '' }}>New</option>
+                <option value="In Progress" {{ request('status') == 'In Progress' ? 'selected' : '' }}>In Progress</option>
+                <option value="Responded" {{ request('status') == 'Responded' ? 'selected' : '' }}>Responded</option>
+                <option value="Converted" {{ request('status') == 'Converted' ? 'selected' : '' }}>Converted</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-12 d-flex gap-2">
+            <button type="submit" class="btn btn-primary"><i class="ti ti-filter"></i> Terapkan</button>
+            <a href="{{ route('crm-leads.index') }}" class="btn btn-subtle-primary px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
+        </div>
+    @endslot
+    @slot('exports')
+        <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.location.href='{{ route('crm-leads.index') }}?export=xls'"><i class="ti ti-file-spreadsheet"></i> .xls</a>
+        <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.print()"><i class="ti ti-printer"></i> Print</a>
+    @endslot
+    @slot('table')
         <table class="table table-hover align-middle mb-0 table-ead">
             <thead class="table-light">
                 <tr>

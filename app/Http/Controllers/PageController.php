@@ -24,13 +24,11 @@ class PageController extends Controller
             $query->where('is_active', $request->status === 'active');
         }
 
-        $pages = $query->paginate(10);
+        $pages = $query->get();
 
         if ($request->ajax()) {
             return response()->json([
                 'html' => view('settings.pages.partials.page_rows', compact('pages'))->render(),
-                'next_page' => $pages->nextPageUrl(),
-                'has_more' => $pages->hasMorePages(),
             ]);
         }
 

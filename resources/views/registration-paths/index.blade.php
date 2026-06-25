@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-@component('components.data-page-layout')
+@component('components.data-page-layout', ['data' => $paths])
     @slot('breadcrumbs', [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Jalur Pendaftaran', 'active' => true],

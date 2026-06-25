@@ -39,6 +39,8 @@ class DatabaseSeeder extends Seeder
             PaketSoalSeeder::class,
             CrmLeadSeeder::class,
             CrmLeadMenuSeeder::class,
+            LandingPageMenuSeeder::class,
+            PeriodePermissionSeeder::class,
             TestDataStikesSeeder::class,
             LandingPageSeeder::class,
             LandingPageSubMenuSeeder::class,

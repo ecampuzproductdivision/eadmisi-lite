@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-@component('components.data-page-layout')
+@component('components.data-page-layout', ['data' => $templates])
     @slot('breadcrumbs', [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Settings', 'url' => '#'],
@@ -58,15 +58,20 @@
                 @endif
             </tbody>
         </table>
-    @endslot
-    @slot('pagination')
-        <div id="pagination-container">
-            @if($templates->hasPages())
-                {{ $templates->links() }}
-            @endif
+        <div id="loading-spinner" class="d-none text-center py-3">
+            <div class="spinner-border text-primary" role="status" style="width: 1.5rem; height: 1.5rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
         </div>
     @endslot
 @endcomponent
+
+@include('components.infinite-scroll-script', [
+    'tableBodyId' => 'template-table-body',
+    'spinnerId' => 'loading-spinner',
+    'nextPageUrl' => $templates->nextPageUrl(),
+    'hasMore' => $templates->hasMorePages(),
+])
 
 <!-- Modal Tambah Template -->
 <div class="modal fade" id="modalTambahTemplate" tabindex="-1" aria-hidden="true">

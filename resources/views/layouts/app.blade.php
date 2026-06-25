@@ -260,12 +260,12 @@
 /* When inside the scrollable container, make thead sticky */
 .data-page-table-scroll .table thead {
   position: sticky;
-  top: 0;
+  top: 39px;
   z-index: 10;
 }
 .data-page-table-scroll .table thead th {
   position: sticky;
-  top: 0;
+  top: 39px;
   z-index: 10;
   background-color: #f8fafc;
   box-shadow: 0 2px 2px -1px rgba(0,0,0,0.1);
@@ -273,6 +273,20 @@
 [data-bs-theme="dark"] .data-page-table-scroll .table thead th {
   background-color: #1e293b;
   box-shadow: 0 2px 2px -1px rgba(0,0,0,0.3);
+}
+/* Showing info row sticky inside scrollable table container */
+.data-page-table-scroll .showing-info-row {
+  position: sticky;
+  top: 0;
+  z-index: 11;
+  background-color: var(--bs-card-bg, #ffffff);
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0 !important;
+  border-bottom: 1px solid var(--bs-border-color, #e2e8f0);
+}
+[data-bs-theme="dark"] .data-page-table-scroll .showing-info-row {
+  background-color: var(--bs-card-bg, #1e293b);
 }
 /* === Consistent Table Styling === */
 .table-ead tbody td {

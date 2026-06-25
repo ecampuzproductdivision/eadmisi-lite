@@ -100,6 +100,11 @@
         </div>
     </div>
 
+    {{-- Cards section (outside main card) --}}
+    @if(isset($cards))
+        {{ $cards }}
+    @endif
+
     {{-- Main Card: Filters + Table (merged) --}}
     <div class="card border-1 shadow-sm px-4 py-4 data-page-card">
         {{-- Filter & Export Row (Non-scrollable) --}}
@@ -119,7 +124,36 @@
         {{-- Table Content (Scrollable) --}}
         @if(isset($table))
             <div class="table-responsive data-page-table-scroll">
+                @if(isset($showingInfo))
+                    <div class="showing-info-row d-flex align-items-center justify-content-between">
+                        <div>
+                            <i class="ti ti-database me-1"></i>
+                            <strong>{!! $showingInfo !!}</strong>
+                        </div>
+                        @if(isset($spinner))
+                            <div id="{{ $spinnerId ?? 'loading-spinner' }}" class="d-none">
+                                <div class="spinner-border text-primary" role="status" style="width: 1.5rem; height: 1.5rem;">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                @elseif(isset($data))
+                    @php
+                        $dataCount = method_exists($data, 'total') ? $data->total() : $data->count();
+                        $dataShowing = $data->count();
+                    @endphp
+                    <div class="showing-info-row d-flex align-items-center justify-content-between">
+                        <div>
+                            <i class="ti ti-database me-1"></i>
+                            <strong>Showing <span id="showing-count">{{ $dataShowing }}</span> from <span id="total-count">{{ $dataCount }}</span> data</strong>
+                        </div>
+                    </div>
+                @endif
                 {{ $table }}
+                @if(isset($sentinel))
+                    <div id="{{ $sentinelId ?? 'scroll-sentinel' }}" class="text-center py-2"></div>
+                @endif
             </div>
         @else
             <p class="text-muted mb-0 text-center py-4">No table content provided.</p>

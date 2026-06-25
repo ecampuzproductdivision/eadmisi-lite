@@ -10,10 +10,19 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $users = User::with('roles')->paginate(10);
         $roles = Role::where('status', 'active')->get();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('settings.users.partials.user_rows', compact('users'))->render(),
+                'next_page' => $users->nextPageUrl(),
+                'has_more' => $users->hasMorePages(),
+            ]);
+        }
+
         return view('settings.users.index', compact('users', 'roles'));
     }
 

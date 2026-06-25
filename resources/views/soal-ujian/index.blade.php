@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-@component('components.data-page-layout')
+@component('components.data-page-layout', ['data' => $pakets])
     @slot('breadcrumbs', [
         ['label' => 'Home', 'url' => route('home')],
         ['label' => 'Settings', 'url' => '#'],
@@ -60,21 +60,20 @@
             </tbody>
         </table>
 
-        <div id="loading-spinner" class="text-center py-4 d-none">
-            <div class="spinner-border text-danger" role="status" style="width: 2rem; height: 2rem;">
+        <div id="loading-spinner" class="text-center py-3 d-none">
+            <div class="spinner-border text-primary" role="status" style="width: 1.5rem; height: 1.5rem;">
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>
-
-    @endslot
-    @slot('pagination')
-        <div id="pagination-container">
-            @if($pakets->hasPages())
-                {{ $pakets->links() }}
-            @endif
-        </div>
     @endslot
 @endcomponent
+
+@include('components.infinite-scroll-script', [
+    'tableBodyId' => 'paket-table-body',
+    'spinnerId' => 'loading-spinner',
+    'nextPageUrl' => $pakets->nextPageUrl(),
+    'hasMore' => $pakets->hasMorePages(),
+])
 
 <!-- Modal Tambah Paket -->
 <div class="modal fade" id="modalTambahPaket" tabindex="-1" aria-hidden="true">
@@ -112,57 +111,3 @@
 
 <!-- Modal Edit Package (rendered per row) is inside paket_rows.blade.php -->
 @endsection
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  let nextPageUrl = '{{ $pakets->nextPageUrl() }}';
-  let hasMore = {{ $pakets->hasMorePages() ? 'true' : 'false' }};
-  let isLoading = false;
-
-  const spinner = document.getElementById('loading-spinner');
-  const paginationContainer = document.getElementById('pagination-container');
-  const tableBody = document.getElementById('paket-table-body');
-
-  if (paginationContainer) {
-    paginationContainer.classList.add('d-none');
-  }
-
-  function handleScroll() {
-    if (isLoading || !hasMore || !nextPageUrl) return;
-    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100) {
-      loadMore();
-    }
-  }
-
-  function loadMore() {
-    isLoading = true;
-    spinner.classList.remove('d-none');
-
-    fetch(nextPageUrl, {
-      headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.html) {
-        const tempDiv = document.createElement('tbody');
-        tempDiv.innerHTML = data.html;
-        const rows = tempDiv.querySelectorAll('tr');
-        rows.forEach(row => tableBody.appendChild(row));
-      }
-      nextPageUrl = data.next_page;
-      hasMore = data.has_more;
-      isLoading = false;
-      spinner.classList.add('d-none');
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      isLoading = false;
-      spinner.classList.add('d-none');
-    });
-  }
-
-  window.addEventListener('scroll', handleScroll);
-});
-</script>
-@endpush

@@ -9,41 +9,28 @@ use App\Models\Wawancara;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-/**
- * WawancaraController - Manages interview scheduling and results for applicants.
- *
- * Only shows registrations where the Registration Path has gunakan_wawancara = true.
- * Business rules:
- * - Setting status_wawancara to 'Tidak Lolos' overrides any exam score.
- * - Scheduling updates sync to the applicant portal immediately.
- */
 class WawancaraController extends Controller
 {
-    /**
-     * Display a list of applicants needing/managing interview scheduling.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        // Get all registration paths that use interviews
         $pathIds = RegistrationPath::where('gunakan_wawancara', true)->pluck('id');
 
-        // Get registrations for those paths, with wawancara data
         $registrations = Registration::whereIn('registration_path_id', $pathIds)
-            ->with([
-                'user',
-                'registrationPath',
-                'wawancara',
-                'programStudi1',
-            ])
+            ->with(['user', 'registrationPath', 'wawancara', 'programStudi1'])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('wawancara.partials.wawancara_rows', compact('registrations'))->render(),
+                'next_page' => $registrations->nextPageUrl(),
+                'has_more' => $registrations->hasMorePages(),
+            ]);
+        }
 
         return view('wawancara.index', compact('registrations'));
     }
 
-    /**
-     * Store or update interview schedule (Date, Time, Location).
-     */
     public function storeSchedule(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -55,13 +42,10 @@ class WawancaraController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        // Update or create wawancara record
-        $wawancara = Wawancara::updateOrCreate(
+        Wawancara::updateOrCreate(
             ['pendaftaran_id' => $request->pendaftaran_id],
             [
                 'tanggal_wawancara' => $request->tanggal_wawancara,
@@ -77,10 +61,6 @@ class WawancaraController extends Controller
             ->with('success', 'Jadwal wawancara berhasil disimpan.');
     }
 
-    /**
-     * Store interview result (status + notes).
-     * If status is 'Tidak Lolos', the applicant is overridden as failed.
-     */
     public function storeHasil(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -90,12 +70,10 @@ class WawancaraController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $wawancara = Wawancara::updateOrCreate(
+        Wawancara::updateOrCreate(
             ['pendaftaran_id' => $request->pendaftaran_id],
             [
                 'status_wawancara'    => $request->status_wawancara,

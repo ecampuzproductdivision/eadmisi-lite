@@ -91,14 +91,14 @@
                         <div class="text-center">
                             <a href="/" class="fs-2 fw-bold d-flex align-items-center gap-2 justify-content-center mb-4 text-decoration-none">
                                 <img src="{{ asset('assets/images/brand/logo/logo-light.png') }}" class="brand-logo-img" width="36" alt="" />
-                                <span class="site-logo-text">Akademik</span>
+                                <span class="site-logo-text">eAdmisi</span>
                             </a>
-                            <h1 class="mb-1">Lengkapi Pendaftaran</h1>
-                            <p class="mb-0">
+                            <h1 class="mb-1">Selamat Datang di Portal eAdmisi</h1>
+                            <p class="mb-0 text-muted">
                                 @if($path)
-                                    Daftar jalur <strong>{{ $path->name }}</strong>
+                                    Daftarkan akun portal eAdmisi Anda untuk memulai proses pendaftaran/admisi jalur <strong>{{ $path->name }}</strong>.
                                 @else
-                                    Isi data diri untuk membuat akun pendaftaran
+                                    Isi data diri untuk membuat akun portal eAdmisi Anda dan memulai proses pendaftaran/admisi.
                                 @endif
                             </p>
                         </div>

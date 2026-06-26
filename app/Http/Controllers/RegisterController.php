@@ -50,9 +50,28 @@ class RegisterController extends Controller
             'pilihan_prodi.2' => 'nullable|exists:program_studis,id',
         ]);
 
-        $path = RegistrationPath::with(['programStudi', 'formPendaftaran.fields' => function ($q) {
+        $path = RegistrationPath::with(['programStudi', 'templateBerkas.syaratDokumens', 'formPendaftaran.fields' => function ($q) {
             $q->active()->ordered();
         }])->findOrFail($request->jalur_id);
+
+        // Validate document berkas if required
+        if ($path->is_upload_berkas) {
+            foreach ($path->syaratBerkas as $berkas) {
+                if ($berkas->status_wajib) {
+                    $request->validate([
+                        'dokumen_berkas.' . $berkas->id => 'required|file|max:' . ($berkas->max_size ?? 2048),
+                    ], [], [
+                        'dokumen_berkas.' . $berkas->id => $berkas->nama_syarat
+                    ]);
+                } else {
+                    $request->validate([
+                        'dokumen_berkas.' . $berkas->id => 'nullable|file|max:' . ($berkas->max_size ?? 2048),
+                    ], [], [
+                        'dokumen_berkas.' . $berkas->id => $berkas->nama_syarat
+                    ]);
+                }
+            }
+        }
 
         // Build dynamic validation rules from form fields
         $dynamicRules = [];
@@ -158,7 +177,9 @@ class RegisterController extends Controller
                 'registration_path_id' => $path->id,
                 'program_studi_1_id' => $request->pilihan_prodi[1] ?? null,
                 'program_studi_2_id' => $request->pilihan_prodi[2] ?? null,
-                'status' => 'submitted',
+                'memerlukan_ujian' => $path->is_ujian_online ? true : false,
+                'memerlukan_wawancara' => $path->is_wawancara ? true : false,
+                'status' => $path->is_upload_berkas ? 'documents_uploaded' : 'submitted',
             ];
 
             // Map dynamic fields to registration columns if they match known fields
@@ -211,7 +232,26 @@ class RegisterController extends Controller
                 }
             }
 
-            Registration::create($registrationData);
+            $registration = Registration::create($registrationData);
+
+            // Store files if uploaded
+            if ($path->is_upload_berkas && $request->hasFile('dokumen_berkas')) {
+                foreach ($request->file('dokumen_berkas') as $berkasId => $file) {
+                    if ($file->isValid()) {
+                        $berkas = \App\Models\SyaratDokumen::find($berkasId);
+                        if ($berkas) {
+                            $filePath = $file->store('registrations/' . $registration->id, 'public');
+                            $registration->documents()->create([
+                                'type' => \Illuminate\Support\Str::slug($berkas->nama_syarat, '_'),
+                                'original_name' => $file->getClientOriginalName(),
+                                'file_path' => $filePath,
+                                'mime_type' => $file->getMimeType(),
+                                'file_size' => $file->getSize(),
+                            ]);
+                        }
+                    }
+                }
+            }
 
             // STEP D: Auto-login the user
             Auth::login($user);

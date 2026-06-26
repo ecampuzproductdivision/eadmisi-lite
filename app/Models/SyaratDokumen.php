@@ -26,6 +26,11 @@ class SyaratDokumen extends Model
         'urutan' => 'integer',
     ];
 
+    public function getNamaSyaratAttribute()
+    {
+        return $this->nama_dokumen;
+    }
+
     public function templateBerkas()
     {
         return $this->belongsTo(TemplateBerkas::class, 'template_berkas_id');

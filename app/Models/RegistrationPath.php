@@ -101,6 +101,29 @@ class RegistrationPath extends Model
         return $this->jumlah_pilihan_prodi;
     }
 
+    public function getIsUploadBerkasAttribute()
+    {
+        return $this->gunakan_berkas;
+    }
+
+    public function getIsUjianOnlineAttribute()
+    {
+        return $this->gunakan_ujian;
+    }
+
+    public function getIsWawancaraAttribute()
+    {
+        return $this->gunakan_wawancara;
+    }
+
+    public function getSyaratBerkasAttribute()
+    {
+        if ($this->templateBerkas) {
+            return $this->templateBerkas->syaratDokumens;
+        }
+        return collect();
+    }
+
     /**
      * A RegistrationPath belongs to a PaketSoal (optional).
      */

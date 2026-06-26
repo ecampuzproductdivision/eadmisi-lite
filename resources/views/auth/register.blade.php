@@ -286,22 +286,6 @@
                                         </div>
                                     @endif
 
-                                    <!-- ═══ DYNAMIC DOCUMENT UPLOAD SECTION ═══ -->
-                                    @if($path && $path->is_upload_berkas)
-                                        <div class="section-header d-flex align-items-center gap-2 mb-3 mt-4">
-                                            <i class="ti ti-upload"></i> Unggah Berkas Persyaratan
-                                        </div>
-                                        <p class="text-muted small mb-3">Silakan unggah berkas persyaratan yang diperlukan untuk pendaftaran jalur ini.</p>
-                                        <div class="row g-3 mb-4">
-                                            @foreach($path->syaratBerkas as $berkas)
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label">Unggah {{ $berkas->nama_syarat }} (Format: {{ $berkas->ekstensi_diizinkan }} / Max: {{ $berkas->max_size }} KB) @if($berkas->status_wajib) <span class="text-danger">*</span> @endif</label>
-                                                    <input type="file" name="dokumen_berkas[{{ $berkas->id }}]" class="form-control" {{ $berkas->status_wajib ? 'required' : '' }}>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @endif
-
                                     <!-- ═══ PROGRAM STUDI PILIHAN DROPDOWN ═══ -->
                                     @if($path && $path->jumlah_pilihan_prodi > 0)
                                         <div class="section-header d-flex align-items-center gap-2 mb-3 mt-4">

@@ -120,7 +120,7 @@
     <div class="card-body p-4">
       <form action="{{ route('rps.index') }}" method="GET" class="row g-3 mb-4">
         <!-- Search -->
-        <div class="col-md-4 col-12">
+        <div class="col-md-3 col-12">
           <label class="form-label small text-muted fw-bold">Cari Mata Kuliah</label>
           <div class="input-group">
             <span class="input-group-text bg-transparent border-end-0"><i class="ti ti-search text-muted"></i></span>

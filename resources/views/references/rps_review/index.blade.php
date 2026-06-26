@@ -108,7 +108,7 @@
             <option value="DITOLAK" {{ request('status') === 'DITOLAK' ? 'selected' : '' }}>Ditolak</option>
           </select>
         </div>
-        <div class="col-md-2 col-12 d-flex gap-2">
+        <div class="col-md-3 col-12 d-flex gap-2">
           <button type="submit" class="btn btn-dark py-2"><i class="ti ti-filter me-1"></i> Filter</button>
           <a href="{{ route('rps-review.index') }}" class="btn btn-light py-2 px-3" title="Reset"><i class="ti ti-refresh"></i></a>
         </div>

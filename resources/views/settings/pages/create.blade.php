@@ -42,20 +42,20 @@
 
                 <div class="row g-3">
                     {{-- Row 1: Page Name, Page Code, Status --}}
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="page_name" class="form-label">Page Name <span class="text-danger">*</span></label>
                         <input type="text" name="page_name" id="page_name" class="form-control" placeholder="e.g. Sales Report" value="{{ old('page_name') }}" required>
                         <div class="invalid-feedback">Please enter the page name.</div>
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="page_code" class="form-label">Page Code <span class="text-danger">*</span></label>
                         <input type="text" name="page_code" id="page_code" class="form-control" placeholder="e.g. PAGE_SALES_REPORT" value="{{ old('page_code') }}" required>
                         <small class="text-muted">Must be unique, uppercase, with no spaces.</small>
                         <div class="invalid-feedback">Please enter a unique uppercase page code.</div>
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="is_active" class="form-label">Status <span class="text-danger">*</span></label>
                         <select name="is_active" id="is_active" class="form-select" required>
                             <option value="1" {{ old('is_active', '1') == '1' ? 'selected' : '' }}>Active (Enforce permissions)</option>
@@ -65,7 +65,7 @@
                     </div>
 
                     {{-- Row 2: Parent Menu, Route Path, Component Name --}}
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="menu_id" class="form-label">Associated Sidebar Menu <small class="text-muted">(Optional)</small></label>
                         <select name="menu_id" id="menu_id" class="form-select">
                             <option value="">None / Standalone Page</option>
@@ -76,13 +76,13 @@
                         <small class="text-muted">Used to render this page in a specific navigation category.</small>
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="route_path" class="form-label">Route Path / URI <small class="text-muted">(Optional)</small></label>
                         <input type="text" name="route_path" id="route_path" class="form-control" placeholder="e.g. /sales/report" value="{{ old('route_path') }}">
                         <small class="text-muted">Required if you want the permission middleware to dynamically authorize this path.</small>
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="component_name" class="form-label">Component / Controller <small class="text-muted">(Optional)</small></label>
                         <input type="text" name="component_name" id="component_name" class="form-control" placeholder="e.g. SalesReportController" value="{{ old('component_name') }}">
                     </div>

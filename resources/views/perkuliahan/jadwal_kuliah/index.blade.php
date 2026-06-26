@@ -178,7 +178,7 @@
             @endforeach
           </select>
         </div>
-        <div class="col-md-2 col-12 d-flex gap-2">
+        <div class="col-md-3 col-12 d-flex gap-2">
           <button type="submit" class="btn btn-primary flex-fill" style="border-radius:10px;">
             <i class="ti ti-search me-1"></i>Filter
           </button>

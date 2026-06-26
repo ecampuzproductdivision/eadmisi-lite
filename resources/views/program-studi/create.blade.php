@@ -44,21 +44,21 @@
 
                 <div class="row g-3">
                     {{-- Row 1: Kode Prodi, Label NIM, Label Prodi No Pendaftaran --}}
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="kode_prodi" class="form-label fw-semibold">Kode Program Studi <span class="text-danger">*</span></label>
                         <input type="text" name="kode_prodi" id="kode_prodi" class="form-control @error('kode_prodi') is-invalid @enderror" placeholder="Contoh: TI, AK, MN" value="{{ old('kode_prodi') }}" required maxlength="20">
                         <div class="form-text">Kode unik untuk program studi (huruf kapital, tanpa spasi).</div>
                         @error('kode_prodi') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="label_nim" class="form-label fw-semibold">Label NIM <span class="text-danger">*</span></label>
                         <input type="text" name="label_nim" id="label_nim" class="form-control @error('label_nim') is-invalid @enderror" placeholder="Contoh: TI, AKT" value="{{ old('label_nim') }}" required maxlength="50">
                         <div class="form-text">Label untuk generating Nomor Induk Mahasiswa.</div>
                         @error('label_nim') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="label_prodi_no_pendaftaran" class="form-label fw-semibold">Label Prodi No Pendaftaran</label>
                         <input type="text" name="label_prodi_no_pendaftaran" id="label_prodi_no_pendaftaran" class="form-control @error('label_prodi_no_pendaftaran') is-invalid @enderror" placeholder="Opsional" value="{{ old('label_prodi_no_pendaftaran') }}" maxlength="50">
                         <div class="form-text">Label untuk nomor pendaftaran (opsional).</div>
@@ -66,19 +66,19 @@
                     </div>
 
                     {{-- Row 2: Nama Prodi, Jurusan, Jenjang --}}
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="nama_prodi" class="form-label fw-semibold">Nama Program Studi <span class="text-danger">*</span></label>
                         <input type="text" name="nama_prodi" id="nama_prodi" class="form-control @error('nama_prodi') is-invalid @enderror" placeholder="Contoh: Teknik Informatika" value="{{ old('nama_prodi') }}" required maxlength="200">
                         @error('nama_prodi') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="jurusan" class="form-label fw-semibold">Jurusan Program Studi <span class="text-danger">*</span></label>
                         <input type="text" name="jurusan" id="jurusan" class="form-control @error('jurusan') is-invalid @enderror" placeholder="Contoh: Teknik Informatika, Akuntansi" value="{{ old('jurusan') }}" required maxlength="200">
                         @error('jurusan') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="jenjang_akademik" class="form-label fw-semibold">Jenjang Akademik <span class="text-danger">*</span></label>
                         <select name="jenjang_akademik" id="jenjang_akademik" class="form-select @error('jenjang_akademik') is-invalid @enderror" required>
                             <option value="">Pilih jenjang...</option>
@@ -92,7 +92,7 @@
                     </div>
 
                     {{-- Row 3: Program, Kelompok, Status Aktif --}}
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="program" class="form-label fw-semibold">Program <span class="text-danger">*</span></label>
                         <select name="program" id="program" class="form-select @error('program') is-invalid @enderror" required>
                             <option value="">Pilih program...</option>
@@ -102,7 +102,7 @@
                         @error('program') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label class="form-label fw-semibold d-block">Kelompok <span class="text-danger">*</span></label>
                         <div class="d-flex gap-4 mt-2">
                             <div class="form-check">
@@ -117,7 +117,7 @@
                         @error('kelompok') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label class="form-label fw-semibold d-block">Status Aktif <span class="text-danger">*</span></label>
                         <div class="d-flex gap-4 mt-2">
                             <div class="form-check">

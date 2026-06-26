@@ -285,7 +285,7 @@
                             </div>
 
                             <!-- Durasi (Menit) -->
-                            <div class="col-md-4 col-12">
+                            <div class="col-md-3 col-12">
                               <label class="form-label small fw-bold text-slate-700">Durasi Tatap Muka (Menit) <span class="text-danger">*</span></label>
                               <input type="number" name="durasi_menit" class="form-control" value="{{ $p->durasi_menit }}" required {{ $rps->status !== 'DRAFT' ? 'disabled' : '' }}>
                             </div>
@@ -503,7 +503,7 @@
                         </div>
 
                         <!-- Waktu Pelaksanaan -->
-                        <div class="col-md-4 col-12">
+                        <div class="col-md-3 col-12">
                           <label class="form-label small fw-bold text-muted">Waktu Pelaksanaan</label>
                           <input type="text" name="waktu_pelaksanaan[{{ $pen->id_rps_penilaian }}]" class="form-control" value="{{ $pen->waktu_pelaksanaan }}" placeholder="Misal: Pertemuan 8, UTS, Akhir semester..." {{ $rps->status !== 'DRAFT' ? 'disabled' : '' }}>
                         </div>

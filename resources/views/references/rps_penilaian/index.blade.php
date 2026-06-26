@@ -63,7 +63,7 @@
   <div class="card border-1 shadow-sm mb-4" style="border-radius: 16px;">
     <div class="card-body p-3 p-md-4">
       <form action="{{ route('rps-penilaian.index') }}" method="GET" class="row g-3 align-items-end">
-        <div class="col-md-4 col-12">
+        <div class="col-md-3 col-12">
           <label class="form-label small text-muted fw-bold">Cari Mata Kuliah</label>
           <div class="input-group">
             <span class="input-group-text bg-transparent border-end-0"><i class="ti ti-search text-muted"></i></span>
@@ -91,7 +91,7 @@
             @endforeach
           </select>
         </div>
-        <div class="col-md-2 col-12 d-flex gap-2">
+        <div class="col-md-3 col-12 d-flex gap-2">
           <button type="submit" class="btn btn-dark py-2"><i class="ti ti-filter me-1"></i> Filter</button>
           <a href="{{ route('rps-penilaian.index') }}" class="btn btn-light py-2 px-3" title="Reset"><i class="ti ti-refresh"></i></a>
         </div>

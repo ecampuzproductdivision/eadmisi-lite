@@ -42,19 +42,19 @@
 
                 <div class="row g-3">
                     {{-- Row 1: Menu Name, Menu Code, Status --}}
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="menu_name" class="form-label">Menu Name <span class="text-danger">*</span></label>
                         <input type="text" name="menu_name" id="menu_name" class="form-control" placeholder="e.g. Invoicing" value="{{ old('menu_name') }}" required>
                         <div class="invalid-feedback">Please enter the menu name.</div>
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="menu_code" class="form-label">Menu Code <span class="text-danger">*</span></label>
                         <input type="text" name="menu_code" id="menu_code" class="form-control" placeholder="e.g. INVOICING" value="{{ old('menu_code') }}" required>
                         <div class="invalid-feedback">Please enter a unique menu code.</div>
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="is_active" class="form-label">Status <span class="text-danger">*</span></label>
                         <select name="is_active" id="is_active" class="form-select" required>
                             <option value="1" {{ old('is_active', '1') == '1' ? 'selected' : '' }}>Show in Sidebar</option>
@@ -64,7 +64,7 @@
                     </div>
 
                     {{-- Row 2: Parent Menu, Icon, URL --}}
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="parent_id" class="form-label">Parent Menu <small class="text-muted">(Optional)</small></label>
                         <select name="parent_id" id="parent_id" class="form-select">
                             <option value="">None (Root Menu)</option>
@@ -74,7 +74,7 @@
                         </select>
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="icon" class="form-label">Icon Class <small class="text-muted">(Optional)</small></label>
                         <div class="input-group">
                             <span class="input-group-text bg-transparent"><i class="ti ti-settings text-muted" id="icon-preview"></i></span>
@@ -83,14 +83,14 @@
                         <small class="text-muted">Uses Tabler Icons. Example: <code>ti-user</code>, <code>ti-coin</code>.</small>
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="url" class="form-label">URL Path</label>
                         <input type="text" name="url" id="url" class="form-control" placeholder="e.g. /finance/invoicing" value="{{ old('url') }}">
                         <small class="text-muted">Leave empty for folder menus that only serve as dropdown toggles.</small>
                     </div>
 
                     {{-- Row 3: Sort Order (fit in 1/3 width) --}}
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="sort_order" class="form-label">Sort Order <span class="text-danger">*</span></label>
                         <input type="number" name="sort_order" id="sort_order" class="form-control" value="{{ old('sort_order', 0) }}" required>
                         <div class="invalid-feedback">Please specify the sorting weight.</div>

@@ -15,7 +15,7 @@
           </a>
       @endslot
       @slot('filters')
-          <div class="col-md-4 col-12">
+          <div class="col-md-3 col-12">
               <div class="input-group">
                   <span class="input-group-text bg-transparent border-end-0"><i class="ti ti-search text-muted"></i></span>
                   <input type="text" name="search" class="form-control border-start-0" placeholder="Cari..." value="{{ request('search') }}">
@@ -28,7 +28,7 @@
                   <option value="inactive">Nonaktif</option>
               </select>
           </div>
-          <div class="col-md-2 col-12 d-flex gap-2">
+            <div class="col-md-3 col-12 d-flex gap-2">
               <button type="submit" class="btn btn-primary"><i class="ti ti-filter"></i> Terapkan</button>
               <a href="{{ url()->current() }}" class="btn btn-subtle-primary px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
           </div>
@@ -111,13 +111,13 @@
         <div class="card border-1 shadow-sm px-4 py-4 data-page-card">
             {{-- Filter & Export Row (Non-scrollable) --}}
             <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-end mb-4 data-page-filters">
-                <div class="col-md-8 col-12">
+                <div class="col-md-10 col-12">
                     <div class="row g-2">
                         {{ $filters ?? '' }}
                     </div>
                 </div>
                 @if(isset($exports))
-                    <div class="col-md-4 col-12 d-flex gap-2 justify-content-md-end">
+                    <div class="col-md-2 col-12 d-flex gap-2 justify-content-md-end">
                         {{ $exports }}
                     </div>
                 @endif

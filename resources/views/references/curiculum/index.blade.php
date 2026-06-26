@@ -15,7 +15,7 @@
         </a>
     @endslot
     @slot('filters')
-        <div class="col-md-4 col-12">
+        <div class="col-md-3 col-12">
             <div class="input-group">
                 <span class="input-group-text bg-transparent border-end-0"><i class="ti ti-search text-muted"></i></span>
                 <input type="text" name="search" class="form-control border-start-0" placeholder="Cari kurikulum..." value="{{ request('search') }}">

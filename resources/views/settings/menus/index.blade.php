@@ -21,7 +21,7 @@
                 <input type="text" name="search" class="form-control border-start-0" placeholder="Search menus..." value="{{ request('search') }}">
             </div>
         </div>
-        <div class="col-md-4 col-12 d-flex gap-2">
+        <div class="col-md-3 col-12 d-flex gap-2">
             <button type="submit" class="btn btn-primary"><i class="ti ti-filter"></i> Filter</button>
             <a href="{{ route('menus.index') }}" class="btn btn-subtle-primary px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
         </div>

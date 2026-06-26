@@ -42,20 +42,20 @@
 
                 <div class="row g-3">
                     {{-- Row 1: Role Name, Role Code, Status --}}
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="role_name" class="form-label">Role Name <span class="text-danger">*</span></label>
                         <input type="text" name="role_name" id="role_name" class="form-control" placeholder="e.g. Finance Officer" value="{{ old('role_name') }}" required>
                         <div class="invalid-feedback">Please enter the role name.</div>
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="role_code" class="form-label">Role Code <span class="text-danger">*</span></label>
                         <input type="text" name="role_code" id="role_code" class="form-control" placeholder="e.g. FINANCE_OFFICER" value="{{ old('role_code') }}" required>
                         <small class="text-muted">Must be unique, uppercase, with no spaces.</small>
                         <div class="invalid-feedback">Please enter a unique uppercase role code.</div>
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
                         <select name="status" id="status" class="form-select" required>
                             <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Active</option>

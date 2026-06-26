@@ -43,7 +43,7 @@
                 @csrf
 
                 <div class="row g-3">
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="kategori_jalur_id" class="form-label fw-semibold">Kategori Jalur</label>
                         <select name="kategori_jalur_id" id="kategori_jalur_id" class="form-select @error('kategori_jalur_id') is-invalid @enderror">
                             <option value="">Pilih kategori...</option>
@@ -54,14 +54,14 @@
                         @error('kategori_jalur_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="code" class="form-label fw-semibold">Kode Jalur <span class="text-danger">*</span></label>
                         <input type="text" name="code" id="code" class="form-control @error('code') is-invalid @enderror" placeholder="Contoh: SNBP, SNBT, MANDIRI" value="{{ old('code') }}" required maxlength="50">
                         <div class="form-text">Kode unik untuk jalur pendaftaran (huruf kapital, tanpa spasi).</div>
                         @error('code') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="name" class="form-label fw-semibold">Nama Jalur <span class="text-danger">*</span></label>
                         <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" placeholder="Contoh: Seleksi Nasional Berdasarkan Prestasi" value="{{ old('name') }}" required maxlength="200">
                         @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror

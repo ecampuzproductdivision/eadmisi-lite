@@ -25,7 +25,7 @@
                 <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Kadaluarsa</option>
             </select>
         </div>
-        <div class="col-md-2 col-12 d-flex gap-2">
+        <div class="col-md-3 col-12 d-flex gap-2">
             <button type="submit" class="btn btn-primary"><i class="ti ti-filter"></i> Terapkan</button>
             <a href="{{ route('settings.tagihan.index') }}" class="btn btn-subtle-primary px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
         </div>

@@ -42,19 +42,19 @@
 
                 <div class="row g-3">
                     {{-- Row 1: Name, Email, Status --}}
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
                         <input type="text" name="name" id="name" class="form-control" placeholder="e.g. John Doe" value="{{ old('name') }}" required>
                         <div class="invalid-feedback">Please enter the user's name.</div>
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
                         <input type="email" name="email" id="email" class="form-control" placeholder="e.g. johndoe@company.com" value="{{ old('email') }}" required>
                         <div class="invalid-feedback">Please enter a valid email address.</div>
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="status" class="form-label">Account Status <span class="text-danger">*</span></label>
                         <select name="status" id="status" class="form-select" required>
                             <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Active</option>
@@ -64,13 +64,13 @@
                     </div>
 
                     {{-- Row 2: Password, Confirm Password --}}
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
                         <input type="password" name="password" id="password" class="form-control" required>
                         <div class="invalid-feedback">Please enter a password.</div>
                     </div>
 
-                    <div class="col-md-4 col-12">
+                    <div class="col-md-3 col-12">
                         <label for="password_confirmation" class="form-label">Confirm Password <span class="text-danger">*</span></label>
                         <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
                         <div class="invalid-feedback">Please confirm the password.</div>

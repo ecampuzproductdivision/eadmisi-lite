@@ -403,24 +403,4 @@
     }
   }
 </style>
-@endsection</｜｜DSML｜｜parameter>
-<parameter name="path" string="true">resources/views/daftar-pmb/registration-steps.blade.php</parameter>
-<parameter name="task_progress" string="true">- [x] Read current auth/register.blade.php views
-- [x] Locate main welcome card header text
-- [x] Replace "Akademik" with "eAdmisi" and rebrand header titles
-- [x] Read TemplateBerkas and SyaratDokumen model relations
-- [x] Create migration for exam and interview fields in registrations table
-- [x] Eager load syaratBerkas on RegistrationPath
-- [x] Fix duplicated accessors in RegistrationPath
-- [x] Implement conditional checks and looping for official document requirements in registration view
-- [x] Process file uploads securely on RegisterController and persist Online Exam / Interview states
-- [x] Read HomeController.php to understand student dashboard logic
-- [x] Read RiwayatPendaftaranController.php to find student dashboard view
-- [x] Read student portal dashboard view in riwayat/index.blade.php
-- [x] Read registration steps view in registration-steps.blade.php
-- [x] Read master index.blade.php under daftar-pmb
-- [x] Clean up register form to remove public upload loops
-- [x] Refactor stepper view to use dynamic step logic with BO settings
-- [ ] Update controller to load syaratBerkas and templateBerkas relations for stepper
-- [ ] Commit and Push changes to the repository</｜｜DSML｜｜parameter>
-</｜｜DSML｜｜write_to_file>
+@endsection

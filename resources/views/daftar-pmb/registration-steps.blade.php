@@ -1,12 +1,27 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $path = $path ?? null;
+    $registration = $registration ?? null;
+    $currentStep = $currentStep ?? 1;
+    $hasExam = $path && $path->is_ujian_online;
+    $totalSteps = $hasExam ? 5 : 4;
+    $berkasList = $path && $path->templateBerkas && $path->templateBerkas->syaratDokumens
+        ? $path->templateBerkas->syaratDokumens : collect();
+@endphp
+
 <main class="p-6">
   <!-- Header -->
   <div class="row mb-5">
     <div class="col-12">
       <h2 class="fw-bold mb-2">Alur Pendaftaran PMB</h2>
       <p class="text-muted mb-0">Ikuti setiap tahapan secara berurutan. Tahap berikutnya akan terbuka otomatis setelah Anda menyelesaikan tahap sebelumnya.</p>
+      @if($path)
+        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill mt-2">
+          <i class="ti ti-road me-1"></i> {{ $path->name }}
+        </span>
+      @endif
     </div>
   </div>
 
@@ -14,6 +29,13 @@
     <div class="alert alert-success alert-dismissible fade show" role="alert">
       <i class="ti ti-circle-check fs-4 me-2"></i>
       {{ session('success') }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  @endif
+  @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="ti ti-alert-circle fs-4 me-2"></i>
+      {{ session('error') }}
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
   @endif
@@ -79,7 +101,7 @@
         </div>
 
         <!-- Step 2: Pilih Program Studi -->
-        <div class="step-item {{ $currentStep > 2 ? 'completed' : ($currentStep == 2 ? 'active' : ($currentStep == 1 && $registration ? 'locked' : 'locked')) }}" id="step2">
+        <div class="step-item {{ $currentStep > 2 ? 'completed' : ($currentStep == 2 ? 'active' : 'locked') }}" id="step2">
           <div class="step-indicator">
             <div class="step-circle {{ $currentStep > 2 ? 'bg-success' : ($currentStep == 2 ? 'bg-primary' : 'bg-light') }}">
               @if($currentStep > 2)
@@ -122,7 +144,7 @@
           </div>
         </div>
 
-        <!-- Step 3: Unggah Persyaratan -->
+        <!-- Step 3: Unggah Persyaratan (Dynamic dari BO settings) -->
         <div class="step-item {{ $currentStep > 3 ? 'completed' : ($currentStep == 3 ? 'active' : 'locked') }}" id="step3">
           <div class="step-indicator">
             <div class="step-circle {{ $currentStep > 3 ? 'bg-success' : ($currentStep == 3 ? 'bg-primary' : 'bg-light') }}">
@@ -148,12 +170,31 @@
               @endif
             </div>
             <h5 class="fw-bold mt-3">Unggah Persyaratan</h5>
-            <p class="text-muted mb-3">Upload dokumen yang diperlukan: foto formal, ijazah/SKHUN, kartu keluarga, dan akta kelahiran.</p>
+            <p class="text-muted mb-3">
+              @if($path && $path->is_upload_berkas && $berkasList->isNotEmpty())
+                Upload dokumen yang diperlukan: <strong>{{ $berkasList->pluck('nama_syarat')->implode(', ') }}</strong>.
+                @if($path->templateBerkas)
+                  @if($path->templateBerkas->ekstensi_diizinkan)
+                    <br><small>Format: {{ $path->templateBerkas->ekstensi_diizinkan }}, Maks: {{ $path->templateBerkas->max_size ?? 2048 }} KB</small>
+                  @endif
+                @endif
+              @elseif($path && $path->is_upload_berkas)
+                Upload dokumen persyaratan yang diperlukan sesuai ketentuan jalur ini.
+              @else
+                Jalur ini tidak memerlukan unggahan dokumen tambahan.
+              @endif
+            </p>
             
             @if($currentStep == 3)
-              <a href="{{ route('daftar-pmb.document.upload', $path?->code) }}" class="btn btn-primary">
-                <i class="ti ti-upload"></i> Unggah Dokumen <i class="ti ti-arrow-right"></i>
-              </a>
+              @if($path && $path->is_upload_berkas)
+                <a href="{{ route('daftar-pmb.document.upload', $path?->code) }}" class="btn btn-primary">
+                  <i class="ti ti-upload"></i> Unggah Dokumen <i class="ti ti-arrow-right"></i>
+                </a>
+              @else
+                <div class="alert alert-info py-2 small mb-0 d-inline-block">
+                  <i class="ti ti-info-circle me-1"></i> Jalur ini tidak memerlukan dokumen. Lanjut ke tahap berikutnya.
+                </div>
+              @endif
             @elseif($currentStep > 3)
               <div class="step-status text-success">
                 <i class="ti ti-circle-check me-1"></i> Tahap ini telah diselesaikan
@@ -166,11 +207,58 @@
           </div>
         </div>
 
-        <!-- Step 4: Selesai -->
-        <div class="step-item {{ $currentStep >= 4 ? 'completed' : 'locked' }}" id="step4">
+        @if($hasExam)
+        <!-- Step 4: Ujian Online (CBT) - ONLY if is_ujian_online = true -->
+        <div class="step-item {{ $currentStep > 4 ? 'completed' : ($currentStep == 4 ? 'active' : 'locked') }}" id="step4">
           <div class="step-indicator">
-            <div class="step-circle {{ $currentStep >= 4 ? 'bg-success' : 'bg-light' }}">
-              @if($currentStep >= 4)
+            <div class="step-circle {{ $currentStep > 4 ? 'bg-success' : ($currentStep == 4 ? 'bg-primary' : 'bg-light') }}">
+              @if($currentStep > 4)
+                <i class="ti ti-check text-white"></i>
+              @elseif($currentStep == 4)
+                <i class="ti ti-edit text-white"></i>
+              @else
+                <i class="ti ti-lock text-muted"></i>
+              @endif
+            </div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-header">
+              <span class="badge {{ $currentStep > 4 ? 'bg-success-subtle text-success' : ($currentStep == 4 ? 'bg-primary-subtle text-primary' : 'bg-secondary-subtle text-secondary') }} px-3 py-2 fw-semibold">Langkah 4</span>
+              @if($currentStep > 4)
+                <span class="badge bg-success-subtle text-success px-3 py-2"><i class="ti ti-check me-1"></i> Selesai</span>
+              @elseif($currentStep == 4)
+                <span class="badge bg-primary-subtle text-primary px-3 py-2"><i class="ti ti-loader me-1"></i> Sedang Aktif</span>
+              @else
+                <span class="badge bg-secondary-subtle text-secondary px-3 py-2"><i class="ti ti-lock me-1"></i> Terkunci</span>
+              @endif
+            </div>
+            <h5 class="fw-bold mt-3">Ujian Online (CBT)</h5>
+            <p class="text-muted mb-3">Silakan ikuti tes online sesuai jadwal yang ditentukan melalui menu Tes Online.</p>
+            
+            @if($currentStep == 4)
+              <a href="{{ route('daftar-pmb.exam.page', $path?->code) }}" class="btn btn-primary">
+                <i class="ti ti-edit"></i> Ikuti Tes Online <i class="ti ti-arrow-right"></i>
+              </a>
+            @elseif($currentStep > 4)
+              <div class="step-status text-success">
+                <i class="ti ti-circle-check me-1"></i> Tahap ini telah diselesaikan
+              </div>
+            @else
+              <div class="step-status text-muted">
+                <i class="ti ti-lock me-1"></i> Selesaikan tahap sebelumnya untuk membuka
+              </div>
+            @endif
+          </div>
+        </div>
+        @endif
+
+        <!-- Step Final: Selesai (dynamic step number) -->
+        @php $finalStep = $totalSteps; @endphp
+        <div class="step-item {{ $currentStep >= $totalSteps ? 'completed' : 'locked' }}" id="stepFinal">
+          <div class="step-indicator">
+            <div class="step-circle {{ $currentStep >= $totalSteps ? 'bg-success' : 'bg-light' }}">
+              @if($currentStep >= $totalSteps)
                 <i class="ti ti-check text-white"></i>
               @else
                 <i class="ti ti-lock text-muted"></i>
@@ -179,17 +267,23 @@
           </div>
           <div class="step-content">
             <div class="step-header">
-              <span class="badge {{ $currentStep >= 4 ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary' }} px-3 py-2 fw-semibold">Langkah 4</span>
-              @if($currentStep >= 4)
+              <span class="badge {{ $currentStep >= $totalSteps ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary' }} px-3 py-2 fw-semibold">Langkah {{ $finalStep }}</span>
+              @if($currentStep >= $totalSteps)
                 <span class="badge bg-success-subtle text-success px-3 py-2"><i class="ti ti-check me-1"></i> Selesai</span>
               @else
                 <span class="badge bg-secondary-subtle text-secondary px-3 py-2"><i class="ti ti-lock me-1"></i> Terkunci</span>
               @endif
             </div>
             <h5 class="fw-bold mt-3">Selesai</h5>
-            <p class="text-muted mb-3">Pendaftaran selesai. Silakan lanjut ke menu <strong>Tagihan</strong> untuk informasi pembayaran, lalu ikuti <strong>Tes Online</strong>.</p>
+            <p class="text-muted mb-3">
+              @if($hasExam)
+                Pendaftaran selesai. Silakan tunggu hasil pengumuman kelulusan.
+              @else
+                Pendaftaran selesai. Silakan lanjut ke menu Tagihan untuk penyelesaian administrasi.
+              @endif
+            </p>
             
-            @if($currentStep >= 4)
+            @if($currentStep >= $totalSteps)
               <div class="d-flex flex-wrap gap-2">
                 <a href="{{ route('daftar-pmb.review', $path?->code) }}" class="btn btn-success">
                   <i class="ti ti-eye"></i> Lihat Ringkasan
@@ -309,4 +403,24 @@
     }
   }
 </style>
-@endsection
+@endsection</｜｜DSML｜｜parameter>
+<parameter name="path" string="true">resources/views/daftar-pmb/registration-steps.blade.php</parameter>
+<parameter name="task_progress" string="true">- [x] Read current auth/register.blade.php views
+- [x] Locate main welcome card header text
+- [x] Replace "Akademik" with "eAdmisi" and rebrand header titles
+- [x] Read TemplateBerkas and SyaratDokumen model relations
+- [x] Create migration for exam and interview fields in registrations table
+- [x] Eager load syaratBerkas on RegistrationPath
+- [x] Fix duplicated accessors in RegistrationPath
+- [x] Implement conditional checks and looping for official document requirements in registration view
+- [x] Process file uploads securely on RegisterController and persist Online Exam / Interview states
+- [x] Read HomeController.php to understand student dashboard logic
+- [x] Read RiwayatPendaftaranController.php to find student dashboard view
+- [x] Read student portal dashboard view in riwayat/index.blade.php
+- [x] Read registration steps view in registration-steps.blade.php
+- [x] Read master index.blade.php under daftar-pmb
+- [x] Clean up register form to remove public upload loops
+- [x] Refactor stepper view to use dynamic step logic with BO settings
+- [ ] Update controller to load syaratBerkas and templateBerkas relations for stepper
+- [ ] Commit and Push changes to the repository</｜｜DSML｜｜parameter>
+</｜｜DSML｜｜write_to_file>

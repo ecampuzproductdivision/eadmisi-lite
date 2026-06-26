@@ -261,7 +261,9 @@ class RegistrationPathController extends Controller
         $path = null;
         $pathId = null;
         if ($pathCode) {
-            $path = RegistrationPath::where('code', $pathCode)->first();
+            $path = RegistrationPath::with('templateBerkas.syaratDokumens')
+                ->where('code', $pathCode)
+                ->first();
             $pathId = $path?->id;
         }
 
@@ -273,7 +275,11 @@ class RegistrationPathController extends Controller
         // Step 1: Biodata (draft without program_studi)
         // Step 2: Program Studi (draft with program_studi_1_id)
         // Step 3: Upload Dokumen (submitted)
-        // After submitting documents, user proceeds to Tagihan then Tes Online via separate menus
+        // Step 4: Ujian Online (CBT) - only if path has is_ujian_online
+        // Step Final: Selesai
+        $hasExam = $path && $path->is_ujian_online;
+        $totalSteps = $hasExam ? 5 : 4;
+
         $currentStep = 1;
         if ($registration) {
             if ($registration->status === 'draft' && $registration->program_studi_1_id) {
@@ -283,7 +289,11 @@ class RegistrationPathController extends Controller
                 $currentStep = 3; // Step 1 & 2 complete, step 3 (Upload) active
             }
             if (in_array($registration->status, ['documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted'])) {
-                $currentStep = 4; // All registration steps complete
+                if ($hasExam && $registration->status !== 'exam_completed') {
+                    $currentStep = 4; // Docs uploaded, but exam not done yet
+                } else {
+                    $currentStep = $totalSteps; // All steps complete
+                }
             }
         }
 

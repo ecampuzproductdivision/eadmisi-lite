@@ -286,6 +286,29 @@
                                         </div>
                                     @endif
 
+                                    <!-- ═══ PROGRAM STUDI PILIHAN DROPDOWN ═══ -->
+                                    @if($path && $path->jumlah_pilihan_prodi > 0)
+                                        <div class="section-header d-flex align-items-center gap-2 mb-3 mt-4">
+                                            <i class="ti ti-school"></i> Pilih Program Studi Pilihan
+                                        </div>
+                                        <p class="text-muted small mb-3">Pilih program studi yang ingin Anda ambil pada pendaftaran ini.</p>
+                                        <div class="row g-3 mb-4">
+                                            @for ($i = 1; $i <= $path->jumlah_pilihan_prodi; $i++)
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Program Studi Pilihan {{ $i }} <span class="text-danger">*</span></label>
+                                                    <select name="pilihan_prodi[{{ $i }}]" class="form-select prodi-select" required>
+                                                        <option value="">-- Pilih Program Studi Pilihan {{ $i }} --</option>
+                                                        @foreach($path->programStudis as $prodi)
+                                                            <option value="{{ $prodi->id }}" {{ old("pilihan_prodi.{$i}") == $prodi->id ? 'selected' : '' }}>
+                                                                {{ $prodi->nama_prodi ?: $prodi->nama }} ({{ $prodi->jenjang_akademik ?? $prodi->jenjang }})
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            @endfor
+                                        </div>
+                                    @endif
+
                                     <hr class="my-4">
 
                                     <!-- ═══ PASSWORD AUTHENTICATION FIELDS ═══ -->
@@ -337,5 +360,33 @@
     <script src="{{ asset('assets/libs/simplebar/dist/simplebar.min.js') }}"></script>
     <script src="{{ asset('assets/js/theme.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendors/password.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selects = document.querySelectorAll('.prodi-select');
+            
+            function updateDropdowns() {
+                // Collect all currently selected values (excluding empty strings)
+                const selectedValues = Array.from(selects).map(s => s.value).filter(v => v !== "");
+                
+                selects.forEach(currentSelect => {
+                    const options = currentSelect.querySelectorAll('option');
+                    options.forEach(option => {
+                        if (option.value !== "") {
+                            // Disable the option if it is selected in ANOTHER dropdown, but keep it enabled in the current one
+                            const isSelectedElsewhere = selectedValues.includes(option.value) && currentSelect.value !== option.value;
+                            option.disabled = isSelectedElsewhere;
+                        }
+                    });
+                });
+            }
+
+            selects.forEach(select => {
+                select.addEventListener('change', updateDropdowns);
+            });
+
+            // Initial run to apply states if old values are loaded
+            updateDropdowns();
+        });
+    </script>
 </body>
 </html>

@@ -85,6 +85,23 @@ class RegistrationPath extends Model
     }
 
     /**
+     * Alias for programStudis relationship to match feedback patterns.
+     */
+    public function programStudi()
+    {
+        return $this->belongsToMany(ProgramStudi::class, 'jalur_prodi', 'registration_path_id', 'program_studi_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Alias for jumlah_pilihan_prodi to match feedback patterns.
+     */
+    public function getMaksimalPilihanAttribute()
+    {
+        return $this->jumlah_pilihan_prodi;
+    }
+
+    /**
      * A RegistrationPath belongs to a PaketSoal (optional).
      */
     public function paketSoal()

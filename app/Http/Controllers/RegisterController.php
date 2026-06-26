@@ -28,7 +28,7 @@ class RegisterController extends Controller
         $formFields = collect();
 
         if ($jalurId) {
-            $path = RegistrationPath::with(['formPendaftaran.fields' => function ($q) {
+            $path = RegistrationPath::with(['programStudi', 'formPendaftaran.fields' => function ($q) {
                 $q->active()->ordered();
             }])->find($jalurId);
 
@@ -45,9 +45,12 @@ class RegisterController extends Controller
         $request->validate([
             'jalur_id' => 'required|exists:registration_paths,id',
             'password' => 'required|string|min:8|confirmed',
+            'pilihan_prodi' => 'required|array',
+            'pilihan_prodi.1' => 'required|exists:program_studis,id',
+            'pilihan_prodi.2' => 'nullable|exists:program_studis,id',
         ]);
 
-        $path = RegistrationPath::with(['formPendaftaran.fields' => function ($q) {
+        $path = RegistrationPath::with(['programStudi', 'formPendaftaran.fields' => function ($q) {
             $q->active()->ordered();
         }])->findOrFail($request->jalur_id);
 
@@ -153,6 +156,8 @@ class RegisterController extends Controller
             $registrationData = [
                 'user_id' => $user->id,
                 'registration_path_id' => $path->id,
+                'program_studi_1_id' => $request->pilihan_prodi[1] ?? null,
+                'program_studi_2_id' => $request->pilihan_prodi[2] ?? null,
                 'status' => 'submitted',
             ];
 

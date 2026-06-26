@@ -98,111 +98,124 @@
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+  width: 20px !important;
+  height: 20px !important;
 }
-#miniSidebar .nav-link .text {
-  display: inline-flex !important;
-  align-items: center !important;
-  flex-grow: 1 !important;
+/* Collapsed sidebar ensures icons center */
+html.collapsed #miniSidebar .nav-link .nav-icon,
+html.collapsed #miniSidebar .nav-link .nav-icon-sub {
+  margin: 0 auto !important;
 }
-#miniSidebar .nav-link.dropdown-toggle::after {
-  margin-left: auto !important;
+/* Nav badge style */
+.nav-badge {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: auto;
 }
-/* Breadcrumbs Custom Styling */
-.breadcrumb-item + .breadcrumb-item::before {
-  content: "•" !important;
+/* Dark mode fix for the sidebar */
+[data-bs-theme="dark"] .side-navbar {
+  background-color: #1e293b !important;
+}
+[data-bs-theme="dark"] .side-navbar .navbar-header {
+  background-color: #1e293b !important;
+}
+[data-bs-theme="dark"] .side-navbar .navbar-nav .nav-item a.active {
+  background-color: #334155 !important;
+}
+[data-bs-theme="dark"] .side-navbar .navbar-nav .nav-item a:hover {
+  background-color: #334155 !important;
+}
+/* Dark mode adjustments for cards and tables */
+[data-bs-theme="dark"] .table {
+  --bs-table-bg: transparent;
+  --bs-table-hover-bg: rgba(255,255,255,0.03);
+}
+[data-bs-theme="dark"] .table thead th {
+  background-color: #1e293b !important;
+  color: #94a3b8 !important;
+  border-bottom-color: #334155 !important;
+}
+[data-bs-theme="dark"] .table td {
   color: #cbd5e1 !important;
 }
-.breadcrumb-item a {
-  color: #64748b;
-  text-decoration: none;
+/* Dark mode: card, modal, dropdown */
+[data-bs-theme="dark"] .card {
+  background-color: #1e293b;
+  border-color: #334155;
 }
-.breadcrumb-item a:hover {
-  color: #f63a4c;
+[data-bs-theme="dark"] .modal-content {
+  background-color: #1e293b;
+  border-color: #334155;
 }
-.breadcrumb-item.active {
-  color: #94a3b8;
+[data-bs-theme="dark"] .dropdown-menu {
+  background-color: #1e293b;
+  border-color: #334155;
 }
-/* === Custom Multi-Select Tag Input Styles === */
+[data-bs-theme="dark"] .dropdown-item {
+  color: #cbd5e1;
+}
+[data-bs-theme="dark"] .dropdown-item:hover {
+  background-color: #334155;
+  color: #fff;
+}
+/* === Tag Input Styles === */
 .tag-input-wrapper {
   position: relative;
-  width: 100%;
 }
 .tag-input-container {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 4px;
-  min-height: 38px;
   padding: 4px 8px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   background: #fff;
+  min-height: 42px;
   cursor: text;
-  transition: border-color 0.15s ease;
-}
-.tag-input-container:focus-within {
-  border-color: #f63a4c;
-  box-shadow: 0 0 0 2px rgba(246, 58, 76, 0.15);
 }
 [data-bs-theme="dark"] .tag-input-container {
-  background: #1e293b;
-  border-color: #334155;
-}
-[data-bs-theme="dark"] .tag-input-container:focus-within {
-  border-color: #f63a4c;
-  box-shadow: 0 0 0 2px rgba(246, 58, 76, 0.2);
+  background: #2b2c40;
+  border-color: #3e3f5a;
 }
 .tag-input-wrapper.is-invalid .tag-input-container {
   border-color: #dc3545;
 }
-.tag-input-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  align-items: center;
-}
-.tag-input-tag {
+.tag-item {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
-  font-size: 0.8125rem;
-  font-weight: 500;
   background: #fef2f2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
+  color: #991b1b;
   border-radius: 4px;
-  white-space: nowrap;
-  animation: tagIn 0.2s ease;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
-[data-bs-theme="dark"] .tag-input-tag {
+[data-bs-theme="dark"] .tag-item {
   background: #3b1c1c;
   color: #fca5a5;
-  border-color: #5c2a2a;
 }
-@keyframes tagIn {
-  from { transform: scale(0.85); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-.tag-input-remove {
+.tag-item .tag-remove {
   cursor: pointer;
-  font-size: 0.75rem;
-  line-height: 1;
+  font-weight: 700;
+  color: inherit;
   opacity: 0.6;
-  transition: opacity 0.15s;
+  margin-left: 2px;
 }
-.tag-input-remove:hover {
+.tag-item .tag-remove:hover {
   opacity: 1;
 }
 .tag-input-field {
-  flex: 1;
-  min-width: 120px;
   border: none;
   outline: none;
   padding: 2px 4px;
   font-size: 0.875rem;
   background: transparent;
   color: inherit;
+  flex: 1;
+  min-width: 80px;
 }
 .tag-input-field::placeholder {
   color: #9ca3af;
@@ -217,9 +230,9 @@
   overflow-y: auto;
   background: #fff;
   border: 1px solid #d1d5db;
-  border-top: none;
-  border-radius: 0 0 6px 6px;
+  border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-top: 2px;
 }
 [data-bs-theme="dark"] .tag-dropdown {
   background: #1e293b;
@@ -249,36 +262,26 @@
   margin-bottom: 0;
 }
 
-/* === Data Page: Scrollable Table Container === */
-/* The card itself scrolls with the page normally */
-/* Only the table area inside is scrollable with a fixed max-height */
+/* === Data Page: Table Container - NATURAL FLOW === */
+/* The table expands naturally based on row count without restrictive scrolling */
 .data-page-table-scroll {
-  max-height: 400px; /* Default fallback, JS will calculate precise height */
-  overflow-y: auto !important;
-  overflow-x: auto !important;
+  overflow: visible !important;
+  max-height: none !important;
 }
-/* When inside the scrollable container, make thead sticky */
+/* Table header is not sticky anymore (table scrolls naturally with page) */
 .data-page-table-scroll .table thead {
-  position: sticky;
-  top: 39px;
-  z-index: 10;
+  position: static;
 }
 .data-page-table-scroll .table thead th {
-  position: sticky;
-  top: 39px;
-  z-index: 10;
+  position: static;
   background-color: #f8fafc;
-  box-shadow: 0 2px 2px -1px rgba(0,0,0,0.1);
 }
 [data-bs-theme="dark"] .data-page-table-scroll .table thead th {
   background-color: #1e293b;
-  box-shadow: 0 2px 2px -1px rgba(0,0,0,0.3);
 }
-/* Showing info row sticky inside scrollable table container */
+/* Showing info row not sticky */
 .data-page-table-scroll .showing-info-row {
-  position: sticky;
-  top: 0;
-  z-index: 11;
+  position: static;
   background-color: var(--bs-card-bg, #ffffff);
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
@@ -328,6 +331,15 @@
 html.expanded #miniSidebar {
   border-right: 1px solid var(--bs-border-color, #e2e8f0) !important;
 }
+
+/* Pagination style improvements */
+.data-page-pagination .pagination {
+  margin-bottom: 0;
+}
+.data-page-pagination .page-link {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+}
 </style>
   </head>
 
@@ -361,55 +373,6 @@ html.expanded #miniSidebar {
     <script src="{{ asset('assets/js/vendors/chart.js') }}"></script>
     <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
 
-    <!-- Data Page: Dynamic Table Scroll Height Calculator -->
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        function calculateTableScrollHeight() {
-          const scrollContainers = document.querySelectorAll('.data-page-table-scroll');
-          if (!scrollContainers.length) return;
-
-          // Use the card's top position relative to viewport
-          scrollContainers.forEach(container => {
-            const card = container.closest('.data-page-card');
-            if (!card) return;
-            
-            const cardRect = card.getBoundingClientRect();
-            const cardTop = cardRect.top;
-            const cardPaddingTop = parseFloat(getComputedStyle(card).paddingTop) || 0;
-            const cardPaddingBottom = parseFloat(getComputedStyle(card).paddingBottom) || 0;
-            
-            // Find filters and pagination within this card
-            const filters = card.querySelector('.data-page-filters');
-            const pagination = card.querySelector('.data-page-pagination');
-            
-            let filtersHeight = 0;
-            if (filters) {
-              filtersHeight = filters.offsetHeight + (parseFloat(getComputedStyle(filters).marginBottom) || 0);
-            }
-            
-            let paginationHeight = 0;
-            if (pagination) {
-              paginationHeight = pagination.offsetHeight + (parseFloat(getComputedStyle(pagination).marginTop) || 0);
-            }
-            
-            const bottomMargin = 16; // safe margin at bottom
-            const availableHeight = window.innerHeight - cardTop - cardPaddingTop - cardPaddingBottom - filtersHeight - paginationHeight - bottomMargin;
-            
-            container.style.maxHeight = Math.max(150, availableHeight) + 'px';
-          });
-        }
-
-        calculateTableScrollHeight();
-        window.addEventListener('resize', calculateTableScrollHeight);
-        
-        // Recalculate when sidebar toggles (collapsed/expanded)
-        const sidebarObserver = new MutationObserver(function() {
-          calculateTableScrollHeight();
-        });
-        sidebarObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-      });
-    </script>
-    
     @stack('scripts')
   </body>
 </html>

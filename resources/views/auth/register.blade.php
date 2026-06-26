@@ -46,6 +46,40 @@
         [data-bs-theme="dark"] .select2-container--default .select2-results__option--highlighted {
             background: #383a5c;
         }
+        .path-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: inline-block;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .password-field {
+            position: relative;
+        }
+        .password-field .passwordToggler {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+            font-size: 1.2rem;
+            z-index: 5;
+        }
+        .section-header {
+            background: #f8f9fa;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #495057;
+        }
+        [data-bs-theme="dark"] .section-header {
+            background: #2b2c40;
+            color: #b2b2c4;
+        }
     </style>
 </head>
 <body>
@@ -59,31 +93,47 @@
                                 <img src="{{ asset('assets/images/brand/logo/logo-light.png') }}" class="brand-logo-img" width="36" alt="" />
                                 <span class="site-logo-text">Akademik</span>
                             </a>
-                            <h1 class="mb-1">Buat Akun Baru</h1>
-                            <p class="mb-0">Daftar untuk memulai proses pendaftaran mahasiswa baru.</p>
+                            <h1 class="mb-1">Lengkapi Pendaftaran</h1>
+                            <p class="mb-0">
+                                @if($path)
+                                    Daftar jalur <strong>{{ $path->name }}</strong>
+                                @else
+                                    Isi data diri untuk membuat akun pendaftaran
+                                @endif
+                            </p>
                         </div>
                     </div>
                 </div>
+
                 <div class="row justify-content-center">
-                    <div class="col-xl-5 col-lg-6 col-md-8 col-12">
+                    <div class="col-xl-6 col-lg-8 col-md-10 col-12">
                         <div class="card card-lg mb-6">
                             <div class="card-body p-6">
-                                <!-- Google Sign In - TOP -->
+
+                                @if($path)
                                 <div class="text-center mb-4">
-                                    <a href="{{ route('auth.google.register') }}" class="btn btn-white w-100 d-flex align-items-center justify-content-center gap-2 py-2 border">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                                            <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z"/>
-                                        </svg>
-                                        <span class="fw-semibold">Daftar dengan Google</span>
+                                    <span class="path-badge">
+                                        <i class="ti ti-arrow-right-circle me-1"></i>
+                                        {{ $path->name }}
+                                    </span>
+                                </div>
+                                @endif
+
+                                <!-- Jika tidak ada path yang dipilih, tampilkan pilihan jalur -->
+                                @if(!$path)
+                                <div class="alert alert-info d-flex align-items-center gap-2 mb-4 py-2 small">
+                                    <i class="ti ti-info-circle fs-5"></i>
+                                    Silakan pilih jalur pendaftaran terlebih dahulu melalui halaman utama.
+                                </div>
+                                <div class="text-center mb-4">
+                                    <a href="{{ route('pmb.landing') }}" class="btn btn-primary btn-lg d-inline-flex align-items-center gap-2">
+                                        <i class="ti ti-arrow-left fs-4"></i> Kembali ke Beranda
                                     </a>
                                 </div>
-
-                                <div class="text-center mb-4">
-                                    <span class="text-muted small">atau daftar secara manual</span>
-                                </div>
-
+                                @else
                                 <form action="{{ route('register.post') }}" method="POST" novalidate>
                                     @csrf
+                                    <input type="hidden" name="jalur_id" value="{{ $path->id }}">
 
                                     @if ($errors->any())
                                         <div class="alert alert-danger mb-4 py-2 small">
@@ -95,47 +145,178 @@
                                         </div>
                                     @endif
 
-                                    <div class="mb-3">
-                                        <label class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" name="name" value="{{ old('name') }}" required placeholder="Masukkan nama lengkap" />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Username <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" name="username" value="{{ old('username') }}" required placeholder="Buat username" />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Email <span class="text-danger">*</span></label>
-                                        <input type="email" class="form-control" name="email" value="{{ old('email') }}" required placeholder="Masukkan email aktif" />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">No. WhatsApp <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" name="phone" value="{{ old('phone') }}" required placeholder="Contoh: 08123456789" />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Asal Wilayah (Kabupaten/Kota)</label>
-                                        <select class="form-control select2-regencies" name="regency_id" style="width: 100%;">
-                                            <option value="">-- Pilih Kabupaten/Kota --</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Password <span class="text-danger">*</span></label>
-                                        <div class="password-field position-relative">
-                                            <input type="password" class="form-control fakePassword" name="password" required placeholder="Minimal 8 karakter" />
-                                            <span><i class="ti ti-eye-off passwordToggler"></i></span>
+                                    @if(session('error'))
+                                        <div class="alert alert-danger mb-4 py-2 small">
+                                            <i class="ti ti-alert-circle me-1"></i>{{ session('error') }}
                                         </div>
+                                    @endif
+
+                                    <!-- ═══ DYNAMIC FORM FIELDS ═══ -->
+                                    @if($formFields->isNotEmpty())
+                                        @php
+                                            $currentSection = '';
+                                        @endphp
+                                        <div class="row g-3">
+                                        @foreach($formFields as $field)
+                                            @php
+                                                $fieldName = 'field_' . $field->id;
+                                                $oldValue = old($fieldName);
+                                                $widthClass = $field->width ?: 'col-md-6';
+                                                $isRequired = $field->is_required ? ' <span class="text-danger">*</span>' : '';
+                                                $isRequiredAttr = $field->is_required ? ' required' : '';
+                                            @endphp
+
+                                            @if($field->section && $field->section !== $currentSection)
+                                                @php $currentSection = $field->section; @endphp
+                                                @if(!$loop->first)
+                                                    </div></div>
+                                                @endif
+                                                <div class="mb-4">
+                                                <div class="section-header d-flex align-items-center gap-2 mb-3">
+                                                    <i class="ti ti-file-text"></i> {{ $currentSection }}
+                                                </div>
+                                                <div class="row g-3">
+                                            @endif
+
+                                            <div class="{{ $widthClass }} mb-3">
+                                                <label class="form-label">{{ $field->field_label }}{!! $isRequired !!}</label>
+
+                                                @switch($field->field_type)
+                                                    @case('textarea')
+                                                        <textarea class="form-control" name="{{ $fieldName }}" rows="3" placeholder="{{ $field->placeholder ?? '' }}"{{ $isRequiredAttr }}>{{ $oldValue }}</textarea>
+                                                        @break
+
+                                                    @case('select')
+                                                        <select class="form-select" name="{{ $fieldName }}"{{ $isRequiredAttr }}>
+                                                            <option value="">-- {{ $field->placeholder ?? 'Pilih ' . $field->field_label }} --</option>
+                                                            @if($field->options && is_array($field->options))
+                                                                @foreach($field->options as $opt)
+                                                                    <option value="{{ $opt }}" {{ $oldValue == $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                                                                @endforeach
+                                                            @endif
+                                                        </select>
+                                                        @break
+
+                                                    @case('radio')
+                                                        @if($field->options && is_array($field->options))
+                                                            <div class="d-flex flex-wrap gap-3">
+                                                                @foreach($field->options as $opt)
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="radio" name="{{ $fieldName }}" value="{{ $opt }}" id="{{ $fieldName }}_{{ $loop->index }}" {{ $oldValue == $opt ? 'checked' : '' }}{{ $isRequiredAttr }}>
+                                                                    <label class="form-check-label" for="{{ $fieldName }}_{{ $loop->index }}">{{ $opt }}</label>
+                                                                </div>
+                                                                @endforeach
+                                                            </div>
+                                                        @else
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="{{ $fieldName }}" value="1" id="{{ $fieldName }}" {{ $oldValue == '1' ? 'checked' : '' }}{{ $isRequiredAttr }}>
+                                                                <label class="form-check-label" for="{{ $fieldName }}">Ya</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="{{ $fieldName }}" value="0" id="{{ $fieldName }}_no" {{ $oldValue === '0' ? 'checked' : '' }}{{ $isRequiredAttr }}>
+                                                                <label class="form-check-label" for="{{ $fieldName }}_no">Tidak</label>
+                                                            </div>
+                                                        @endif
+                                                        @break
+
+                                                    @case('checkbox')
+                                                        @if($field->options && is_array($field->options))
+                                                            @foreach($field->options as $opt)
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" name="{{ $fieldName }}[]" value="{{ $opt }}" id="{{ $fieldName }}_{{ $loop->index }}" {{ is_array($oldValue) && in_array($opt, $oldValue) ? 'checked' : '' }}>
+                                                                <label class="form-check-label" for="{{ $fieldName }}_{{ $loop->index }}">{{ $opt }}</label>
+                                                            </div>
+                                                            @endforeach
+                                                        @else
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" name="{{ $fieldName }}" value="1" id="{{ $fieldName }}" {{ $oldValue == '1' ? 'checked' : '' }}>
+                                                                <label class="form-check-label" for="{{ $fieldName }}">{{ $field->field_label }}</label>
+                                                            </div>
+                                                        @endif
+                                                        @break
+
+                                                    @case('date')
+                                                        <input type="date" class="form-control" name="{{ $fieldName }}" value="{{ $oldValue }}"{{ $isRequiredAttr }}>
+                                                        @break
+
+                                                    @case('number')
+                                                        <input type="number" class="form-control" name="{{ $fieldName }}" value="{{ $oldValue }}" placeholder="{{ $field->placeholder ?? '' }}"{{ $isRequiredAttr }}>
+                                                        @break
+
+                                                    @case('email')
+                                                        <input type="email" class="form-control" name="{{ $fieldName }}" value="{{ $oldValue }}" placeholder="{{ $field->placeholder ?? '' }}"{{ $isRequiredAttr }}>
+                                                        @break
+
+                                                    @case('tel')
+                                                        <input type="tel" class="form-control" name="{{ $fieldName }}" value="{{ $oldValue }}" placeholder="{{ $field->placeholder ?? '' }}"{{ $isRequiredAttr }}>
+                                                        @break
+
+                                                    @case('file')
+                                                        <input type="file" class="form-control" name="{{ $fieldName }}"{{ $isRequiredAttr }}>
+                                                        @break
+
+                                                    @default
+                                                        <input type="text" class="form-control" name="{{ $fieldName }}" value="{{ $oldValue }}" placeholder="{{ $field->placeholder ?? '' }}"{{ $isRequiredAttr }}>
+                                                @endswitch
+
+                                                @if($field->help_text)
+                                                    <small class="text-muted d-block mt-1">{{ $field->help_text }}</small>
+                                                @endif
+                                            </div>
+
+                                            @if($loop->last)
+                                                </div></div>
+                                            @endif
+                                        @endforeach
+                                    @else
+                                        <!-- Jika form tidak punya fields, tampilkan default fields -->
+                                        <div class="row g-3">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" name="field_default_nama" value="{{ old('field_default_nama') }}" required placeholder="Masukkan nama lengkap">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Nomor WhatsApp <span class="text-danger">*</span></label>
+                                                <input type="tel" class="form-control" name="field_default_hp" value="{{ old('field_default_hp') }}" required placeholder="08xxxxxxxxxx">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Email <span class="text-danger">*</span></label>
+                                                <input type="email" class="form-control" name="field_default_email" value="{{ old('field_default_email') }}" required placeholder="contoh@email.com">
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <hr class="my-4">
+
+                                    <!-- ═══ PASSWORD AUTHENTICATION FIELDS ═══ -->
+                                    <div class="section-header d-flex align-items-center gap-2 mb-3">
+                                        <i class="ti ti-lock"></i> Buat Password Portal
                                     </div>
-                                    <div class="mb-4">
-                                        <label class="form-label">Konfirmasi Password <span class="text-danger">*</span></label>
-                                        <div class="password-field position-relative">
-                                            <input type="password" class="form-control fakePassword" name="password_confirmation" required placeholder="Ulangi password" />
-                                            <span><i class="ti ti-eye-off passwordToggler"></i></span>
+                                    <p class="text-muted small mb-3">Buat password untuk mengakses portal pendaftaran Anda.</p>
+                                    <div class="row g-3">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Buat Password Portal <span class="text-danger">*</span></label>
+                                            <div class="password-field">
+                                                <input type="password" class="form-control fakePassword" name="password" required placeholder="Minimal 8 karakter" />
+                                                <span><i class="ti ti-eye-off passwordToggler"></i></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Konfirmasi Password <span class="text-danger">*</span></label>
+                                            <div class="password-field">
+                                                <input type="password" class="form-control fakePassword" name="password_confirmation" required placeholder="Ulangi password" />
+                                                <span><i class="ti ti-eye-off passwordToggler"></i></span>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div class="d-grid mb-4">
-                                        <button class="btn btn-primary" type="submit">Daftar Akun</button>
+                                    <div class="d-grid mt-4">
+                                        <button class="btn btn-primary btn-lg d-flex align-items-center justify-content-center gap-2" type="submit">
+                                            <i class="ti ti-send fs-4"></i> Daftar Sekarang
+                                        </button>
                                     </div>
                                 </form>
+                                @endif
 
                                 <hr class="my-4">
                                 <div class="text-center">
@@ -156,49 +337,5 @@
     <script src="{{ asset('assets/libs/simplebar/dist/simplebar.min.js') }}"></script>
     <script src="{{ asset('assets/js/theme.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendors/password.js') }}"></script>
-    <script>
-        $(document).ready(function() {
-            $('.select2-regencies').select2({
-                language: 'id',
-                placeholder: 'Cari Kabupaten/Kota...',
-                allowClear: true,
-                ajax: {
-                    url: '{{ route("api.regencies.select2") }}',
-                    dataType: 'json',
-                    delay: 300,
-                    data: function (params) {
-                        return {
-                            q: params.term || '',
-                            page: params.page || 1,
-                        };
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: data.results,
-                            pagination: data.pagination,
-                        };
-                    },
-                    cache: true,
-                },
-                minimumInputLength: 1,
-            });
-
-            @if(old('regency_id'))
-                $.ajax({
-                    url: '{{ route("api.regencies.select2") }}?q=&page=1',
-                    dataType: 'json',
-                    success: function(data) {
-                        var selected = data.results.find(function(item) {
-                            return item.id == {{ old('regency_id') }};
-                        });
-                        if (selected) {
-                            var option = new Option(selected.text, selected.id, true, true);
-                            $('.select2-regencies').append(option).trigger('change');
-                        }
-                    }
-                });
-            @endif
-        });
-    </script>
 </body>
 </html>

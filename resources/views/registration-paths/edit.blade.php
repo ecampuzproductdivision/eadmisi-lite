@@ -97,10 +97,10 @@
           <!-- Program Studi Ditawarkan (Tag Input) -->
           <div class="col-12">
             <label for="tag-input-prodi" class="form-label fw-semibold">Program Studi Ditawarkan <span class="text-danger">*</span></label>
-            <div class="tag-input-wrapper @error('program_studi_ids') is-invalid @enderror" id="tag-input-wrapper">
-              <div class="tag-input-container" id="tag-input-container">
-                <div class="tag-input-tags" id="tag-input-tags"></div>
-                <input type="text" class="tag-input-field" id="tag-input-field" placeholder="Ketik untuk mencari program studi..." autocomplete="off">
+            <div class="tag-input-wrapper position-relative @error('program_studi_ids') is-invalid @enderror" id="tag-input-wrapper">
+              <div class="tag-input-container d-flex flex-wrap align-items-center gap-1 p-1" id="tag-input-container">
+                <div class="tag-input-tags d-inline-flex flex-wrap align-items-center gap-1" id="tag-input-tags"></div>
+                <input type="text" class="tag-input-field flex-grow-1" id="tag-input-field" placeholder="Ketik untuk mencari program studi..." autocomplete="off">
               </div>
               <div class="tag-dropdown" id="tag-dropdown" style="display:none;"></div>
             </div>
@@ -317,10 +317,10 @@ document.addEventListener('DOMContentLoaded', function() {
   function addTag(value, text, sync = true) {
     if (tagsEl.querySelector(`[data-value="${value}"]`)) return;
     const tag = document.createElement('span');
-    tag.className = 'tag-input-tag';
+    tag.className = 'tag-item';
     tag.dataset.value = value;
-    tag.innerHTML = `${text} <i class="ti ti-x tag-input-remove" data-value="${value}"></i>`;
-    tag.querySelector('.tag-input-remove').addEventListener('click', function(e) {
+    tag.innerHTML = `${text} <span class="tag-remove" data-value="${value}">&times;</span>`;
+    tag.querySelector('.tag-remove').addEventListener('click', function(e) {
       e.stopPropagation();
       removeTag(value);
     });
@@ -340,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Sync hidden select with current tags
   function syncSelect() {
     const selectedValues = [];
-    tagsEl.querySelectorAll('.tag-input-tag').forEach(tag => {
+    tagsEl.querySelectorAll('.tag-item').forEach(tag => {
       selectedValues.push(tag.dataset.value);
     });
     selectEl.querySelectorAll('option').forEach(opt => {
@@ -357,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function() {
       filtered = options.filter(o => o.text.toLowerCase().includes(normalized));
     }
     const selectedValues = [];
-    tagsEl.querySelectorAll('.tag-input-tag').forEach(tag => {
+    tagsEl.querySelectorAll('.tag-item').forEach(tag => {
       selectedValues.push(tag.dataset.value);
     });
     filtered = filtered.filter(o => !selectedValues.includes(o.value));
@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
         hideDropdown();
       }
     } else if (e.key === 'Backspace' && this.value === '') {
-      const lastTag = tagsEl.querySelector('.tag-input-tag:last-child');
+      const lastTag = tagsEl.querySelector('.tag-item:last-child');
       if (lastTag) removeTag(lastTag.dataset.value);
     } else if (e.key === 'Escape') {
       hideDropdown();

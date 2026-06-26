@@ -70,18 +70,17 @@
                 @endif
             </tbody>
         </table>
-        <div id="loading-spinner" class="d-none text-center py-3">
-            <div class="spinner-border text-primary" role="status" style="width: 1.5rem; height: 1.5rem;">
-                <span class="visually-hidden">Loading...</span>
+    @endslot
+    @slot('pagination')
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted small">
+                <i class="ti ti-database me-1"></i>
+                Menampilkan {{ $paths->firstItem() }} - {{ $paths->lastItem() }} dari {{ $paths->total() }} data
+            </div>
+            <div>
+                {{ $paths->links() }}
             </div>
         </div>
     @endslot
 @endcomponent
-
-@include('components.infinite-scroll-script', [
-    'tableBodyId' => 'paths-table-body',
-    'spinnerId' => 'loading-spinner',
-    'nextPageUrl' => $paths->nextPageUrl(),
-    'hasMore' => $paths->hasMorePages(),
-])
 @endsection

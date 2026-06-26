@@ -44,6 +44,8 @@ class DatabaseSeeder extends Seeder
             TestDataStikesSeeder::class,
             LandingPageSeeder::class,
             LandingPageSubMenuSeeder::class,
+            MenuFormPendaftaranSubMenuSeeder::class,
+            FormPendaftaranSeeder::class,
         ]);
     }
 }

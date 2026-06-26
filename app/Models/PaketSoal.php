@@ -42,7 +42,7 @@ class PaketSoal extends Model
      */
     public function getTotalSkorAttribute()
     {
-        return $this->soalUjians()->sum('skor');
+        return (int) $this->soalUjians()->sum('skor');
     }
 
     /**

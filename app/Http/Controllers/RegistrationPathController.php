@@ -96,7 +96,7 @@ class RegistrationPathController extends Controller
         // Validate paket_soal total skor == 100 if using exam
         if ($request->boolean('gunakan_ujian') && $request->filled('paket_soal_id')) {
             $paket = PaketSoal::find($request->paket_soal_id);
-            if ($paket && $paket->total_skor !== 100) {
+            if ($paket && (int) $paket->total_skor !== 100) {
                 return redirect()->back()
                     ->withErrors(['paket_soal_id' => 'Total skor paket soal (' . $paket->total_skor . ') harus tepat 100.'])
                     ->withInput();
@@ -189,7 +189,7 @@ class RegistrationPathController extends Controller
         // Validate paket_soal total skor == 100 if using exam
         if ($request->boolean('gunakan_ujian') && $request->filled('paket_soal_id')) {
             $paket = PaketSoal::find($request->paket_soal_id);
-            if ($paket && $paket->total_skor !== 100) {
+            if ($paket && (int) $paket->total_skor !== 100) {
                 return redirect()->back()
                     ->withErrors(['paket_soal_id' => 'Total skor paket soal (' . $paket->total_skor . ') harus tepat 100.'])
                     ->withInput();

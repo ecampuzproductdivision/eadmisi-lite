@@ -357,7 +357,7 @@
                                     <small class="text-muted"><i class="ti ti-checks me-1"></i>{{ $path->jumlah_pilihan_prodi }} pilihan</small>
                                     @endif
                                 </div>
-                                <a href="{{ route('register') }}?path={{ $path->code }}" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2">
+                                <a href="{{ route('register', $path->id) }}" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2">
                                     <i class="ti ti-arrow-right fs-5"></i> Daftar Sekarang
                                 </a>
                             </div>
@@ -387,6 +387,9 @@
                 @php
                     $prodi = $lp->programStudi;
                     $color = ['primary', 'danger', 'success', 'warning', 'info', 'secondary', 'dark'][$loop->index % 7];
+                @endphp
+                @if($prodi)
+                @php
                     $jenjang = $prodi->jenjang_akademik ?? $prodi->jenjang ?? 'S1';
                     $nama = $prodi->nama_prodi ?: $prodi->nama;
                 @endphp
@@ -404,6 +407,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
                 @empty
                 <div class="col-12 text-center py-6">
                     <i class="ti ti-school-off text-muted" style="font-size: 3rem;"></i>

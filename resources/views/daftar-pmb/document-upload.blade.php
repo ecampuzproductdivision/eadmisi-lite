@@ -1,6 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+    $syaratBerkas = collect();
+    if ($path && $path->templateBerkas && $path->templateBerkas->syaratDokumens) {
+        $syaratBerkas = $path->templateBerkas->syaratDokumens;
+    }
+    $hasDocuments = $syaratBerkas->isNotEmpty();
+@endphp
+
 <main class="p-6">
   <!-- Header -->
   <div class="row mb-4">
@@ -37,66 +45,56 @@
     <div class="row">
       <div class="col-lg-8">
 
-        <!-- Document Upload Grid -->
+        @if(!$hasDocuments)
+        <div class="alert alert-info d-flex align-items-center gap-3 mb-4 border-0">
+          <i class="ti ti-info-circle fs-4"></i>
+          <div>
+            <h6 class="fw-bold mb-1">Tidak ada persyaratan dokumen</h6>
+            <p class="mb-0 text-muted small">Jalur pendaftaran ini tidak memerlukan unggahan dokumen tambahan. Silakan lanjut ke tahap berikutnya.</p>
+          </div>
+        </div>
+        @else
+        <!-- Document Upload Grid - Dynamic dari BO -->
         <div class="row g-4 mb-4">
-
-          <!-- Foto Formal -->
+          @foreach($syaratBerkas as $berkas)
           <div class="col-md-6">
             <div class="card card-lg h-100 document-card">
               <div class="card-body p-4">
                 <div class="d-flex align-items-start justify-content-between mb-3">
                   <div class="document-icon bg-primary-subtle">
-                    <i class="ti ti-user text-primary"></i>
+                    <i class="ti ti-file-text text-primary"></i>
                   </div>
-                  @if(old('foto_formal_status') == 'uploaded')
-                    <span class="badge bg-success-subtle text-success px-2 py-1"><i class="ti ti-check me-1"></i> Uploaded</span>
+                  @if(isset($existingDocuments[$berkas->nama_dokumen]))
+                    <span class="badge bg-success-subtle text-success px-2 py-1">
+                      <i class="ti ti-check me-1"></i> Terunggah
+                    </span>
                   @endif
                 </div>
-                <h6 class="fw-bold mb-1">Foto Formal</h6>
-                <p class="text-muted mb-2" style="font-size: 0.82rem;">Foto studio latar belakang biru atau merah. Wajah terlihat jelas.</p>
-                <small class="text-muted d-block mb-3"><i class="ti ti-info-circle me-1"></i> Max 2MB, JPG/PNG</small>
+                <h6 class="fw-bold mb-1">{{ $berkas->nama_dokumen }}</h6>
+                <p class="text-muted mb-2" style="font-size: 0.82rem;">
+                  Silakan unggah scan {{ $berkas->nama_dokumen }} asli sesuai dengan ketentuan.
+                </p>
+                <small class="text-muted d-block mb-3">
+                  <i class="ti ti-info-circle me-1"></i>
+                  Max: {{ $berkas->max_size ?? 2048 }} KB,
+                  Format: {{ $berkas->ekstensi_diizinkan ?? 'PDF/JPG/PNG' }}
+                  @if($berkas->status_wajib)
+                    <span class="text-danger fw-bold"> *Wajib</span>
+                  @endif
+                </small>
                 
-                <div class="upload-zone" id="fotoFormalZone">
-                  <input type="file" name="foto_formal" id="fotoFormalInput" class="d-none" accept=".jpg,.jpeg,.png">
-                  <div class="upload-placeholder" id="fotoFormalPlaceholder">
+                <div class="upload-zone" id="berkasZone_{{ $berkas->id }}">
+                  <input type="file" name="berkas[{{ $berkas->id }}]" id="berkasInput_{{ $berkas->id }}" class="d-none"
+                    accept="{{ $berkas->ekstensi_diizinkan ? '.' . str_replace(',', ',.', $berkas->ekstensi_diizinkan) : '.pdf,.jpg,.jpeg,.png' }}"
+                    {{ $berkas->status_wajib ? 'required' : '' }}>
+                  <div class="upload-placeholder" id="berkasPlaceholder_{{ $berkas->id }}">
                     <i class="ti ti-cloud-upload text-primary"></i>
                     <span>Pilih File</span>
                   </div>
-                  <div class="upload-preview d-none" id="fotoFormalPreview">
-                    <i class="ti ti-photo text-success"></i>
-                    <span class="upload-filename" id="fotoFormalName"></span>
-                    <button type="button" class="btn btn-sm btn-outline-danger ms-auto" onclick="removeFile('fotoFormal')">
-                      <i class="ti ti-trash"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Ijazah / SKHUN -->
-          <div class="col-md-6">
-            <div class="card card-lg h-100 document-card">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start justify-content-between mb-3">
-                  <div class="document-icon bg-info-subtle">
-                    <i class="ti ti-school text-info"></i>
-                  </div>
-                </div>
-                <h6 class="fw-bold mb-1">Ijazah / SKHUN</h6>
-                <p class="text-muted mb-2" style="font-size: 0.82rem;">Unggah scan ijazah atau Surat Keterangan Hasil Ujian Nasional asli.</p>
-                <small class="text-muted d-block mb-3"><i class="ti ti-info-circle me-1"></i> Max 5MB, PDF</small>
-                
-                <div class="upload-zone" id="ijazahZone">
-                  <input type="file" name="ijazah" id="ijazahInput" class="d-none" accept=".pdf">
-                  <div class="upload-placeholder" id="ijazahPlaceholder">
-                    <i class="ti ti-cloud-upload text-primary"></i>
-                    <span>Pilih File</span>
-                  </div>
-                  <div class="upload-preview d-none" id="ijazahPreview">
+                  <div class="upload-preview d-none" id="berkasPreview_{{ $berkas->id }}">
                     <i class="ti ti-file text-success"></i>
-                    <span class="upload-filename" id="ijazahName"></span>
-                    <button type="button" class="btn btn-sm btn-outline-danger ms-auto" onclick="removeFile('ijazah')">
+                    <span class="upload-filename" id="berkasName_{{ $berkas->id }}"></span>
+                    <button type="button" class="btn btn-sm btn-outline-danger ms-auto" onclick="removeBerkas({{ $berkas->id }})">
                       <i class="ti ti-trash"></i>
                     </button>
                   </div>
@@ -104,70 +102,9 @@
               </div>
             </div>
           </div>
-
-          <!-- Kartu Keluarga -->
-          <div class="col-md-6">
-            <div class="card card-lg h-100 document-card">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start justify-content-between mb-3">
-                  <div class="document-icon bg-warning-subtle">
-                    <i class="ti ti-users text-warning"></i>
-                  </div>
-                </div>
-                <h6 class="fw-bold mb-1">Kartu Keluarga</h6>
-                <p class="text-muted mb-2" style="font-size: 0.82rem;">Scan Kartu Keluarga terbaru yang mencantumkan nama calon mahasiswa.</p>
-                <small class="text-muted d-block mb-3"><i class="ti ti-info-circle me-1"></i> Max 5MB, PDF/JPG</small>
-                
-                <div class="upload-zone" id="kkZone">
-                  <input type="file" name="kartu_keluarga" id="kkInput" class="d-none" accept=".pdf,.jpg,.jpeg">
-                  <div class="upload-placeholder" id="kkPlaceholder">
-                    <i class="ti ti-cloud-upload text-primary"></i>
-                    <span>Pilih File</span>
-                  </div>
-                  <div class="upload-preview d-none" id="kkPreview">
-                    <i class="ti ti-file text-success"></i>
-                    <span class="upload-filename" id="kkName"></span>
-                    <button type="button" class="btn btn-sm btn-outline-danger ms-auto" onclick="removeFile('kk')">
-                      <i class="ti ti-trash"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Akta Kelahiran -->
-          <div class="col-md-6">
-            <div class="card card-lg h-100 document-card">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-start justify-content-between mb-3">
-                  <div class="document-icon bg-success-subtle">
-                    <i class="ti ti-certificate text-success"></i>
-                  </div>
-                </div>
-                <h6 class="fw-bold mb-1">Akta Kelahiran</h6>
-                <p class="text-muted mb-2" style="font-size: 0.82rem;">Scan Akta Kelahiran asli atau yang sudah dilegalisir.</p>
-                <small class="text-muted d-block mb-3"><i class="ti ti-info-circle me-1"></i> Max 5MB, PDF/JPG</small>
-                
-                <div class="upload-zone" id="aktaZone">
-                  <input type="file" name="akta_kelahiran" id="aktaInput" class="d-none" accept=".pdf,.jpg,.jpeg">
-                  <div class="upload-placeholder" id="aktaPlaceholder">
-                    <i class="ti ti-cloud-upload text-primary"></i>
-                    <span>Pilih File</span>
-                  </div>
-                  <div class="upload-preview d-none" id="aktaPreview">
-                    <i class="ti ti-file text-success"></i>
-                    <span class="upload-filename" id="aktaName"></span>
-                    <button type="button" class="btn btn-sm btn-outline-danger ms-auto" onclick="removeFile('akta')">
-                      <i class="ti ti-trash"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
+          @endforeach
         </div>
+        @endif
 
         <!-- Important Note -->
         <div class="alert alert-info d-flex align-items-start gap-3 mb-4 border-0" style="background: #f0f7ff;">
@@ -185,7 +122,7 @@
           <a href="{{ route('daftar-pmb.steps', $path?->code) }}" class="btn btn-outline-secondary px-4">
             <i class="ti ti-arrow-left me-1"></i> Kembali
           </a>
-          <button type="submit" class="btn btn-primary fw-semibold px-4">
+          <button type="submit" class="btn btn-primary fw-semibold px-4" {{ !$hasDocuments ? 'disabled' : '' }}>
             Unggah & Lanjutkan <i class="ti ti-arrow-right ms-1"></i>
           </button>
         </div>
@@ -313,40 +250,6 @@
     flex: 1;
   }
 
-  /* Mini stepper */
-  .stepper-item-sm {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .stepper-circle-sm {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-  }
-
-  .stepper-label-sm {
-    font-size: 0.7rem;
-    white-space: nowrap;
-  }
-
-  .stepper-line-sm {
-    width: 50px;
-    height: 3px;
-    background: #dee2e6;
-    margin-bottom: 20px;
-  }
-
-  .stepper-item-sm.current .stepper-circle-sm {
-    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
-  }
-
   .d-none {
     display: none !important;
   }
@@ -354,67 +257,38 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // Setup upload zones
-    setupUploadZone('fotoFormal', {
-      accept: '.jpg,.jpeg,.png',
-      maxSize: 2 * 1024 * 1024, // 2MB
-      allowedTypes: ['image/jpeg', 'image/png']
-    });
-
-    setupUploadZone('ijazah', {
-      accept: '.pdf',
-      maxSize: 5 * 1024 * 1024, // 5MB
-      allowedTypes: ['application/pdf']
-    });
-
-    setupUploadZone('kk', {
-      accept: '.pdf,.jpg,.jpeg',
-      maxSize: 5 * 1024 * 1024, // 5MB
-      allowedTypes: ['application/pdf', 'image/jpeg']
-    });
-
-    setupUploadZone('akta', {
-      accept: '.pdf,.jpg,.jpeg',
-      maxSize: 5 * 1024 * 1024, // 5MB
-      allowedTypes: ['application/pdf', 'image/jpeg']
-    });
+    // Setup upload zones for all dynamic berkas
+    @if($hasDocuments)
+      @foreach($syaratBerkas as $berkas)
+        setupBerkasZone({{ $berkas->id }}, {
+          maxSize: {{ ($berkas->max_size ?? 2048) * 1024 }},
+        });
+      @endforeach
+    @endif
   });
 
-  function setupUploadZone(id, options) {
-    const zone = document.getElementById(id + 'Zone');
-    const input = document.getElementById(id + 'Input');
-    const placeholder = document.getElementById(id + 'Placeholder');
-    const preview = document.getElementById(id + 'Preview');
-    const filename = document.getElementById(id + 'Name');
+  function setupBerkasZone(id, options) {
+    const zone = document.getElementById('berkasZone_' + id);
+    const input = document.getElementById('berkasInput_' + id);
+    const placeholder = document.getElementById('berkasPlaceholder_' + id);
+    const preview = document.getElementById('berkasPreview_' + id);
+    const filename = document.getElementById('berkasName_' + id);
 
     if (!zone || !input) return;
 
-    // Click to upload
     zone.addEventListener('click', function(e) {
       if (e.target.closest('.btn-outline-danger')) return;
       input.click();
     });
 
-    // File selected
     input.addEventListener('change', function() {
       if (this.files && this.files[0]) {
         const file = this.files[0];
-
-        // Validate size
         if (file.size > options.maxSize) {
           alert('Ukuran file melebihi batas maksimal (' + formatSize(options.maxSize) + ')');
           this.value = '';
           return;
         }
-
-        // Validate type
-        if (options.allowedTypes && !options.allowedTypes.includes(file.type)) {
-          alert('Format file tidak valid');
-          this.value = '';
-          return;
-        }
-
-        // Show preview
         placeholder.classList.add('d-none');
         preview.classList.remove('d-none');
         filename.textContent = file.name;
@@ -422,7 +296,6 @@
       }
     });
 
-    // Drag & drop
     zone.addEventListener('dragover', function(e) {
       e.preventDefault();
       this.style.borderColor = '#0d6efd';
@@ -439,7 +312,6 @@
       e.preventDefault();
       this.style.borderColor = '';
       this.style.background = '';
-      
       if (e.dataTransfer.files && e.dataTransfer.files[0]) {
         input.files = e.dataTransfer.files;
         input.dispatchEvent(new Event('change'));
@@ -447,16 +319,16 @@
     });
   }
 
-  function removeFile(id) {
-    const input = document.getElementById(id + 'Input');
-    const placeholder = document.getElementById(id + 'Placeholder');
-    const preview = document.getElementById(id + 'Preview');
-    const zone = document.getElementById(id + 'Zone');
+  function removeBerkas(id) {
+    const input = document.getElementById('berkasInput_' + id);
+    const placeholder = document.getElementById('berkasPlaceholder_' + id);
+    const preview = document.getElementById('berkasPreview_' + id);
+    const zone = document.getElementById('berkasZone_' + id);
 
-    input.value = '';
-    placeholder.classList.remove('d-none');
-    preview.classList.add('d-none');
-    zone.classList.remove('has-file');
+    if (input) input.value = '';
+    if (placeholder) placeholder.classList.remove('d-none');
+    if (preview) preview.classList.add('d-none');
+    if (zone) zone.classList.remove('has-file');
   }
 
   function formatSize(bytes) {

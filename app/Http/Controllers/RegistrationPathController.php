@@ -471,7 +471,9 @@ class RegistrationPathController extends Controller
         $path = null;
         $pathId = null;
         if ($pathCode) {
-            $path = RegistrationPath::where('code', $pathCode)->first();
+            $path = RegistrationPath::with('templateBerkas.syaratDokumens')
+                ->where('code', $pathCode)
+                ->first();
             $pathId = $path?->id;
         }
 
@@ -497,13 +499,16 @@ class RegistrationPathController extends Controller
     }
 
     /**
-     * Simpan dokumen upload.
+     * Simpan dokumen upload (dynamic from BO syaratDokumens).
      */
     public function documentStore(Request $request, $pathCode = null)
     {
+        $pathObj = null;
         $pathId = null;
         if ($pathCode) {
-            $pathObj = RegistrationPath::where('code', $pathCode)->first();
+            $pathObj = RegistrationPath::with('templateBerkas.syaratDokumens')
+                ->where('code', $pathCode)
+                ->first();
             $pathId = $pathObj?->id;
         }
 
@@ -516,27 +521,47 @@ class RegistrationPathController extends Controller
                 ->with('error', 'Data pendaftaran tidak ditemukan.');
         }
 
-        $request->validate([
-            'foto_formal'    => 'nullable|file|max:2048|mimes:jpg,jpeg,png',
-            'ijazah'         => 'nullable|file|max:5120|mimes:pdf',
-            'kartu_keluarga' => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg',
-            'akta_kelahiran' => 'nullable|file|max:5120|mimes:pdf,jpg,jpeg',
-        ]);
+        // Build dynamic validation from SyaratDokumen records
+        $syaratBerkas = $pathObj && $pathObj->templateBerkas
+            ? $pathObj->templateBerkas->syaratDokumens
+            : collect();
 
-        $documentTypes = [
-            'foto_formal'    => ['accept' => 'jpg,jpeg,png', 'max' => 2048],
-            'ijazah'         => ['accept' => 'pdf', 'max' => 5120],
-            'kartu_keluarga' => ['accept' => 'pdf,jpg,jpeg', 'max' => 5120],
-            'akta_kelahiran' => ['accept' => 'pdf,jpg,jpeg', 'max' => 5120],
-        ];
+        $validationRules = [];
+        foreach ($syaratBerkas as $berkas) {
+            $rules = [];
+            if ($berkas->status_wajib) {
+                $rules[] = 'required';
+            } else {
+                $rules[] = 'nullable';
+            }
+            $rules[] = 'file';
+            $rules[] = 'max:' . ($berkas->max_size ?? 2048);
 
-        foreach ($documentTypes as $type => $config) {
-            if ($request->hasFile($type)) {
-                $file = $request->file($type);
+            if ($berkas->ekstensi_diizinkan) {
+                $mimes = str_replace(',', ',', $berkas->ekstensi_diizinkan);
+                $rules[] = 'mimes:' . $mimes;
+            }
 
-                // Delete old file if exists
+            $validationRules['berkas.' . $berkas->id] = implode('|', $rules);
+        }
+
+        if (!empty($validationRules)) {
+            $request->validate($validationRules);
+        }
+
+        // Process uploaded files
+        if ($request->hasFile('berkas')) {
+            foreach ($request->file('berkas') as $berkasId => $file) {
+                if (!$file || !$file->isValid()) continue;
+
+                $berkas = \App\Models\SyaratDokumen::find($berkasId);
+                if (!$berkas) continue;
+
+                $typeSlug = \Illuminate\Support\Str::slug($berkas->nama_dokumen, '_');
+
+                // Delete old file for this syarat document
                 $oldDoc = RegistrationDocument::where('registration_id', $registration->id)
-                    ->where('type', $type)
+                    ->where('type', $typeSlug)
                     ->first();
 
                 if ($oldDoc) {
@@ -548,13 +573,13 @@ class RegistrationPathController extends Controller
                 }
 
                 // Store new file
-                $path = $file->store('registrations/' . $registration->id, 'public');
+                $filePath = $file->store('registrations/' . $registration->id, 'public');
 
                 RegistrationDocument::create([
                     'registration_id' => $registration->id,
-                    'type'            => $type,
+                    'type'            => $typeSlug,
                     'original_name'   => $file->getClientOriginalName(),
-                    'file_path'       => $path,
+                    'file_path'       => $filePath,
                     'mime_type'       => $file->getMimeType(),
                     'file_size'       => $file->getSize(),
                 ]);
@@ -562,9 +587,11 @@ class RegistrationPathController extends Controller
         }
 
         // Update registration status to documents_uploaded
-        \Illuminate\Support\Facades\DB::table('registrations')
-            ->where('id', $registration->id)
-            ->update(['status' => 'documents_uploaded', 'updated_at' => now()]);
+        if ($registration->status === 'submitted') {
+            \Illuminate\Support\Facades\DB::table('registrations')
+                ->where('id', $registration->id)
+                ->update(['status' => 'documents_uploaded', 'updated_at' => now()]);
+        }
 
         return redirect()->route('daftar-pmb.steps', $pathCode)
             ->with('success', 'Dokumen berhasil diunggah. Silakan lanjut ke tahap berikutnya.');

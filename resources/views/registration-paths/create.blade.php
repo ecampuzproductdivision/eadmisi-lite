@@ -1,65 +1,71 @@
 @extends('layouts.app')
 
 @section('content')
-<main class="p-6">
-  <div class="row mb-6">
-    <div class="col-12">
-      <a href="{{ route('registration-paths.index') }}" class="btn btn-soft-secondary mb-3 d-inline-flex align-items-center gap-2">
-        <i class="ti ti-arrow-left fs-4"></i> Kembali
-      </a>
-      <h1 class="mb-1 fw-bold">Tambah Jalur Pendaftaran</h1>
-      <p class="mb-0 text-muted">Buat jalur pendaftaran baru untuk penerimaan mahasiswa baru.</p>
+<main class="p-2">
+    {{-- Breadcrumb --}}
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('registration-paths.index') }}">Registration Paths</a></li>
+            <li class="breadcrumb-item active">Tambah Jalur Pendaftaran</li>
+        </ol>
+    </nav>
+    <hr>
+
+    {{-- Title with Back Button --}}
+    <div class="d-flex align-items-top gap-3 my-5">
+        <a href="{{ route('registration-paths.index') }}" class="btn btn-light d-flex align-items-center justify-content-center flex-shrink-0 mt-1" style="width: 36px; height: 36px;" title="Back to List">
+            <i class="ti ti-arrow-left fs-5"></i>
+        </a>
+        <div>
+            <h1 class="mb-1 fw-bold">Tambah Jalur Pendaftaran</h1>
+            <p class="text-muted mb-0">Buat jalur pendaftaran baru untuk penerimaan mahasiswa baru.</p>
+        </div>
     </div>
-  </div>
 
-  @if($errors->any())
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      <i class="ti ti-alert-circle fs-4 me-2"></i>
-      <strong>Terjadi kesalahan:</strong>
-      <ul class="mb-0 mt-1">
-        @foreach($errors->all() as $error)
-          <li>{{ $error }}</li>
-        @endforeach
-      </ul>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-  @endif
+    @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="ti ti-alert-circle fs-4 me-2"></i>
+            <strong>Terjadi kesalahan:</strong>
+            <ul class="mb-0 mt-1">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
-  <div class="card border-1 shadow-sm">
-    <div class="card-body p-5">
-      <form action="{{ route('registration-paths.store') }}" method="POST">
-        @csrf
+    {{-- Card Form --}}
+    <div class="card border-1 shadow-sm px-4 py-4">
+        <div class="col-xl-12 col-12">
+            <form action="{{ route('registration-paths.store') }}" method="POST">
+                @csrf
 
-        <div class="row g-4">
-          <div class="col-md-4">
-            <label for="kategori_jalur_id" class="form-label fw-semibold">Kategori Jalur</label>
-            <select name="kategori_jalur_id" id="kategori_jalur_id" class="form-select @error('kategori_jalur_id') is-invalid @enderror">
-              <option value="">Pilih kategori...</option>
-              @foreach($kategoris as $kategori)
-                <option value="{{ $kategori->id }}" {{ old('kategori_jalur_id') == $kategori->id ? 'selected' : '' }}>{{ $kategori->nama }}</option>
-              @endforeach
-            </select>
-            @error('kategori_jalur_id')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
+                <div class="row g-3">
+                    <div class="col-md-4 col-12">
+                        <label for="kategori_jalur_id" class="form-label fw-semibold">Kategori Jalur</label>
+                        <select name="kategori_jalur_id" id="kategori_jalur_id" class="form-select @error('kategori_jalur_id') is-invalid @enderror">
+                            <option value="">Pilih kategori...</option>
+                            @foreach($kategoris as $kategori)
+                                <option value="{{ $kategori->id }}" {{ old('kategori_jalur_id') == $kategori->id ? 'selected' : '' }}>{{ $kategori->nama }}</option>
+                            @endforeach
+                        </select>
+                        @error('kategori_jalur_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
 
-          <div class="col-md-4">
-            <label for="code" class="form-label fw-semibold">Kode Jalur <span class="text-danger">*</span></label>
-            <input type="text" name="code" id="code" class="form-control @error('code') is-invalid @enderror" placeholder="Contoh: SNBP, SNBT, MANDIRI" value="{{ old('code') }}" required maxlength="50">
-            <div class="form-text">Kode unik untuk jalur pendaftaran (huruf kapital, tanpa spasi).</div>
-            @error('code')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
+                    <div class="col-md-4 col-12">
+                        <label for="code" class="form-label fw-semibold">Kode Jalur <span class="text-danger">*</span></label>
+                        <input type="text" name="code" id="code" class="form-control @error('code') is-invalid @enderror" placeholder="Contoh: SNBP, SNBT, MANDIRI" value="{{ old('code') }}" required maxlength="50">
+                        <div class="form-text">Kode unik untuk jalur pendaftaran (huruf kapital, tanpa spasi).</div>
+                        @error('code') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
 
-          <div class="col-md-6">
-            <label for="name" class="form-label fw-semibold">Nama Jalur <span class="text-danger">*</span></label>
-            <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" placeholder="Contoh: Seleksi Nasional Berdasarkan Prestasi" value="{{ old('name') }}" required maxlength="200">
-            @error('name')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
+                    <div class="col-md-4 col-12">
+                        <label for="name" class="form-label fw-semibold">Nama Jalur <span class="text-danger">*</span></label>
+                        <input type="text" name="name" id="name" class="form-control @error('name') is-invalid @enderror" placeholder="Contoh: Seleksi Nasional Berdasarkan Prestasi" value="{{ old('name') }}" required maxlength="200">
+                        @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
 
           <div class="col-12">
             <label for="description" class="form-label fw-semibold">Deskripsi</label>
@@ -265,19 +271,17 @@
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
+                    {{-- Submit Buttons --}}
+                    <div class="col-12 d-flex gap-2 justify-content-end mt-4">
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="ti ti-device-floppy me-1"></i> Simpan
+                        </button>
+                        <a href="{{ route('registration-paths.index') }}" class="btn btn-light border">Batal</a>
+                    </div>
+                </div>
+            </form>
         </div>
-
-        <div class="mt-5 d-flex gap-3">
-          <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2 px-5">
-            <i class="ti ti-device-floppy fs-4"></i> Simpan
-          </button>
-          <a href="{{ route('registration-paths.index') }}" class="btn btn-soft-secondary d-inline-flex align-items-center gap-2">
-            Batal
-          </a>
-        </div>
-      </form>
     </div>
-  </div>
 </main>
 @endsection
 

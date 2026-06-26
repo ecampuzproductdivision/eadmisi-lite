@@ -82,10 +82,11 @@
                     @endforeach
                 </ol>
             </nav>
+            <hr>
         @endif
 
         {{-- SECTION 2: Title Header --}}
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center my-5">
             <div>
                 <h1 class="mb-1 fw-bold">{{ $title ?? 'Page Title' }}</h1>
                 @if(isset($description))

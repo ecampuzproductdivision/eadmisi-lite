@@ -41,8 +41,11 @@
                 @endif
 
                 <div class="row g-3">
-                    {{-- Permission Name (full width in 3-column layout: col-md-8 to look balanced) --}}
-                    <div class="col-md-8 col-12">
+                    {{-- Section: Permission Information --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0" style="border-bottom: 1px dashed #dee2e6;">Permission Information</h6>
+                    </div>
+                    <div class="col-md-6 col-12">
                         <label for="permission_name" class="form-label">Permission / Action Name <span class="text-danger">*</span></label>
                         <input type="text" name="permission_name" id="permission_name" class="form-control" placeholder="e.g. print, download, export" value="{{ old('permission_name') }}" required>
                         <small class="text-muted">Use lowercase alphanumeric words, no spaces. Must be unique.</small>

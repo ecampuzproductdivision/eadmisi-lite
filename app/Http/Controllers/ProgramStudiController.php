@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ActivityLogger;
+use App\Helpers\SortHelper;
 use App\Models\ProgramStudi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -14,7 +15,12 @@ class ProgramStudiController extends Controller
      */
     public function index(Request $request)
     {
-        $programStudis = ProgramStudi::latest()->paginate(10);
+        $query = ProgramStudi::query();
+
+        $programStudis = SortHelper::apply($query, [
+            'id', 'kode_prodi', 'nama_prodi', 'jurusan', 'jenjang_akademik',
+            'kelompok', 'status_aktif', 'created_at'
+        ], 'created_at', 'desc')->paginate(10);
 
         if ($request->ajax()) {
             return response()->json([

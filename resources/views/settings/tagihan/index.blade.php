@@ -39,16 +39,17 @@
         </a>
     @endslot
     @slot('table')
+        @include('components.ajax-sort-script', ['tableBodyId' => 'payment-table-body'])
         <table class="table align-middle text-nowrap mb-0 table-hover table-ead">
             <thead class="table-light">
                 <tr>
-                    <th scope="col" class="py-3">No. Invoice</th>
+                    <x-sortable-header field="invoice_number" label="No. Invoice" />
                     <th scope="col" class="py-3">Nama Pendaftar</th>
                     <th scope="col" class="py-3">Jalur</th>
                     <th scope="col" class="py-3 text-end">Nominal</th>
-                    <th scope="col" class="py-3">Status</th>
+                    <x-sortable-header field="transaction_status" label="Status" width="100px" />
                     <th scope="col" class="py-3">Batas Bayar</th>
-                    <th scope="col" class="py-3 text-center">Aksi</th>
+                    <th scope="col" class="py-3 text-center" style="width:80px;">Aksi</th>
                 </tr>
             </thead>
             <tbody id="payment-table-body">

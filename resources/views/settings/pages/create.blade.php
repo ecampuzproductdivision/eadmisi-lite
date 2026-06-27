@@ -41,7 +41,10 @@
                 @endif
 
                 <div class="row g-3">
-                    {{-- Row 1: Page Name, Page Code, Status --}}
+                    {{-- Section: Page Information --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0" style="border-bottom: 1px dashed #dee2e6;">Page Information</h6>
+                    </div>
                     <div class="col-md-3 col-12">
                         <label for="page_name" class="form-label">Page Name <span class="text-danger">*</span></label>
                         <input type="text" name="page_name" id="page_name" class="form-control" placeholder="e.g. Sales Report" value="{{ old('page_name') }}" required>
@@ -64,7 +67,12 @@
                         <div class="invalid-feedback">Please select the page status.</div>
                     </div>
 
-                    {{-- Row 2: Parent Menu, Route Path, Component Name --}}
+                    <div class="col-md-3 col-12"></div>
+
+                    {{-- Section: Route & Navigation --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0 mt-2" style="border-bottom: 1px dashed #dee2e6;">Route & Navigation</h6>
+                    </div>
                     <div class="col-md-3 col-12">
                         <label for="menu_id" class="form-label">Associated Sidebar Menu <small class="text-muted">(Optional)</small></label>
                         <select name="menu_id" id="menu_id" class="form-select">
@@ -86,6 +94,8 @@
                         <label for="component_name" class="form-label">Component / Controller <small class="text-muted">(Optional)</small></label>
                         <input type="text" name="component_name" id="component_name" class="form-control" placeholder="e.g. SalesReportController" value="{{ old('component_name') }}">
                     </div>
+
+                    <div class="col-md-3 col-12"></div>
 
                     {{-- Submit Buttons --}}
                     <div class="col-12 d-flex gap-2 justify-content-end mt-4">

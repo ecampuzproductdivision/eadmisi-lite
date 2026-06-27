@@ -15,9 +15,8 @@ class SyaratBerkasController extends Controller
      */
     public function index(Request $request)
     {
-        $templates = TemplateBerkas::withCount('syaratDokumens')
-            ->orderBy('id')
-            ->paginate(10);
+        $query = TemplateBerkas::withCount('syaratDokumens');
+        $templates = \App\Helpers\SortHelper::apply($query, ['id', 'nama_template', 'status', 'created_at'], 'id', 'desc')->paginate(10);
 
         if ($request->ajax()) {
             return response()->json([

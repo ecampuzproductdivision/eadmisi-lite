@@ -9,7 +9,7 @@ class ActivityLogController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ActivityLog::with('user')->latest();
+        $query = ActivityLog::with('user');
 
         if ($request->filled('module')) {
             $query->where('module', $request->module);

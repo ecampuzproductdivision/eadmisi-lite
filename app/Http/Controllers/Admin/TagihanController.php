@@ -13,8 +13,7 @@ class TagihanController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Payment::with(['registration.registrationPath', 'registration', 'user'])
-            ->orderBy('created_at', 'desc');
+        $query = Payment::with(['registration.registrationPath', 'registration', 'user']);
 
         if ($request->filled('status')) {
             $query->where('transaction_status', $request->status);
@@ -33,7 +32,7 @@ class TagihanController extends Controller
             });
         }
 
-        $payments = $query->paginate(15)->withQueryString();
+        $payments = \App\Helpers\SortHelper::apply($query, ['invoice_number', 'created_at', 'transaction_status'], 'created_at', 'desc')->paginate(15)->withQueryString();
 
         if ($request->ajax()) {
             return response()->json([

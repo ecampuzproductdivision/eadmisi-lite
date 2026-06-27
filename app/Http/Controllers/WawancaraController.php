@@ -15,10 +15,9 @@ class WawancaraController extends Controller
     {
         $pathIds = RegistrationPath::where('gunakan_wawancara', true)->pluck('id');
 
-        $registrations = Registration::whereIn('registration_path_id', $pathIds)
-            ->with(['user', 'registrationPath', 'wawancara', 'programStudi1'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        $query = Registration::whereIn('registration_path_id', $pathIds)
+            ->with(['user', 'registrationPath', 'wawancara', 'programStudi1']);
+        $registrations = \App\Helpers\SortHelper::apply($query, ['created_at'], 'created_at', 'desc')->paginate(15);
 
         if ($request->ajax()) {
             return response()->json([

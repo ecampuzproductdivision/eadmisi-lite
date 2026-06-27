@@ -43,6 +43,10 @@
                 @csrf
 
                 <div class="row g-3">
+                    {{-- Section: Informasi Jalur --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0" style="border-bottom: 1px dashed #dee2e6;">Informasi Jalur</h6>
+                    </div>
                     <div class="col-md-3 col-12">
                         <label for="kategori_jalur_id" class="form-label fw-semibold">Kategori Jalur</label>
                         <select name="kategori_jalur_id" id="kategori_jalur_id" class="form-select @error('kategori_jalur_id') is-invalid @enderror">
@@ -67,37 +71,45 @@
                         @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-          <div class="col-12">
-            <label for="description" class="form-label fw-semibold">Deskripsi</label>
-            <textarea name="description" id="description" rows="3" class="form-control @error('description') is-invalid @enderror" placeholder="Deskripsi jalur pendaftaran...">{{ old('description') }}</textarea>
-            @error('description')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
+                    <div class="col-md-3 col-12"></div>
 
-          <div class="col-md-4">
-            <label for="registration_start" class="form-label fw-semibold">Tanggal Mulai</label>
-            <input type="date" name="registration_start" id="registration_start" class="form-control @error('registration_start') is-invalid @enderror" value="{{ old('registration_start') }}">
-            @error('registration_start')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
+                    <div class="col-12">
+                        <label for="description" class="form-label fw-semibold">Deskripsi</label>
+                        <textarea name="description" id="description" rows="3" class="form-control @error('description') is-invalid @enderror" placeholder="Deskripsi jalur pendaftaran...">{{ old('description') }}</textarea>
+                        @error('description')
+                          <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-          <div class="col-md-4">
-            <label for="registration_end" class="form-label fw-semibold">Tanggal Akhir</label>
-            <input type="date" name="registration_end" id="registration_end" class="form-control @error('registration_end') is-invalid @enderror" value="{{ old('registration_end') }}">
-            @error('registration_end')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
+                    {{-- Section: Periode & Kuota --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0 mt-2" style="border-bottom: 1px dashed #dee2e6;">Periode & Kuota</h6>
+                    </div>
+                    <div class="col-md-3 col-12">
+                        <label for="registration_start" class="form-label fw-semibold">Tanggal Mulai</label>
+                        <input type="date" name="registration_start" id="registration_start" class="form-control @error('registration_start') is-invalid @enderror" value="{{ old('registration_start') }}">
+                        @error('registration_start')
+                          <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
 
-          <div class="col-md-4">
-            <label for="quota" class="form-label fw-semibold">Kuota</label>
-            <input type="number" name="quota" id="quota" class="form-control @error('quota') is-invalid @enderror" placeholder="Kosongkan jika tidak terbatas" value="{{ old('quota') }}" min="0">
-            @error('quota')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
+                    <div class="col-md-3 col-12">
+                        <label for="registration_end" class="form-label fw-semibold">Tanggal Akhir</label>
+                        <input type="date" name="registration_end" id="registration_end" class="form-control @error('registration_end') is-invalid @enderror" value="{{ old('registration_end') }}">
+                        @error('registration_end')
+                          <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-3 col-12">
+                        <label for="quota" class="form-label fw-semibold">Kuota</label>
+                        <input type="number" name="quota" id="quota" class="form-control @error('quota') is-invalid @enderror" placeholder="Kosongkan jika tidak terbatas" value="{{ old('quota') }}" min="0">
+                        @error('quota')
+                          <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-3 col-12"></div>
 
 
           <!-- Program Studi Ditawarkan (Tag Input) -->

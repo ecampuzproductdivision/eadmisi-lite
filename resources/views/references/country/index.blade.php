@@ -45,12 +45,12 @@
         <table class="table align-middle text-nowrap mb-0 table-hover table-dotted table-ead">
             <thead class="table-light">
                 <tr>
-                    <th scope="col" class="py-3">Nama Negara</th>
-                    <th scope="col" class="py-3">Kode Negara (ISO 2)</th>
-                    <th scope="col" class="py-3">Kode Negara (ISO 3)</th>
-                    <th scope="col" class="py-3">Kode Telepon</th>
-                    <th scope="col" class="py-3">Status</th>
-                    <th scope="col" class="py-3 text-end">Aksi</th>
+                    <x-sortable-header field="name" label="Nama Negara" />
+                    <x-sortable-header field="iso2" label="Kode ISO 2" width="160px" />
+                    <x-sortable-header field="iso3" label="Kode ISO 3" width="160px" />
+                    <x-sortable-header field="phone_code" label="Kode Telepon" width="130px" />
+                    <x-sortable-header field="status" label="Status" width="110px" />
+                    <th scope="col" class="py-3 text-end" width="100px">Aksi</th>
                 </tr>
             </thead>
             <tbody id="country-table-body">
@@ -82,6 +82,8 @@
     border-bottom: none !important;
 }
 </style>
+
+@include('components.ajax-sort-script', ['tableBodyId' => 'country-table-body'])
 
 @push('scripts')
 <script>

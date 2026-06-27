@@ -38,13 +38,14 @@
         </div>
     @endslot
     @slot('table')
+        @include('components.ajax-sort-script', ['tableBodyId' => 'log-table-body'])
         <table class="table align-middle text-nowrap mb-0 table-hover table-ead">
             <thead class="table-light">
                 <tr>
-                    <th scope="col" class="py-3">Time</th>
+                    <x-sortable-header field="created_at" label="Time" />
                     <th scope="col" class="py-3">User</th>
-                    <th scope="col" class="py-3">Action</th>
-                    <th scope="col" class="py-3">Module</th>
+                    <x-sortable-header field="action" label="Action" />
+                    <x-sortable-header field="module" label="Module" />
                     <th scope="col" class="py-3">Description</th>
                     <th scope="col" class="py-3">IP Address</th>
                 </tr>

@@ -42,16 +42,17 @@
         </a>
     @endslot
     @slot('table')
+        @include('components.ajax-sort-script', ['tableBodyId' => 'page-table-body'])
         <table class="table align-middle text-nowrap mb-0 table-hover table-ead">
             <thead class="table-light">
                 <tr>
-                    <th scope="col" class="py-3">Page Name</th>
-                    <th scope="col" class="py-3">Page Code</th>
-                    <th scope="col" class="py-3">Parent Menu</th>
-                    <th scope="col" class="py-3">Route Path</th>
-                    <th scope="col" class="py-3">Component / View</th>
-                    <th scope="col" class="py-3">Status</th>
-                    <th scope="col" class="py-3 text-end">Actions</th>
+                    <x-sortable-header field="page_name" label="Page Name" />
+                    <x-sortable-header field="page_code" label="Page Code" />
+                    <x-sortable-header field="menu_id" label="Parent Menu" />
+                    <x-sortable-header field="url" label="Route Path" />
+                    <x-sortable-header field="component_name" label="Component / View" />
+                    <x-sortable-header field="is_active" label="Status" width="90px" />
+                    <th scope="col" class="py-3 text-end" width="100px">Actions</th>
                 </tr>
             </thead>
             <tbody id="page-table-body">

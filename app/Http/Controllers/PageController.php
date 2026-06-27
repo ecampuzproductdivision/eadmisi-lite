@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Page;
 use App\Models\Menu;
+use App\Helpers\SortHelper;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Page::with('menu')->orderBy('sort_order');
+        $query = Page::with('menu');
 
         if ($request->filled('search')) {
             $s = $request->search;
@@ -24,7 +25,9 @@ class PageController extends Controller
             $query->where('is_active', $request->status === 'active');
         }
 
-        $pages = $query->get();
+        $pages = SortHelper::apply($query, [
+            'page_name', 'page_code', 'menu_id', 'url', 'route_path', 'component_name', 'sort_order', 'is_active', 'created_at'
+        ], 'sort_order', 'asc')->get();
 
         if ($request->ajax()) {
             return response()->json([

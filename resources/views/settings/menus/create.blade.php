@@ -41,7 +41,10 @@
                 @endif
 
                 <div class="row g-3">
-                    {{-- Row 1: Menu Name, Menu Code, Status --}}
+                    {{-- Section: Menu Information --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0" style="border-bottom: 1px dashed #dee2e6;">Menu Information</h6>
+                    </div>
                     <div class="col-md-3 col-12">
                         <label for="menu_name" class="form-label">Menu Name <span class="text-danger">*</span></label>
                         <input type="text" name="menu_name" id="menu_name" class="form-control" placeholder="e.g. Invoicing" value="{{ old('menu_name') }}" required>
@@ -63,7 +66,12 @@
                         <div class="invalid-feedback">Please select the menu status.</div>
                     </div>
 
-                    {{-- Row 2: Parent Menu, Icon, URL --}}
+                    <div class="col-md-3 col-12"></div>
+
+                    {{-- Section: Navigation Properties --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0 mt-2" style="border-bottom: 1px dashed #dee2e6;">Navigation Properties</h6>
+                    </div>
                     <div class="col-md-3 col-12">
                         <label for="parent_id" class="form-label">Parent Menu <small class="text-muted">(Optional)</small></label>
                         <select name="parent_id" id="parent_id" class="form-select">
@@ -89,7 +97,12 @@
                         <small class="text-muted">Leave empty for folder menus that only serve as dropdown toggles.</small>
                     </div>
 
-                    {{-- Row 3: Sort Order (fit in 1/3 width) --}}
+                    <div class="col-md-3 col-12"></div>
+
+                    {{-- Section: Ordering --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0 mt-2" style="border-bottom: 1px dashed #dee2e6;">Ordering</h6>
+                    </div>
                     <div class="col-md-3 col-12">
                         <label for="sort_order" class="form-label">Sort Order <span class="text-danger">*</span></label>
                         <input type="number" name="sort_order" id="sort_order" class="form-control" value="{{ old('sort_order', 0) }}" required>

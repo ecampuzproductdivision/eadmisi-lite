@@ -42,17 +42,18 @@
         </a>
     @endslot
     @slot('table')
+        @include('components.ajax-sort-script', ['tableBodyId' => 'prodi-table-body'])
         <table class="table table-hover align-middle table-ead">
             <thead class="table-light">
                 <tr>
                     <th scope="col" class="py-3" style="width: 60px;">No</th>
-                    <th scope="col" class="py-3">Kode Prodi</th>
-                    <th scope="col" class="py-3">Nama Prodi</th>
-                    <th scope="col" class="py-3">Jurusan</th>
-                    <th scope="col" class="py-3">Jenjang</th>
-                    <th scope="col" class="py-3">Program</th>
-                    <th scope="col" class="py-3">Kelompok</th>
-                    <th scope="col" class="py-3">Status</th>
+                    <x-sortable-header field="kode_prodi" label="Kode Prodi" />
+                    <x-sortable-header field="nama_prodi" label="Nama Prodi" />
+                    <x-sortable-header field="jurusan" label="Jurusan" />
+                    <x-sortable-header field="jenjang_akademik" label="Jenjang" width="80px" />
+                    <x-sortable-header field="program" label="Program" />
+                    <x-sortable-header field="kelompok" label="Kelompok" />
+                    <x-sortable-header field="status_aktif" label="Status" width="90px" />
                     <th scope="col" class="py-3 text-end" style="width: 150px;">Aksi</th>
                 </tr>
             </thead>

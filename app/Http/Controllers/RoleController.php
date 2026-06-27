@@ -13,7 +13,8 @@ class RoleController extends Controller
 {
     public function index(Request $request)
     {
-        $roles = Role::withCount('users')->paginate(10);
+        $query = Role::withCount('users');
+        $roles = \App\Helpers\SortHelper::apply($query, ['role_name', 'role_code', 'status', 'created_at'], 'created_at', 'desc')->paginate(10);
 
         if ($request->ajax()) {
             return response()->json([

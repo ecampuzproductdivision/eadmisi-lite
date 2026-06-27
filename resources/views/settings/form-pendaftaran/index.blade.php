@@ -42,16 +42,17 @@
         </a>
     @endslot
     @slot('table')
+        @include('components.ajax-sort-script', ['tableBodyId' => 'form-table-body'])
         <table class="table table-hover align-middle table-ead">
             <thead class="bg-light">
                 <tr>
                     <th style="width: 60px;" class="py-3">No</th>
-                    <th class="py-3">Nama Form</th>
+                    <x-sortable-header field="nama" label="Nama Form" />
                     <th class="py-3">Deskripsi</th>
                     <th class="py-3 text-center">Field</th>
                     <th class="py-3 text-center">Status</th>
-                    <th class="py-3 text-center">Dibuat</th>
-                    <th class="py-3 text-center">Aksi</th>
+                    <x-sortable-header field="created_at" label="Dibuat" align="center" />
+                    <th class="py-3 text-center" style="width:90px;">Aksi</th>
                 </tr>
             </thead>
             <tbody id="form-table-body">

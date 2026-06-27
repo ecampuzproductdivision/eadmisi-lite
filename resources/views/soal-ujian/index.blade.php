@@ -34,14 +34,15 @@
         </div>
     @endslot
     @slot('table')
+        @include('components.ajax-sort-script', ['tableBodyId' => 'paket-table-body'])
         <table class="table align-middle text-nowrap mb-0 table-hover table-ead">
             <thead class="table-light">
                 <tr>
                     <th scope="col" class="py-3" style="width: 50px;">No</th>
-                    <th scope="col" class="py-3">Nama Paket</th>
+                    <x-sortable-header field="nama_paket" label="Nama Paket" />
                     <th scope="col" class="py-3 text-center" style="width: 80px;">Total Soal</th>
                     <th scope="col" class="py-3 text-center" style="width: 80px;">Total Skor</th>
-                    <th scope="col" class="py-3" style="width: 100px;">Status</th>
+                    <x-sortable-header field="status_aktif" label="Status" width="100px" />
                     <th scope="col" class="py-3 text-end" style="width: 320px;">Aksi</th>
                 </tr>
             </thead>

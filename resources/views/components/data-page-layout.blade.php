@@ -1,50 +1,6 @@
 {{-- 
   Reusable Data Page Layout Component
   Usage: 
-  @component('components.data-page-layout')
-      @slot('breadcrumbs', [
-          ['label' => 'Home', 'url' => route('home')],
-          ['label' => 'Master Data', 'url' => '#'],
-          ['label' => 'Negara', 'active' => true],
-      ])
-      @slot('title', 'Negara')
-      @slot('description', 'Kelola data negara untuk referensi alamat dan kode telepon internasional.')
-      @slot('actions')
-          <a href="{{ route('country.create') }}" class="btn btn-dark d-inline-flex align-items-center gap-2">
-              <i class="ti ti-plus fs-4"></i> Tambah
-          </a>
-      @endslot
-      @slot('filters')
-          <div class="col-md-3 col-12">
-              <div class="input-group">
-                  <span class="input-group-text bg-transparent border-end-0"><i class="ti ti-search text-muted"></i></span>
-                  <input type="text" name="search" class="form-control border-start-0" placeholder="Cari..." value="{{ request('search') }}">
-              </div>
-          </div>
-          <div class="col-md-2 col-12">
-              <select name="status" class="form-select">
-                  <option value="">-- Status --</option>
-                  <option value="active">Aktif</option>
-                  <option value="inactive">Nonaktif</option>
-              </select>
-          </div>
-            <div class="col-md-3 col-12 d-flex gap-2">
-              <button type="submit" class="btn btn-primary"><i class="ti ti-filter"></i> Terapkan</button>
-              <a href="{{ url()->current() }}" class="btn btn-subtle-primary px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
-          </div>
-      @endslot
-      @slot('exports')
-          <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.location.href='{{ url()->current() }}?export=xls'">
-              <i class="ti ti-file-spreadsheet"></i> .xls
-          </a>
-          <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.print()">
-              <i class="ti ti-printer"></i> Print
-          </a>
-      @endslot
-      @slot('table')
-          @include('references.country.partials.country_rows')
-      @endslot
-  @endcomponent
 --}}
 <main class="p-2">
     {{-- Success/Error Alerts --}}
@@ -106,28 +62,32 @@
         {{ $cards }}
     @endif
 
-    {{-- Main Card: Filters + Table (merged) — only rendered when there's content --}}
+    {{-- Main Card: Card Header (filters/exports/showing info) + Card Body (scrollable table with sticky header) --}}
     @if(isset($filters) || isset($exports) || isset($table) || isset($pagination))
-        <div class="card border-1 shadow-sm px-4 py-4 data-page-card">
-            {{-- Filter & Export Row (Non-scrollable) --}}
-            <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-end mb-4 data-page-filters">
-                <div class="col-md-10 col-12">
-                    <div class="row g-2">
-                        {{ $filters ?? '' }}
-                    </div>
+        <div class="card border-1 shadow-sm data-page-card">
+            {{-- Card Header: Filters and Exports --}}
+            @if(isset($filters) || isset($exports))
+                <div class="card-header border-bottom-0 bg-transparent px-4 pt-4 pb-0">
+                    <form method="GET" action="{{ url()->current() }}" class="row g-2 align-items-end data-page-filters">
+                        <div class="col-md-10 col-12">
+                            <div class="row g-2">
+                                {{ $filters ?? '' }}
+                            </div>
+                        </div>
+                        @if(isset($exports))
+                            <div class="col-md-2 col-12 d-flex gap-2 justify-content-md-end">
+                                {{ $exports }}
+                            </div>
+                        @endif
+                    </form>
                 </div>
-                @if(isset($exports))
-                    <div class="col-md-2 col-12 d-flex gap-2 justify-content-md-end">
-                        {{ $exports }}
-                    </div>
-                @endif
-            </form>
+            @endif
 
-            {{-- Table Content (Scrollable) --}}
+            {{-- Showing Info Row (in card-header as well) --}}
             @if(isset($table))
-                <div class="table-responsive data-page-table-scroll">
+                <div class="card-header border-bottom-0 bg-transparent px-4 pt-3 pb-2">
                     @if(isset($showingInfo))
-                        <div class="showing-info-row d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <i class="ti ti-database me-1"></i>
                                 <strong>{!! $showingInfo !!}</strong>
@@ -145,13 +105,19 @@
                             $dataCount = method_exists($data, 'total') ? $data->total() : $data->count();
                             $dataShowing = $data->count();
                         @endphp
-                        <div class="showing-info-row d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <i class="ti ti-database me-1"></i>
                                 <strong>Showing <span id="showing-count">{{ $dataShowing }}</span> from <span id="total-count">{{ $dataCount }}</span> data</strong>
                             </div>
                         </div>
                     @endif
+                </div>
+            @endif
+
+            {{-- Card Body: Scrollable Table with Sticky Header --}}
+            @if(isset($table))
+                <div class="card-body px-4 py-0 data-page-table-container">
                     {{ $table }}
                     @if(isset($sentinel))
                         <div id="{{ $sentinelId ?? 'scroll-sentinel' }}" class="text-center py-2"></div>
@@ -161,8 +127,10 @@
 
             {{-- Pagination --}}
             @if(isset($pagination))
-                <div class="mt-3 data-page-pagination">
-                    {{ $pagination }}
+                <div class="card-footer border-top-0 bg-transparent px-4 pt-3 pb-4">
+                    <div class="data-page-pagination">
+                        {{ $pagination }}
+                    </div>
                 </div>
             @endif
         </div>

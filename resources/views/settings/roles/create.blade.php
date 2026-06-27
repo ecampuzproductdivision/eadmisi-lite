@@ -41,7 +41,10 @@
                 @endif
 
                 <div class="row g-3">
-                    {{-- Row 1: Role Name, Role Code, Status --}}
+                    {{-- Section: Role Information --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0" style="border-bottom: 1px dashed #dee2e6;">Role Information</h6>
+                    </div>
                     <div class="col-md-3 col-12">
                         <label for="role_name" class="form-label">Role Name <span class="text-danger">*</span></label>
                         <input type="text" name="role_name" id="role_name" class="form-control" placeholder="e.g. Finance Officer" value="{{ old('role_name') }}" required>
@@ -64,7 +67,12 @@
                         <div class="invalid-feedback">Please select the status.</div>
                     </div>
 
-                    {{-- Row 2: Description (full width) --}}
+                    <div class="col-md-3 col-12"></div>
+
+                    {{-- Section: Description --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0 mt-2" style="border-bottom: 1px dashed #dee2e6;">Description</h6>
+                    </div>
                     <div class="col-12">
                         <label for="description" class="form-label">Description</label>
                         <textarea name="description" id="description" class="form-control" rows="3" placeholder="Provide a short description of what this role does...">{{ old('description') }}</textarea>

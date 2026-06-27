@@ -15,9 +15,8 @@ class PaketSoalController extends Controller
      */
     public function index(Request $request)
     {
-        $pakets = PaketSoal::withCount('soalUjians')
-            ->orderBy('id')
-            ->paginate(10);
+        $query = PaketSoal::withCount('soalUjians');
+        $pakets = \App\Helpers\SortHelper::apply($query, ['id', 'nama_paket', 'status', 'created_at'], 'id', 'desc')->paginate(10);
 
         if ($request->ajax()) {
             return response()->json([

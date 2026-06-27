@@ -41,7 +41,10 @@
                 @endif
 
                 <div class="row g-3">
-                    {{-- Row 1: Name, Email, Status --}}
+                    {{-- Section: Account Information --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0" style="border-bottom: 1px dashed #dee2e6;">Account Information</h6>
+                    </div>
                     <div class="col-md-3 col-12">
                         <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
                         <input type="text" name="name" id="name" class="form-control" placeholder="e.g. John Doe" value="{{ old('name') }}" required>
@@ -63,7 +66,12 @@
                         <div class="invalid-feedback">Please select the status.</div>
                     </div>
 
-                    {{-- Row 2: Password, Confirm Password --}}
+                    <div class="col-md-3 col-12"></div>
+
+                    {{-- Section: Security --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0 mt-2" style="border-bottom: 1px dashed #dee2e6;">Security</h6>
+                    </div>
                     <div class="col-md-3 col-12">
                         <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
                         <input type="password" name="password" id="password" class="form-control" required>
@@ -76,9 +84,14 @@
                         <div class="invalid-feedback">Please confirm the password.</div>
                     </div>
 
-                    {{-- Row 3: Assign Roles (full width) --}}
+                    <div class="col-md-6 col-12"></div>
+
+                    {{-- Section: Role Assignment --}}
                     <div class="col-12">
-                        <label class="form-label d-block fw-semibold mb-2">Assign Roles <span class="text-danger">*</span></label>
+                        <h6 class="text-secondary fw-bold pb-2 mb-0 mt-2" style="border-bottom: 1px dashed #dee2e6;">Role Assignment</h6>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label d-block fw-semibold mb-2 mt-2">Assign Roles <span class="text-danger">*</span></label>
                         <div class="row g-3">
                             @forelse($roles as $role)
                                 <div class="col-md-4 col-sm-6 col-12">

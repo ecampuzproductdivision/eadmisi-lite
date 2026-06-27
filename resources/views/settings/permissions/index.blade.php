@@ -35,10 +35,11 @@
         </a>
     @endslot
     @slot('table')
+        @include('components.ajax-sort-script', ['tableBodyId' => 'permission-table-body'])
         <table class="table align-middle text-nowrap mb-0 table-hover table-ead">
             <thead class="table-light">
                 <tr>
-                    <th scope="col" class="py-3">Action Token</th>
+                    <x-sortable-header field="permission_name" label="Action Token" />
                     <th scope="col" class="py-3">Dynamic PHP Usage Example</th>
                     <th scope="col" class="py-3 text-end">Actions</th>
                 </tr>

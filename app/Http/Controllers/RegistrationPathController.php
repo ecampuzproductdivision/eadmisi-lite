@@ -26,10 +26,9 @@ class RegistrationPathController extends Controller
     public function index(Request $request)
     {
         // Filter paths by the currently active period
-        $paths = RegistrationPath::with('kategori', 'formPendaftaran')
-            ->byActivePeriode()
-            ->orderBy('code')
-            ->paginate(10);
+        $query = RegistrationPath::with('kategori', 'formPendaftaran')
+            ->byActivePeriode();
+        $paths = \App\Helpers\SortHelper::apply($query, ['code', 'name', 'biaya', 'kuota', 'is_active'], 'code', 'asc')->paginate(10);
 
         if ($request->ajax()) {
             return response()->json([

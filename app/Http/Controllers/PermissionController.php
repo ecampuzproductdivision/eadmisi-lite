@@ -9,7 +9,8 @@ class PermissionController extends Controller
 {
     public function index(Request $request)
     {
-        $permissions = Permission::paginate(10);
+        $query = Permission::query();
+        $permissions = \App\Helpers\SortHelper::apply($query, ['permission_name', 'created_at'], 'created_at', 'desc')->paginate(10);
 
         if ($request->ajax()) {
             return response()->json([

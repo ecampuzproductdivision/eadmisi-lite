@@ -58,13 +58,13 @@
         <table class="table table-hover align-middle mb-0 no-sticky-global table-ead">
             <thead class="bg-light">
                 <tr>
-                    <th class="ps-4 py-3 fw-semibold">#</th>
+                    <th class="ps-4 py-3 fw-semibold" style="width:50px;">#</th>
                     <th class="py-3 fw-semibold">Nama Lengkap</th>
                     <th class="py-3 fw-semibold">Jalur</th>
                     <th class="py-3 fw-semibold">No. HP</th>
                     <th class="py-3 fw-semibold">Tgl Daftar</th>
                     <th class="py-3 fw-semibold">Status</th>
-                    <th class="pe-4 py-3 fw-semibold text-end">Aksi</th>
+                    <th class="pe-4 py-3 fw-semibold text-end" style="width:90px;">Aksi</th>
                 </tr>
             </thead>
             <tbody>

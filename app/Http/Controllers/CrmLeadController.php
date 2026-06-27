@@ -23,7 +23,7 @@ class CrmLeadController extends Controller
             });
         }
 
-        $leads = $query->orderBy('created_at', 'desc')->paginate(15);
+        $leads = \App\Helpers\SortHelper::apply($query, ['nama', 'created_at', 'status'], 'created_at', 'desc')->paginate(15);
 
         $totalLeads = CrmLead::count();
         $newLeads = CrmLead::where('status', 'New')->count();

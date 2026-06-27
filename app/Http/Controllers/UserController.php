@@ -12,7 +12,8 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $users = User::with('roles')->paginate(10);
+        $query = User::with('roles');
+        $users = \App\Helpers\SortHelper::apply($query, ['name', 'email', 'created_at'], 'created_at', 'desc')->paginate(10);
         $roles = Role::where('status', 'active')->get();
 
         if ($request->ajax()) {

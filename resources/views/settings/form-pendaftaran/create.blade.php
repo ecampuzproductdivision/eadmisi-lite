@@ -42,15 +42,21 @@
             <form action="{{ route('settings.form-pendaftaran.store') }}" method="POST">
                 @csrf
                 <div class="row g-3">
-                    <div class="col-md-12 col-12">
+                    {{-- Section: Informasi Form --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0" style="border-bottom: 1px dashed #dee2e6;">Informasi Form</h6>
+                    </div>
+                    <div class="col-md-6 col-12">
                         <label class="form-label fw-semibold">Nama Form <span class="text-danger">*</span></label>
-                        <input type="text" name="nama" class="form-control form-control-lg @error('nama') is-invalid @enderror" value="{{ old('nama') }}" placeholder="Contoh: Form Pendaftaran Gelombang 1" required>
+                        <input type="text" name="nama" class="form-control @error('nama') is-invalid @enderror" value="{{ old('nama') }}" placeholder="Contoh: Form Pendaftaran Gelombang 1" required>
                         @error('nama')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <div class="col-md-12 col-12">
+                    <div class="col-md-6 col-12"></div>
+
+                    <div class="col-12">
                         <label class="form-label fw-semibold">Deskripsi (opsional)</label>
                         <textarea name="deskripsi" class="form-control @error('deskripsi') is-invalid @enderror" rows="3" placeholder="Penjelasan singkat tentang form ini">{{ old('deskripsi') }}</textarea>
                         @error('deskripsi')

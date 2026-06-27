@@ -79,16 +79,17 @@
         <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.print()"><i class="ti ti-printer"></i> Print</a>
     @endslot
     @slot('table')
+        @include('components.ajax-sort-script', ['tableBodyId' => 'leads-table-body'])
         <table class="table table-hover align-middle mb-0 table-ead">
             <thead class="table-light">
                 <tr>
-                    <th class="text-center py-3" style="width:50px;">No</th>
-                    <th class="py-3">Tanggal Masuk</th>
-                    <th class="py-3">Nama Prospek</th>
+                    <th scope="col" class="text-center py-3" style="width:50px;">No</th>
+                    <x-sortable-header field="created_at" label="Tanggal Masuk" />
+                    <x-sortable-header field="nama" label="Nama Prospek" />
                     <th class="py-3">WhatsApp</th>
                     <th class="py-3">Pertanyaan</th>
-                    <th class="py-3">Status</th>
-                    <th class="text-center py-3">Aksi</th>
+                    <x-sortable-header field="status" label="Status" width="100px" />
+                    <th class="text-center py-3" style="width:80px;">Aksi</th>
                 </tr>
             </thead>
             <tbody id="leads-table-body">

@@ -43,7 +43,10 @@
                 @csrf
 
                 <div class="row g-3">
-                    {{-- Row 1: Kode Prodi, Label NIM, Label Prodi No Pendaftaran --}}
+                    {{-- Section: Kode & Label --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0" style="border-bottom: 1px dashed #dee2e6;">Kode & Label</h6>
+                    </div>
                     <div class="col-md-3 col-12">
                         <label for="kode_prodi" class="form-label fw-semibold">Kode Program Studi <span class="text-danger">*</span></label>
                         <input type="text" name="kode_prodi" id="kode_prodi" class="form-control @error('kode_prodi') is-invalid @enderror" placeholder="Contoh: TI, AK, MN" value="{{ old('kode_prodi') }}" required maxlength="20">
@@ -65,7 +68,12 @@
                         @error('label_prodi_no_pendaftaran') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-                    {{-- Row 2: Nama Prodi, Jurusan, Jenjang --}}
+                    <div class="col-md-3 col-12"></div>
+
+                    {{-- Section: Identitas Prodi --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0 mt-2" style="border-bottom: 1px dashed #dee2e6;">Identitas Program Studi</h6>
+                    </div>
                     <div class="col-md-3 col-12">
                         <label for="nama_prodi" class="form-label fw-semibold">Nama Program Studi <span class="text-danger">*</span></label>
                         <input type="text" name="nama_prodi" id="nama_prodi" class="form-control @error('nama_prodi') is-invalid @enderror" placeholder="Contoh: Teknik Informatika" value="{{ old('nama_prodi') }}" required maxlength="200">
@@ -91,7 +99,12 @@
                         @error('jenjang_akademik') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-                    {{-- Row 3: Program, Kelompok, Status Aktif --}}
+                    <div class="col-md-3 col-12"></div>
+
+                    {{-- Section: Status & Pengaturan --}}
+                    <div class="col-12">
+                        <h6 class="text-secondary fw-bold pb-2 mb-0 mt-2" style="border-bottom: 1px dashed #dee2e6;">Status & Pengaturan</h6>
+                    </div>
                     <div class="col-md-3 col-12">
                         <label for="program" class="form-label fw-semibold">Program <span class="text-danger">*</span></label>
                         <select name="program" id="program" class="form-select @error('program') is-invalid @enderror" required>
@@ -131,6 +144,8 @@
                         </div>
                         @error('status_aktif') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                     </div>
+
+                    <div class="col-md-3 col-12"></div>
 
                     {{-- Submit Buttons --}}
                     <div class="col-12 d-flex gap-2 justify-content-end mt-4">

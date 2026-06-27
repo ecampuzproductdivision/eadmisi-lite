@@ -9,9 +9,9 @@
     @slot('title', 'Periode Akademik')
     @slot('description', 'Kelola tahun akademik dan semester aktif untuk pendaftaran mahasiswa baru.')
     @slot('actions')
-        <button type="button" class="btn btn-dark d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#periodeModal">
+        <a href="{{ route('periode.create') }}" class="btn btn-dark d-inline-flex align-items-center gap-2">
             <i class="ti ti-plus fs-4"></i> Tambah Periode Baru
-        </button>
+        </a>
     @endslot
     @slot('filters')
         <div class="col-md-3 col-12">
@@ -42,13 +42,14 @@
         </a>
     @endslot
     @slot('table')
+        @include('components.ajax-sort-script', ['tableBodyId' => 'periode-table-body'])
         <table class="table align-middle table-hover table-ead">
             <thead class="table-light">
                 <tr>
                     <th scope="col" class="py-3" style="width: 60px;">No</th>
-                    <th scope="col" class="py-3">Tahun Akademik</th>
-                    <th scope="col" class="py-3">Periode Semester</th>
-                    <th scope="col" class="py-3">Status Aktif</th>
+                    <x-sortable-header field="tahun_akademik" label="Tahun Akademik" />
+                    <x-sortable-header field="semester" label="Periode Semester" />
+                    <x-sortable-header field="status_aktif" label="Status Aktif" width="120px" />
                     <th scope="col" class="py-3 text-end" style="width: 160px;">Aksi</th>
                 </tr>
             </thead>
@@ -85,14 +86,9 @@
                         </td>
                         <td class="py-3 text-end">
                             <div class="d-inline-flex gap-2">
-                                <button type="button" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1"
-                                        data-bs-toggle="modal" data-bs-target="#periodeModal"
-                                        data-id="{{ $periode->id }}"
-                                        data-tahun-akademik="{{ $periode->tahun_akademik }}"
-                                        data-semester="{{ $periode->semester }}"
-                                        data-status-aktif="{{ $periode->status_aktif ? 'true' : 'false' }}">
+                                <a href="{{ route('periode.edit', $periode) }}" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1">
                                     <i class="ti ti-edit fs-5"></i>
-                                </button>
+                                </a>
                                 <form action="{{ route('periode.destroy', $periode) }}" method="POST" onsubmit="return confirm('Hapus periode {{ $periode->label }}?')">
                                     @csrf
                                     @method('DELETE')
@@ -108,9 +104,9 @@
                         <td colspan="5" class="text-center py-5">
                             <i class="ti ti-calendar-off text-muted" style="font-size: 3rem;"></i>
                             <p class="mt-3 mb-0 text-muted">Belum ada periode akademik.</p>
-                            <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#periodeModal">
-                                Tambah Periode Pertama
-                            </button>
+                                <a href="{{ route('periode.create') }}" class="btn btn-primary mt-3">
+                                    Tambah Periode Pertama
+                                </a>
                         </td>
                     </tr>
                 @endforelse
@@ -123,118 +119,4 @@
         @endif
     @endslot
 @endcomponent
-
-<!-- Add/Edit Modal -->
-<div class="modal fade" id="periodeModal" tabindex="-1" aria-labelledby="periodeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <form id="periodeForm" method="POST" action="{{ route('periode.store') }}">
-        @csrf
-        <div class="modal-header">
-          <h5 class="modal-title" id="periodeModalLabel">Tambah Periode Akademik</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" name="periode_id" id="periode_id" value="">
-          <div class="mb-3">
-            <label for="tahun_akademik" class="form-label">Tahun Akademik <span class="text-danger">*</span></label>
-            <select class="form-select @error('tahun_akademik') is-invalid @enderror" id="tahun_akademik" name="tahun_akademik" required>
-              <option value="">-- Pilih Tahun Akademik --</option>
-              @php
-                $currentYear = date('Y');
-                $startYear = $currentYear - 7;
-                $endYear = $currentYear + 7;
-              @endphp
-              @for($year = $startYear; $year <= $endYear; $year++)
-                @php $label = $year . '/' . ($year + 1); @endphp
-                <option value="{{ $label }}" {{ old('tahun_akademik') === $label ? 'selected' : '' }}>{{ $label }}</option>
-              @endfor
-            </select>
-            @error('tahun_akademik')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-          <div class="mb-3">
-            <label for="semester" class="form-label">Periode Semester <span class="text-danger">*</span></label>
-            <select class="form-select @error('semester') is-invalid @enderror" id="semester" name="semester" required>
-              <option value="">-- Pilih Semester --</option>
-              <option value="Ganjil" {{ old('semester') === 'Ganjil' ? 'selected' : '' }}>Ganjil</option>
-              <option value="Genap" {{ old('semester') === 'Genap' ? 'selected' : '' }}>Genap</option>
-              <option value="Pendek" {{ old('semester') === 'Pendek' ? 'selected' : '' }}>Pendek</option>
-            </select>
-            @error('semester')
-              <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Status Aktif</label>
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" role="switch" id="status_aktif" name="status_aktif" value="1" {{ old('status_aktif') ? 'checked' : '' }}>
-              <label class="form-check-label" for="status_aktif">Aktifkan periode ini</label>
-            </div>
-            <small class="text-muted">Hanya satu periode yang dapat aktif dalam satu waktu.</small>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-primary" id="btnSave">Simpan</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const periodeModal = document.getElementById('periodeModal');
-  const form = document.getElementById('periodeForm');
-  const modalTitle = document.getElementById('periodeModalLabel');
-  const btnSave = document.getElementById('btnSave');
-  const idField = document.getElementById('periode_id');
-  const tahunField = document.getElementById('tahun_akademik');
-  const semesterField = document.getElementById('semester');
-  const statusField = document.getElementById('status_aktif');
-
-  periodeModal.addEventListener('show.bs.modal', function(event) {
-    const button = event.relatedTarget;
-    const id = button.getAttribute('data-id');
-    const tahunAkademik = button.getAttribute('data-tahun-akademik');
-    const semester = button.getAttribute('data-semester');
-    const statusAktif = button.getAttribute('data-status-aktif');
-
-    if (id) {
-      modalTitle.textContent = 'Edit Periode Akademik';
-      btnSave.textContent = 'Perbarui';
-      idField.value = id;
-      tahunField.value = tahunAkademik;
-      semesterField.value = semester;
-      statusField.checked = statusAktif === 'true';
-      form.action = '{{ route("periode.update", ":id") }}'.replace(':id', id);
-      if (!form.querySelector('input[name="_method"]')) {
-        const methodInput = document.createElement('input');
-        methodInput.type = 'hidden';
-        methodInput.name = '_method';
-        methodInput.value = 'PUT';
-        form.appendChild(methodInput);
-      }
-    } else {
-      modalTitle.textContent = 'Tambah Periode Akademik';
-      btnSave.textContent = 'Simpan';
-      idField.value = '';
-      tahunField.value = '';
-      semesterField.value = '';
-      statusField.checked = false;
-      form.action = '{{ route("periode.store") }}';
-      const methodInput = form.querySelector('input[name="_method"]');
-      if (methodInput) methodInput.remove();
-    }
-  });
-
-  periodeModal.addEventListener('hidden.bs.modal', function() {
-    form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
-  });
-});
-</script>
-@endpush
 @endsection

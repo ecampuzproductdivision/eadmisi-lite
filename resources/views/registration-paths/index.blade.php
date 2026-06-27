@@ -42,17 +42,18 @@
         </a>
     @endslot
     @slot('table')
+        @include('components.ajax-sort-script', ['tableBodyId' => 'paths-table-body'])
         <table class="table table-hover align-middle table-ead">
             <thead class="bg-light">
                 <tr>
                     <th style="width: 60px;">No</th>
-                    <th>Nama Jalur</th>
+                    <x-sortable-header field="code" label="Nama Jalur" />
                     <th>Kategori</th>
                     <th>Form Template</th>
                     <th>Biaya</th>
                     <th>Periode</th>
                     <th>Kuota</th>
-                    <th>Status</th>
+                    <x-sortable-header field="is_active" label="Status" width="90px" />
                     <th style="width: 150px;">Aksi</th>
                 </tr>
             </thead>

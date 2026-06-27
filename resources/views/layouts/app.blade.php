@@ -262,34 +262,35 @@ html.collapsed #miniSidebar .nav-link .nav-icon-sub {
   margin-bottom: 0;
 }
 
-/* === Data Page: Table Container - NATURAL FLOW === */
-/* The table expands naturally based on row count without restrictive scrolling */
-.data-page-table-scroll {
-  overflow: visible !important;
-  max-height: none !important;
+/* === Data Page Card: Header + Body Layout === */
+/* Filters row inside card-header */
+.data-page-filters {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  margin-bottom: 0 !important;
 }
-/* Table header is not sticky anymore (table scrolls naturally with page) */
-.data-page-table-scroll .table thead {
-  position: static;
+/* Table inside data-page-card - ensure full width */
+.data-page-card table {
+  width: 100%;
 }
-.data-page-table-scroll .table thead th {
-  position: static;
+/* Card Body as scrollable table container with sticky header */
+.data-page-table-container {
+  overflow: auto;
+  max-height: 60vh;
+}
+.data-page-table-container table thead {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.data-page-table-container table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 19;
   background-color: #f8fafc;
 }
-[data-bs-theme="dark"] .data-page-table-scroll .table thead th {
+[data-bs-theme="dark"] .data-page-table-container table thead th {
   background-color: #1e293b;
-}
-/* Showing info row not sticky */
-.data-page-table-scroll .showing-info-row {
-  position: static;
-  background-color: var(--bs-card-bg, #ffffff);
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0 !important;
-  border-bottom: 1px solid var(--bs-border-color, #e2e8f0);
-}
-[data-bs-theme="dark"] .data-page-table-scroll .showing-info-row {
-  background-color: var(--bs-card-bg, #1e293b);
 }
 /* === Consistent Table Styling === */
 .table-ead tbody td {
@@ -339,6 +340,64 @@ html.expanded #miniSidebar {
 .data-page-pagination .page-link {
   padding: 0.4rem 0.75rem;
   font-size: 0.85rem;
+}
+
+/* Sortable Header Styles */
+.sortable-header {
+  color: inherit;
+  white-space: nowrap;
+  user-select: none;
+}
+.sortable-header:hover {
+  color: var(--ds-primary, #f63a4c);
+}
+.sortable-header .sort-icon {
+  font-size: 0.7rem;
+  transition: opacity 0.2s;
+  opacity: 0.4;
+}
+.sortable-header:hover .sort-icon {
+  opacity: 1;
+}
+.sortable-header .sort-icon-active {
+  opacity: 1;
+  color: var(--ds-primary, #f63a4c);
+}
+.sortable-header .sort-icon-muted {
+  opacity: 0.3;
+}
+[data-bs-theme="dark"] .sortable-header:hover {
+  color: var(--ds-primary-text-emphasis, #66caa9);
+}
+[data-bs-theme="dark"] .sortable-header .sort-icon-active {
+  color: var(--ds-primary-text-emphasis, #66caa9);
+}
+
+/* Input value color - darker than placeholder for better contrast */
+.form-control,
+.form-select,
+textarea.form-control {
+  color: #334155;
+}
+.form-control:focus,
+.form-select:focus,
+textarea.form-control:focus {
+  color: #334155;
+}
+.form-control::placeholder,
+.form-select::placeholder,
+textarea.form-control::placeholder {
+  color: #94a3b8;
+}
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select,
+[data-bs-theme="dark"] textarea.form-control {
+  color: #e2e8f0;
+}
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus,
+[data-bs-theme="dark"] textarea.form-control:focus {
+  color: #e2e8f0;
 }
 </style>
   </head>

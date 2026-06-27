@@ -21,11 +21,28 @@ class PeriodeController extends Controller
      */
     public function index()
     {
-        $periodes = Periode::orderBy('tahun_akademik', 'desc')
-            ->orderByRaw("CASE WHEN semester = 'Ganjil' THEN 1 WHEN semester = 'Genap' THEN 2 WHEN semester = 'Pendek' THEN 3 ELSE 4 END")
-            ->paginate(10);
+        $query = Periode::query();
+        $periodes = \App\Helpers\SortHelper::apply($query, [
+            'tahun_akademik', 'semester', 'status_aktif', 'created_at'
+        ], 'tahun_akademik', 'desc')->paginate(10);
 
         return view('periode.index', compact('periodes'));
+    }
+
+    /**
+     * Show the form for creating a new academic period.
+     */
+    public function create()
+    {
+        return view('periode.create');
+    }
+
+    /**
+     * Show the form for editing the specified academic period.
+     */
+    public function edit(Periode $periode)
+    {
+        return view('periode.edit', compact('periode'));
     }
 
     /**

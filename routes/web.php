@@ -178,6 +178,8 @@ Route::middleware(['auth'])->group(function () {
 
         // Periode Akademik (Settings)
         Route::get('settings/periode', [PeriodeController::class, 'index'])->name('periode.index');
+        Route::get('settings/periode/create', [PeriodeController::class, 'create'])->name('periode.create');
+        Route::get('settings/periode/{periode}/edit', [PeriodeController::class, 'edit'])->name('periode.edit');
         Route::post('settings/periode', [PeriodeController::class, 'store'])->name('periode.store');
         Route::put('settings/periode/{periode}', [PeriodeController::class, 'update'])->name('periode.update');
         Route::post('settings/periode/{periode}/toggle-active', [PeriodeController::class, 'toggleActive'])->name('periode.toggle-active');

@@ -33,14 +33,14 @@
         <table class="table table-hover align-middle mb-0 table-ead" style="min-width: 1100px;">
             <thead class="table-light">
                 <tr>
-                    <th class="py-3">No</th>
+                    <th class="py-3" style="width:50px;">No</th>
                     <th class="py-3">No. Pendaftaran</th>
                     <th class="py-3">Nama Mahasiswa</th>
                     <th class="py-3">Jalur</th>
                     <th class="py-3">Jadwal Wawancara</th>
                     <th class="py-3">Pewawancara</th>
                     <th class="py-3">Status</th>
-                    <th class="py-3">Aksi</th>
+                    <th class="py-3" style="width:100px;">Aksi</th>
                 </tr>
             </thead>
             <tbody id="wawancara-table-body">

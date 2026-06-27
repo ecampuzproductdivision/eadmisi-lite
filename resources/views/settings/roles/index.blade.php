@@ -45,13 +45,14 @@
         </a>
     @endslot
     @slot('table')
+        @include('components.ajax-sort-script', ['tableBodyId' => 'role-table-body'])
         <table class="table align-middle text-nowrap mb-0 table-hover table-ead">
             <thead class="table-light">
                 <tr>
-                    <th scope="col" class="py-3">Role Name</th>
-                    <th scope="col" class="py-3">Role Code</th>
+                    <x-sortable-header field="role_name" label="Role Name" />
+                    <x-sortable-header field="role_code" label="Role Code" />
                     <th scope="col" class="py-3">Description</th>
-                    <th scope="col" class="py-3">Status</th>
+                    <x-sortable-header field="status" label="Status" width="90px" />
                     <th scope="col" class="py-3 text-center">Active Users</th>
                     <th scope="col" class="py-3 text-end">Actions</th>
                 </tr>

@@ -11,7 +11,8 @@ class FormPendaftaranController extends Controller
 {
     public function index(Request $request)
     {
-        $forms = Form::withCount('fields')->orderBy('created_at', 'desc')->paginate(20);
+        $query = Form::withCount('fields');
+        $forms = \App\Helpers\SortHelper::apply($query, ['nama', 'created_at'], 'created_at', 'desc')->paginate(20);
 
         if ($request->ajax()) {
             return response()->json([

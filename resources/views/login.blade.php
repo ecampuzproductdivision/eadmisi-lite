@@ -54,13 +54,16 @@
     <!-- Libs CSS -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" />
     <link rel="stylesheet" href="{{ asset('assets/libs/simplebar/dist/simplebar.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/libs/@tabler/icons-webfont/tabler-icons.min.css') }}" />
 
     <!-- Theme CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/theme.min.css') }}">
     <style>
+      body {
+        font-family: 'Inter', sans-serif;
+      }
       .btn-primary {
         --ds-btn-hover-bg: #d82939;
         --ds-btn-hover-border-color: #d82939;
@@ -88,7 +91,7 @@
                   <img src="{{ asset('assets/images/brand/logo/logo-light.png') }}" class="brand-logo-img" alt="" />
                   <span class="site-logo-text">Admisi</span>
                 </a>
-                <h1 class="mb-1">Welcome Back</h1>
+                <h1 class="fw-semibold mb-1">Welcome Back</h1>
                 <p class="mb-0">
                   Don’t have an account yet?
                   <a href="{{ route('register') }}" class="text-primary">Register here</a>
@@ -98,7 +101,7 @@
           </div>
           <div class="row justify-content-center">
             <div class="col-xl-5 col-lg-6 col-md-8 col-12">
-              <div class="card card-lg mb-6">
+              <div class="card border card-lg mb-6">
                 <div class="card-body p-6">
                   <form action="{{ route('login.post') }}" method="POST" class="needs-validation mb-6" novalidate>
                     @csrf
@@ -144,7 +147,7 @@
                     </div>
                   </form>
 
-                  <center class="text-secondary small mt-4">Or sign in with your social network.</center>
+                  <center class="text-secondary mt-4">Or sign in with your social network.</center>
                   <div class="mt-3 d-flex gap-2 justify-content-between">
                     <a href="{{ route('auth.google.login') }}" class="btn btn-white w-100 d-flex align-items-center justify-content-center gap-2">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">

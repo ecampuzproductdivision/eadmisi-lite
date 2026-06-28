@@ -1,7 +1,7 @@
 @foreach($leads as $index => $lead)
   <tr>
     <td>{{ ($leads->currentPage() - 1) * $leads->perPage() + $index + 1 }}</td>
-    <td><small>{{ $lead->created_at->format('d/m/Y H:i') }}</small></td>
+    <td>{{ $lead->created_at->format('d/m/Y H:i') }}</td>
     <td class="fw-semibold">{{ $lead->nama }}</td>
     <td>
       <a href="https://wa.me/{{ $lead->whatsapp }}?text=Halo%20{{ urlencode($lead->nama) }},%20saya%20Admin%20PMB..." target="_blank" class="text-success text-decoration-none">
@@ -9,7 +9,7 @@
       </a>
     </td>
     <td>
-      <div class="text-truncate" title="{{ $lead->pertanyaan }}">
+      <div>
         {{ $lead->pertanyaan }}
       </div>
     </td>

@@ -16,7 +16,7 @@
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center gap-3">
                             <div class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 48px; height: 48px; background: #667eea15;"><i class="ti ti-users fs-4" style="color: #667eea;"></i></div>
-                            <div><p class="text-muted small mb-0">Total Leads Masuk</p><h3 class="fw-bold mb-0">{{ $totalLeads }}</h3></div>
+                            <div><p class="text-muted mb-0">Total Leads Masuk</p><h3 class="fw-bold mb-0">{{ $totalLeads }}</h3></div>
                         </div>
                     </div>
                 </div>
@@ -26,7 +26,7 @@
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center gap-3">
                             <div class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 48px; height: 48px; background: #dc262615;"><i class="ti ti-alert-circle fs-4" style="color: #dc2626;"></i></div>
-                            <div><p class="text-muted small mb-0">Belum Ditangani (New)</p><h3 class="fw-bold mb-0 text-danger">{{ $newLeads }}</h3></div>
+                            <div><p class="text-muted mb-0">Belum Ditangani (New)</p><h2 class="fw-bold mb-0 text-danger">{{ $newLeads }}</h2></div>
                         </div>
                     </div>
                 </div>
@@ -36,7 +36,7 @@
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center gap-3">
                             <div class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 48px; height: 48px; background: #d9770615;"><i class="ti ti-phone-call fs-4" style="color: #d97706;"></i></div>
-                            <div><p class="text-muted small mb-0">Sedang Dihubungi</p><h3 class="fw-bold mb-0 text-warning">{{ $inProgressLeads }}</h3></div>
+                            <div><p class="text-muted mb-0">Sedang Dihubungi</p><h2 class="fw-bold mb-0 text-warning">{{ $inProgressLeads }}</h2></div>
                         </div>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center gap-3">
                             <div class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0" style="width: 48px; height: 48px; background: #05966915;"><i class="ti ti-circle-check fs-4" style="color: #059669;"></i></div>
-                            <div><p class="text-muted small mb-0">Berhasil Konversi</p><h3 class="fw-bold mb-0 text-success">{{ $convertedLeads }}</h3></div>
+                            <div><p class="text-muted mb-0">Berhasil Konversi</p><h2 class="fw-bold mb-0 text-success">{{ $convertedLeads }}</h2></div>
                         </div>
                     </div>
                 </div>
@@ -80,13 +80,13 @@
     @endslot
     @slot('table')
         @include('components.ajax-sort-script', ['tableBodyId' => 'leads-table-body'])
-        <table class="table table-hover align-middle mb-0 table-ead">
+        <table class="table table-hover align-middle mb-0 table-ead" style="table-layout: fixed;">
             <thead class="table-light">
                 <tr>
                     <th scope="col" class="text-center py-3" style="width:50px;">No</th>
-                    <x-sortable-header field="created_at" label="Tanggal Masuk" />
-                    <x-sortable-header field="nama" label="Nama Prospek" />
-                    <th class="py-3">WhatsApp</th>
+                    <x-sortable-header field="created_at" label="Tanggal Masuk" width="140px" />
+                    <x-sortable-header field="nama" label="Nama Prospek" width="150px" />
+                    <th class="py-3" style="width:160px;">WhatsApp</th>
                     <th class="py-3">Pertanyaan</th>
                     <x-sortable-header field="status" label="Status" width="100px" />
                     <th class="text-center py-3" style="width:80px;">Aksi</th>

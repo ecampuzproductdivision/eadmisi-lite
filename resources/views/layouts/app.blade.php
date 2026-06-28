@@ -55,7 +55,7 @@
 <!-- Libs CSS -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" />
 <link rel="stylesheet" href="{{ asset('assets/libs/simplebar/dist/simplebar.min.css') }}" />
 <link rel="stylesheet" href="{{ asset('assets/libs/@tabler/icons-webfont/tabler-icons.min.css') }}" />
 <link rel="stylesheet" href="{{ asset('assets/libs/select2/css/select2.min.css') }}" />
@@ -64,6 +64,9 @@
 <link rel="stylesheet" href="{{ asset('assets/css/theme.min.css') }}">
 
 <style>
+body {
+  font-family: 'Inter', sans-serif;
+}
 .btn-primary {
   --ds-btn-hover-bg: #d82939;
   --ds-btn-hover-border-color: #d82939;

@@ -81,6 +81,7 @@ body {
 }
 #miniSidebar {
   z-index: 1040 !important;
+  background-color: #f8fafc !important;
 }
 #miniSidebar .nav-link {
   display: flex !important;
@@ -109,6 +110,11 @@ html.collapsed #miniSidebar .nav-link .nav-icon,
 html.collapsed #miniSidebar .nav-link .nav-icon-sub {
   margin: 0 auto !important;
 }
+/* Sidebar nav link active & hover states (expanded) */
+html.expanded #miniSidebar .nav-link.active,
+html.expanded #miniSidebar .nav-link:hover {
+  background-color: var(--ds-gray-300) !important;
+}
 /* Nav badge style */
 .nav-badge {
   font-size: 0.7rem;
@@ -119,6 +125,13 @@ html.collapsed #miniSidebar .nav-link .nav-icon-sub {
 /* Dark mode fix for the sidebar */
 [data-bs-theme="dark"] .side-navbar {
   background-color: #1e293b !important;
+}
+[data-bs-theme="dark"] #miniSidebar {
+  background-color: #141a21 !important;
+}
+[data-bs-theme="dark"] html.expanded #miniSidebar .nav-link.active,
+[data-bs-theme="dark"] html.expanded #miniSidebar .nav-link:hover {
+  background-color: var(--ds-gray-300) !important;
 }
 [data-bs-theme="dark"] .side-navbar .navbar-header {
   background-color: #1e293b !important;

@@ -117,7 +117,7 @@
 
             {{-- Card Body: Scrollable Table with Sticky Header --}}
             @if(isset($table))
-                <div class="card-body px-4 py-0 data-page-table-container">
+                <div class="card-body px-4 py-0 data-page-table-container data-page-table-scroll">
                     {{ $table }}
                     @if(isset($sentinel))
                         <div id="{{ $sentinelId ?? 'scroll-sentinel' }}" class="text-center py-2"></div>

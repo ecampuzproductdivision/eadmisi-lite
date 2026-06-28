@@ -19,14 +19,48 @@ class PeriodeController extends Controller
     /**
      * Display a listing of academic periods.
      */
-    public function index()
+    public function index(Request $request)
     {
         $query = Periode::query();
-        $periodes = \App\Helpers\SortHelper::apply($query, [
-            'tahun_akademik', 'semester', 'status_aktif', 'created_at'
-        ], 'tahun_akademik', 'desc')->paginate(10);
 
-        return view('periode.index', compact('periodes'));
+        // Search filter
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where('tahun_akademik', 'like', "%{$s}%");
+        }
+
+        // Semester filter
+        if ($request->filled('semester')) {
+            $query->where('semester', $request->semester);
+        }
+
+        $query = \App\Helpers\SortHelper::apply($query, [
+            'tahun_akademik', 'semester', 'status_aktif', 'created_at'
+        ], 'tahun_akademik', 'desc');
+
+        // Total count (before pagination)
+        $total = $query->count();
+
+        // Paginate 10 per page for infinite scroll
+        $periodes = $query->paginate(10);
+
+        // AJAX request for infinite scroll
+        if ($request->ajax()) {
+            $html = view('periode.partials.periode_rows', compact('periodes'))->render();
+
+            return response()->json([
+                'html' => $html,
+                'next_page' => $periodes->nextPageUrl(),
+                'has_more' => $periodes->hasMorePages(),
+                'total' => $total,
+            ]);
+        }
+
+        // First page data for initial load
+        $nextPageUrl = $periodes->nextPageUrl();
+        $hasMore = $periodes->hasMorePages();
+
+        return view('periode.index', compact('periodes', 'nextPageUrl', 'hasMore', 'total'));
     }
 
     /**

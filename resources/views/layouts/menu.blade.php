@@ -5,9 +5,44 @@
       <span class="fw-bold fs-4 site-logo-text">Admisi</span>
     </a>
   </div>
+  @php
+    // Determine user role for sidebar filtering
+    $user = auth()->user();
+    $isCalonMahasiswa = $user && $user->roles->contains('role_code', 'CALON_MAHASISWA');
+    
+    // Admin-only URL prefixes that should be hidden from calon_mahasiswa
+    $adminPrefixes = ['settings/', 'pendaftaran'];
+  @endphp
   <ul class="navbar-nav flex-column">
     @if(isset($sideMenus))
       @foreach($sideMenus as $menu)
+        @php
+          // Check if this menu is admin-only
+          $isAdminOnly = false;
+          if ($isCalonMahasiswa) {
+            $menuUrl = trim($menu->url ?? '', '/');
+            foreach ($adminPrefixes as $prefix) {
+              if (str_starts_with($menuUrl, $prefix)) {
+                $isAdminOnly = true;
+                break;
+              }
+            }
+            // Also check children
+            if (!$isAdminOnly && $menu->children->isNotEmpty()) {
+              foreach ($menu->children as $child) {
+                $childUrl = trim($child->url ?? '', '/');
+                foreach ($adminPrefixes as $prefix) {
+                  if (str_starts_with($childUrl, $prefix)) {
+                    $isAdminOnly = true;
+                    break 2;
+                  }
+                }
+              }
+            }
+          }
+          if ($isAdminOnly) continue;
+        @endphp
+
         @if($menu->children->isNotEmpty())
           <!-- Dynamic Parent Menu with Children -->
           @php
@@ -40,6 +75,18 @@
             <ul class="dropdown-menu flex-column {{ $anyActive ? 'show' : '' }}">
               @foreach($menu->children as $child)
                 @php
+                  // Filter child admin menus for calon_mahasiswa
+                  if ($isCalonMahasiswa) {
+                    $childUrl = trim($child->url ?? '', '/');
+                    $isChildAdmin = false;
+                    foreach ($adminPrefixes as $prefix) {
+                      if (str_starts_with($childUrl, $prefix)) {
+                        $isChildAdmin = true;
+                        break;
+                      }
+                    }
+                    if ($isChildAdmin) continue;
+                  }
                   $trimmedChildUrl = trim($child->url, '/');
                   $childActive = request()->is($trimmedChildUrl) || request()->is($trimmedChildUrl . '/*');
                 @endphp

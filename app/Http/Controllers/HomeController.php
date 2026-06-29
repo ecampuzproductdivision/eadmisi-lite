@@ -87,7 +87,10 @@ class HomeController extends Controller
             $hasPaidInvoice = $reg->payments->firstWhere('transaction_status', 'success');
             $isPaymentLocked = !$hasPaidInvoice;
 
-            // Terminal states (bypass the cascade)
+            // Terminal states (bypass the cascade).
+            // NOTE: payment_verified is NOT terminal — it falls through to the cascade
+            // so the main badge reflects the academic step (documents/exam/verification)
+            // while 'Pembayaran Terverifikasi' appears as a sub-badge only.
             if ($reg->status === 'rejected') {
                 $statusLabel = 'Ditolak';
                 $badgeBg = 'bg-danger';
@@ -116,13 +119,6 @@ class HomeController extends Controller
                 $subBadge = '';
                 $actionLabel = 'Lihat Detail';
                 $actionUrl = route('daftar-pmb.review', $pathObj?->code);
-            } elseif ($reg->status === 'payment_verified') {
-                $statusLabel = 'Pembayaran Terverifikasi';
-                $badgeBg = 'bg-success';
-                $badgeText = 'text-dark';
-                $subBadge = '';
-                $actionLabel = 'Lanjutkan';
-                $actionUrl = route('daftar-pmb.steps', $pathObj?->code);
             } elseif ($reg->status === 'payment_pending') {
                 // Already has pending invoice — treat as locked
                 $isPaymentLocked = true;

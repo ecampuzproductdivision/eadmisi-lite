@@ -81,7 +81,9 @@
 
                   $isStep3Completed = ($totalRequiredDocs == 0) || ($totalUploadedDocs >= $totalRequiredDocs);
 
-                  // Terminal states
+                  // Terminal states (bypass cascade).
+                  // NOTE: payment_verified is NOT terminal — falls through to cascade
+                  // so the main badge shows academic step, not payment status.
                   if ($registration->status === 'rejected') {
                       $badgeBg = 'bg-danger'; $badgeText = 'text-white'; $statusLabel = 'Ditolak';
                   } elseif ($registration->status === 'accepted') {
@@ -90,8 +92,6 @@
                       $badgeBg = 'bg-secondary'; $badgeText = 'text-white'; $statusLabel = 'Direview';
                   } elseif ($registration->status === 'exam_completed') {
                       $badgeBg = 'bg-primary'; $badgeText = 'text-white'; $statusLabel = 'Ujian Selesai';
-                  } elseif ($registration->status === 'payment_verified') {
-                      $badgeBg = 'bg-success'; $badgeText = 'text-dark'; $statusLabel = 'Pembayaran Terverifikasi';
                   } elseif ($registration->status === 'payment_pending') {
                       $isPaymentLocked = true;
                   }

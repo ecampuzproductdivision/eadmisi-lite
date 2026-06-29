@@ -62,6 +62,9 @@
                       <span class="badge {{ $card->badgeBg }} {{ $card->badgeText }} rounded-pill px-3 py-1 fw-semibold fs-6">
                         {{ $card->statusLabel }}
                       </span>
+                      @if(!empty($card->subBadge))
+                        {!! $card->subBadge !!}
+                      @endif
                     </div>
 
                     <div class="bg-light rounded-3 p-3 mb-3">

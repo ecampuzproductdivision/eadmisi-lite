@@ -82,83 +82,100 @@ class HomeController extends Controller
 
             $isStep3Completed = ($totalRequiredDocs == 0) || ($totalUploadedDocs >= $totalRequiredDocs);
 
-            // Determine status label, badge class, and action button
+            // ── UNIFIED STATUS PIPELINE (Lazy Invoice Architecture) ──
+            // STEP 1: Financial State Guard
+            $hasPaidInvoice = $reg->payments->firstWhere('transaction_status', 'success');
+            $isPaymentLocked = !$hasPaidInvoice;
+
+            // Terminal states (bypass the cascade)
             if ($reg->status === 'rejected') {
                 $statusLabel = 'Ditolak';
                 $badgeBg = 'bg-danger';
                 $badgeText = 'text-white';
+                $subBadge = '';
                 $actionLabel = null;
                 $actionUrl = null;
             } elseif ($reg->status === 'accepted') {
                 $statusLabel = 'Diterima';
                 $badgeBg = 'bg-success';
                 $badgeText = 'text-white';
+                $subBadge = '';
                 $actionLabel = 'Lihat Detail';
                 $actionUrl = route('daftar-pmb.review', $pathObj?->code);
             } elseif ($reg->status === 'reviewed') {
                 $statusLabel = 'Direview';
                 $badgeBg = 'bg-secondary';
                 $badgeText = 'text-white';
+                $subBadge = '';
                 $actionLabel = null;
                 $actionUrl = null;
             } elseif ($reg->status === 'exam_completed') {
                 $statusLabel = 'Ujian Selesai';
                 $badgeBg = 'bg-primary';
                 $badgeText = 'text-white';
+                $subBadge = '';
                 $actionLabel = 'Lihat Detail';
                 $actionUrl = route('daftar-pmb.review', $pathObj?->code);
             } elseif ($reg->status === 'payment_verified') {
                 $statusLabel = 'Pembayaran Terverifikasi';
                 $badgeBg = 'bg-success';
                 $badgeText = 'text-dark';
+                $subBadge = '';
                 $actionLabel = 'Lanjutkan';
                 $actionUrl = route('daftar-pmb.steps', $pathObj?->code);
             } elseif ($reg->status === 'payment_pending') {
-                $statusLabel = 'Menunggu Pembayaran';
-                $badgeBg = 'bg-warning';
-                $badgeText = 'text-dark';
-                $actionLabel = 'Selesaikan Pembayaran';
-                $actionUrl = route('tagihan.index');
-            } elseif ($reg->status === 'documents_uploaded' || $reg->status === 'submitted') {
+                // Already has pending invoice — treat as locked
+                $isPaymentLocked = true;
+            }
+
+            // Cascade: only if status not yet resolved
+            if (!isset($statusLabel)) {
+                // STEP 1: Financial State Guard
                 if ($isPaymentLocked) {
                     $statusLabel = 'Menunggu Pembayaran';
-                    $badgeBg = 'bg-warning';
-                    $badgeText = 'text-dark';
+                    $badgeBg = 'bg-danger';
+                    $badgeText = 'text-white';
+                    $subBadge = '';
                     $actionLabel = 'Selesaikan Pembayaran';
                     $actionUrl = route('tagihan.index');
-                } elseif (!$isStep3Completed) {
-                    if ($totalUploadedDocs == 0) {
-                        $statusLabel = 'Belum Upload';
+                } else {
+                    // Payment is cleared
+                    $subBadge = '<span class="badge bg-success text-white mt-1 d-inline-block" style="font-size:0.65rem;">Pembayaran Terverifikasi</span>';
+
+                    // STEP 2: Document Upload Phase
+                    $totalRequiredDocs = 0;
+                    $totalUploadedDocs = $reg->documents->count();
+                    if ($pathObj && $pathObj->templateBerkas) {
+                        $totalRequiredDocs = $pathObj->templateBerkas->syaratDokumens()
+                            ->where('status_wajib', true)
+                            ->count();
+                    }
+                    $isStep3Completed = ($totalRequiredDocs == 0) || ($totalUploadedDocs >= $totalRequiredDocs);
+
+                    if ($totalRequiredDocs > 0 && !$isStep3Completed) {
+                        $statusLabel = 'Belum Unggah Berkas';
                         $badgeBg = 'bg-warning';
                         $badgeText = 'text-dark';
-                        $actionLabel = 'Lengkapi Berkas Persyaratan';
-                        $actionUrl = route('daftar-pmb.steps', $pathObj?->code);
-                    } else {
-                        $statusLabel = 'Belum Lengkap';
-                        $badgeBg = 'bg-warning';
-                        $badgeText = 'text-dark';
-                        $actionLabel = 'Lengkapi Berkas Persyaratan';
+                        $actionLabel = 'Lengkapi Berkas';
                         $actionUrl = route('daftar-pmb.steps', $pathObj?->code);
                     }
-                } elseif ($pathObj && $pathObj->is_ujian_online && !$hasExamBeenTaken) {
-                    $statusLabel = 'Menunggu Ujian';
-                    $badgeBg = 'bg-info';
-                    $badgeText = 'text-dark';
-                    $actionLabel = 'Mulai Tes Online';
-                    $actionUrl = route('tes-online.start', $reg->id);
-                } else {
-                    $statusLabel = 'Menunggu Verifikasi';
-                    $badgeBg = 'bg-success';
-                    $badgeText = 'text-dark';
-                    $actionLabel = 'Lihat Detail';
-                    $actionUrl = route('daftar-pmb.review', $pathObj?->code);
+                    // STEP 3: Online CBT Exam Phase
+                    elseif ($pathObj && $pathObj->is_ujian_online && !$hasExamBeenTaken) {
+                        $statusLabel = 'Menunggu Ujian';
+                        $badgeBg = 'bg-info';
+                        $badgeText = 'text-dark';
+                        $actionLabel = 'Mulai Ujian Online';
+                        $actionUrl = route('tes-online.start', $reg->id);
+                    }
+                    // STEP 4: Final Verification
+                    else {
+                        $statusLabel = 'Menunggu Verifikasi Berkas';
+                        $badgeBg = 'bg-secondary';
+                        $badgeText = 'text-white';
+                        $actionLabel = 'Lihat Detail';
+                        $actionUrl = route('daftar-pmb.review', $pathObj?->code);
+                    }
                 }
-            } else {
-                $statusLabel = 'Menunggu';
-                $badgeBg = 'bg-secondary';
-                $badgeText = 'text-white';
-                $actionLabel = null;
-                $actionUrl = null;
             }
 
             return (object) [
@@ -171,6 +188,7 @@ class HomeController extends Controller
                 'statusLabel' => $statusLabel,
                 'badgeBg' => $badgeBg,
                 'badgeText' => $badgeText,
+                'subBadge' => $subBadge ?? '',
                 'actionLabel' => $actionLabel,
                 'actionUrl' => $actionUrl,
             ];

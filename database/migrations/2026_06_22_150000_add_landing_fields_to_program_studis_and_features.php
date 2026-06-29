@@ -1,53 +1,73 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
+    /**
+     * Run raw SQL directly to avoid Schema::hasColumn() and renameColumn()
+     * which use information_schema.columns.generation_expression (not supported in MariaDB 10.1)
+     */
     public function up(): void
     {
-        // Add landing-related columns to program_studis
-        Schema::table('program_studis', function (Blueprint $table) {
-            if (!Schema::hasColumn('program_studis', 'deskripsi_singkat')) {
-                $table->text('deskripsi_singkat')->nullable()->after('jurusan');
-            }
-            if (!Schema::hasColumn('program_studis', 'akreditasi')) {
-                $table->string('akreditasi', 50)->default('A')->after('deskripsi_singkat');
-            }
-            if (!Schema::hasColumn('program_studis', 'kode_icon')) {
-                $table->string('kode_icon', 100)->default('ti-device-analytics')->after('akreditasi');
-            }
-        });
+        // ─── Add landing-related columns to program_studis ───
+        $colsProdi = DB::select("SHOW COLUMNS FROM program_studis");
+        $prodiFields = array_column($colsProdi, 'Field');
 
-        // Rename columns in landing_features for clarity
-        Schema::table('landing_features', function (Blueprint $table) {
-            if (Schema::hasColumn('landing_features', 'title')) {
-                $table->renameColumn('title', 'judul_poin');
-            }
-            if (Schema::hasColumn('landing_features', 'description')) {
-                $table->renameColumn('description', 'deskripsi_poin');
-            }
-            if (Schema::hasColumn('landing_features', 'icon')) {
-                $table->renameColumn('icon', 'nama_icon');
-            }
-            if (!Schema::hasColumn('landing_features', 'warna_skema')) {
-                $table->string('warna_skema', 50)->default('danger')->after('nama_icon');
-            }
-        });
+        if (!in_array('deskripsi_singkat', $prodiFields)) {
+            DB::statement("ALTER TABLE program_studis ADD COLUMN deskripsi_singkat TEXT NULL AFTER jurusan");
+        }
+        if (!in_array('akreditasi', $prodiFields)) {
+            DB::statement("ALTER TABLE program_studis ADD COLUMN akreditasi VARCHAR(50) NOT NULL DEFAULT 'A' AFTER deskripsi_singkat");
+        }
+        if (!in_array('kode_icon', $prodiFields)) {
+            DB::statement("ALTER TABLE program_studis ADD COLUMN kode_icon VARCHAR(100) NOT NULL DEFAULT 'ti-device-analytics' AFTER akreditasi");
+        }
+
+        // ─── Rename columns in landing_features ───
+        $colsFeat = DB::select("SHOW COLUMNS FROM landing_features");
+        $featFields = array_column($colsFeat, 'Field');
+
+        if (in_array('title', $featFields)) {
+            DB::statement("ALTER TABLE landing_features CHANGE COLUMN title judul_poin VARCHAR(255)");
+        }
+        if (in_array('description', $featFields)) {
+            DB::statement("ALTER TABLE landing_features CHANGE COLUMN description deskripsi_poin TEXT");
+        }
+        if (in_array('icon', $featFields)) {
+            DB::statement("ALTER TABLE landing_features CHANGE COLUMN icon nama_icon VARCHAR(255)");
+        }
+        if (!in_array('warna_skema', $featFields)) {
+            DB::statement("ALTER TABLE landing_features ADD COLUMN warna_skema VARCHAR(50) NOT NULL DEFAULT 'danger' AFTER nama_icon");
+        }
     }
 
     public function down(): void
     {
-        Schema::table('program_studis', function (Blueprint $table) {
-            $table->dropColumn(['deskripsi_singkat', 'akreditasi', 'kode_icon']);
-        });
-        Schema::table('landing_features', function (Blueprint $table) {
-            $table->renameColumn('judul_poin', 'title');
-            $table->renameColumn('deskripsi_poin', 'description');
-            $table->renameColumn('nama_icon', 'icon');
-            $table->dropColumn(['warna_skema']);
-        });
+        // Revert program_studis
+        $colsProdi = DB::select("SHOW COLUMNS FROM program_studis");
+        $prodiFields = array_column($colsProdi, 'Field');
+        $dropProdi = array_intersect(['deskripsi_singkat', 'akreditasi', 'kode_icon'], $prodiFields);
+        if (!empty($dropProdi)) {
+            DB::statement("ALTER TABLE program_studis DROP COLUMN " . implode(', DROP COLUMN ', $dropProdi));
+        }
+
+        // Revert landing_features
+        $colsFeat = DB::select("SHOW COLUMNS FROM landing_features");
+        $featFields = array_column($colsFeat, 'Field');
+
+        if (in_array('judul_poin', $featFields)) {
+            DB::statement("ALTER TABLE landing_features CHANGE COLUMN judul_poin title VARCHAR(255)");
+        }
+        if (in_array('deskripsi_poin', $featFields)) {
+            DB::statement("ALTER TABLE landing_features CHANGE COLUMN deskripsi_poin description TEXT");
+        }
+        if (in_array('nama_icon', $featFields)) {
+            DB::statement("ALTER TABLE landing_features CHANGE COLUMN nama_icon icon VARCHAR(255)");
+        }
+        if (in_array('warna_skema', $featFields)) {
+            DB::statement("ALTER TABLE landing_features DROP COLUMN warna_skema");
+        }
     }
 };

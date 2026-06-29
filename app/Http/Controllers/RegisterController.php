@@ -159,6 +159,9 @@ class RegisterController extends Controller
             }
 
             // STEP C: Create Registration record
+            // Note: Status is always 'submitted' from single-step public registration.
+            // The 'documents_uploaded' status is ONLY set after the applicant
+            // actually uploads their files inside the authenticated portal (document-upload step).
             $registrationData = [
                 'user_id' => $user->id,
                 'registration_path_id' => $path->id,
@@ -166,7 +169,7 @@ class RegisterController extends Controller
                 'program_studi_2_id' => $request->pilihan_prodi[2] ?? null,
                 'memerlukan_ujian' => $path->is_ujian_online ? true : false,
                 'memerlukan_wawancara' => $path->is_wawancara ? true : false,
-                'status' => $path->is_upload_berkas ? 'documents_uploaded' : 'submitted',
+                'status' => 'submitted',
             ];
 
             // Map dynamic fields to registration columns if they match known fields

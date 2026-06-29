@@ -37,6 +37,10 @@ class HomeController extends Controller
     {
         $userId = auth()->id();
 
+        // Check if user has any registrations
+        $registrationCount = Registration::where('user_id', $userId)->count();
+        $hasRegistrations = $registrationCount > 0;
+
         // Fetch all registrations for this user
         $registrations = Registration::where('user_id', $userId)
             ->with([
@@ -174,6 +178,8 @@ class HomeController extends Controller
 
         return view('home', [
             'isCalonMahasiswa' => true,
+            'hasRegistrations' => $hasRegistrations,
+            'registrationCount' => $registrationCount,
             'registrationCards' => $registrationCards,
         ]);
     }

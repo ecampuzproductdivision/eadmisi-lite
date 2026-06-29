@@ -185,7 +185,15 @@
               @endif
             </p>
             
-            @if($currentStep == 3)
+              @if($isPaymentLocked ?? false)
+                <div class="alert alert-danger py-2 small mb-0 d-inline-block" role="alert">
+                  <i class="ti ti-lock me-1"></i> Silakan selesaikan pembayaran formulir Anda pada menu <strong>Tagihan</strong> untuk membuka tahap unggah berkas.
+                  <br>
+                  <a href="{{ route('tagihan.index') }}" class="btn btn-sm btn-primary mt-2">
+                    <i class="ti ti-receipt"></i> Bayar Tagihan
+                  </a>
+                </div>
+              @elseif($currentStep == 3)
               @if($path && $path->is_upload_berkas)
                 <a href="{{ route('daftar-pmb.document.upload', $path?->code) }}" class="btn btn-primary">
                   <i class="ti ti-upload"></i> Unggah Dokumen <i class="ti ti-arrow-right"></i>

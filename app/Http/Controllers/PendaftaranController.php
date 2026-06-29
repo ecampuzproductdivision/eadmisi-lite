@@ -16,9 +16,11 @@ class PendaftaranController extends Controller
     {
         $query = Registration::with([
             'user',
-            'registrationPath' => fn($q) => $q->withTrashed(),
+            'registrationPath' => fn($q) => $q->withTrashed()->with('templateBerkas.syaratDokumens'),
             'programStudi1',
             'programStudi2',
+            'documents',
+            'examResults',
         ])->whereIn('status', ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted', 'rejected']);
 
         // Filter by registration path

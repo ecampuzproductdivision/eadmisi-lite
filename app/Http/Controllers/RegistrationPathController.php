@@ -270,11 +270,23 @@ class RegistrationPathController extends Controller
             ->where('registration_path_id', $pathId)
             ->first();
 
+        // ── Payment Gate Guard: check if invoice exists and is paid ──
+        // Lazy Invoice: invoice is only created when applicant clicks "Bayar" in Tagihan menu.
+        // If no paid invoice exists, steps 3+ are locked.
+        $isPaymentLocked = false;
+        $hasPaidInvoice = false;
+        if ($registration) {
+            $payments = $registration->payments;
+            $paidInvoice = $payments->firstWhere('transaction_status', 'success');
+            $hasPaidInvoice = $paidInvoice !== null;
+            $isPaymentLocked = !$hasPaidInvoice;
+        }
+
         // Determine current step (only for Daftar PMB registration flow)
         // Step 1: Biodata (draft without program_studi)
         // Step 2: Program Studi (draft with program_studi_1_id)
-        // Step 3: Upload Dokumen (submitted)
-        // Step 4: Ujian Online (CBT) - only if path has is_ujian_online
+        // Step 3: Upload Dokumen (submitted) — locked if payment not yet paid
+        // Step 4: Ujian Online (CBT) — locked if payment not yet paid
         // Step Final: Selesai
         $hasExam = $path && $path->is_ujian_online;
         $totalSteps = $hasExam ? 5 : 4;
@@ -300,13 +312,18 @@ class RegistrationPathController extends Controller
             if ($registration->status === 'draft' && $registration->program_studi_1_id) {
                 $currentStep = 2; // Step 1 done, step 2 active
             }
-            if ($registration->status === 'submitted') {
+
+            // ── Payment Gate: if no paid invoice, show payment step warning ──
+            if ($isPaymentLocked && in_array($registration->status, ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted'])) {
+                $currentStep = 2; // Still show step 3 as locked
+            } elseif ($registration->status === 'submitted') {
                 // Step 1 & 2 complete, step 3 (Upload) active
                 $currentStep = 3;
             }
+
             // Step 3 is complete ONLY if actual documents have been uploaded
             if (in_array($registration->status, ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted'])) {
-                if ($isStep3Completed) {
+                if (!$isPaymentLocked && $isStep3Completed) {
                     if ($hasExam && !in_array($registration->status, ['exam_completed', 'reviewed', 'accepted'])) {
                         $currentStep = 4; // Docs uploaded, but exam not done yet
                     } elseif ($hasExam && in_array($registration->status, ['exam_completed', 'reviewed', 'accepted'])) {
@@ -314,6 +331,9 @@ class RegistrationPathController extends Controller
                     } elseif (!$hasExam) {
                         $currentStep = $totalSteps; // All steps complete (no exam)
                     }
+                } elseif ($isStep3Completed && $isPaymentLocked) {
+                    // Docs uploaded but no payment → need to show payment warning
+                    $currentStep = 2; // Steps 3+ locked
                 } else {
                     // Status says submitted/doc_uploaded but no docs uploaded yet
                     $currentStep = 3;
@@ -321,7 +341,7 @@ class RegistrationPathController extends Controller
             }
         }
 
-        return view('daftar-pmb.registration-steps', compact('path', 'registration', 'currentStep', 'hasExam', 'totalSteps', 'isStep3Completed', 'documentCount'));
+        return view('daftar-pmb.registration-steps', compact('path', 'registration', 'currentStep', 'hasExam', 'totalSteps', 'isStep3Completed', 'documentCount', 'isPaymentLocked', 'hasPaidInvoice'));
     }
 
     /**

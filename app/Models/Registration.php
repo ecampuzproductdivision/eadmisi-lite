@@ -66,4 +66,12 @@ class Registration extends Model
     {
         return $this->hasOne(Wawancara::class, 'pendaftaran_id');
     }
+
+    /**
+     * A registration has many exam results.
+     */
+    public function examResults()
+    {
+        return $this->hasMany(ExamResult::class);
+    }
 }

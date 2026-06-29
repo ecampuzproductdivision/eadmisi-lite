@@ -87,19 +87,77 @@
                     <td class="py-3">{{ $registration->created_at->format('d/m/Y H:i') }}</td>
                     <td class="py-3">
                         @php
-                            $statusBadge = [
-                                'submitted' => ['bg-warning', 'text-dark', 'Submitted'],
-                                'documents_uploaded' => ['bg-info', 'text-dark', 'Dokumen Diupload'],
-                                'payment_pending' => ['bg-warning', 'text-dark', 'Menunggu Pembayaran'],
-                                'payment_verified' => ['bg-success', 'text-dark', 'Pembayaran Terverifikasi'],
-                                'exam_completed' => ['bg-primary', 'text-white', 'Ujian Selesai'],
-                                'reviewed' => ['bg-secondary', 'text-white', 'Direview'],
-                                'accepted' => ['bg-success', 'text-white', 'Diterima'],
-                                'rejected' => ['bg-danger', 'text-white', 'Ditolak'],
-                            ];
-                            $badge = $statusBadge[$registration->status] ?? ['bg-secondary', 'text-white', $registration->status];
+                            // ── Dynamic status calculation (unified with applicant portal) ──
+                            $pathObj = $registration->registrationPath;
+                            $totalRequiredDocs = 0;
+                            $totalUploadedDocs = 0;
+                            $hasExamBeenTaken = false;
+
+                            if ($pathObj && $pathObj->templateBerkas) {
+                                $totalRequiredDocs = $pathObj->templateBerkas->syaratDokumens()
+                                    ->where('status_wajib', true)
+                                    ->count();
+                            }
+                            $totalUploadedDocs = $registration->documents->count();
+
+                            if ($pathObj && $pathObj->is_ujian_online) {
+                                $hasExamBeenTaken = $registration->examResults
+                                    ->where('status', 'completed')
+                                    ->isNotEmpty();
+                            }
+
+                            $isVerifiedFinal = in_array($registration->status, ['accepted', 'rejected', 'reviewed', 'exam_completed', 'payment_verified']);
+                            $isStep3Completed = ($totalRequiredDocs == 0) || ($totalUploadedDocs >= $totalRequiredDocs);
+
+                            if ($registration->status === 'rejected') {
+                                $badgeBg = 'bg-danger'; $badgeText = 'text-white'; $statusLabel = 'Ditolak';
+                            } elseif ($registration->status === 'accepted') {
+                                $badgeBg = 'bg-success'; $badgeText = 'text-white'; $statusLabel = 'Diterima';
+                            } elseif ($registration->status === 'reviewed') {
+                                $badgeBg = 'bg-secondary'; $badgeText = 'text-white'; $statusLabel = 'Direview';
+                            } elseif ($registration->status === 'exam_completed') {
+                                $badgeBg = 'bg-primary'; $badgeText = 'text-white'; $statusLabel = 'Ujian Selesai';
+                            } elseif ($registration->status === 'payment_verified') {
+                                $badgeBg = 'bg-success'; $badgeText = 'text-dark'; $statusLabel = 'Pembayaran Terverifikasi';
+                            } elseif ($registration->status === 'payment_pending') {
+                                $badgeBg = 'bg-warning'; $badgeText = 'text-dark'; $statusLabel = 'Menunggu Pembayaran';
+                            } elseif ($registration->status === 'documents_uploaded' && $isStep3Completed) {
+                                if ($pathObj && $pathObj->is_ujian_online && !$hasExamBeenTaken) {
+                                    $badgeBg = 'bg-info'; $badgeText = 'text-dark'; $statusLabel = 'Menunggu Ujian';
+                                } else {
+                                    $badgeBg = 'bg-info'; $badgeText = 'text-dark'; $statusLabel = 'Dokumen Diupload';
+                                }
+                            } elseif ($registration->status === 'documents_uploaded' && !$isStep3Completed) {
+                                if ($totalRequiredDocs > 0 && $totalUploadedDocs == 0) {
+                                    $badgeBg = 'bg-warning'; $badgeText = 'text-dark'; $statusLabel = 'Belum Upload';
+                                } elseif ($totalUploadedDocs > 0 && $totalUploadedDocs < $totalRequiredDocs) {
+                                    $badgeBg = 'bg-warning'; $badgeText = 'text-dark'; $statusLabel = 'Belum Lengkap';
+                                } else {
+                                    $badgeBg = 'bg-warning'; $badgeText = 'text-dark'; $statusLabel = 'Menunggu Upload';
+                                }
+                            } elseif ($registration->status === 'submitted') {
+                                if ($isStep3Completed) {
+                                    if ($pathObj && $pathObj->is_ujian_online && !$hasExamBeenTaken) {
+                                        $badgeBg = 'bg-info'; $badgeText = 'text-dark'; $statusLabel = 'Menunggu Ujian';
+                                    } else {
+                                        $badgeBg = 'bg-info'; $badgeText = 'text-dark'; $statusLabel = 'Dokumen Diupload';
+                                    }
+                                } else {
+                                    if ($totalRequiredDocs > 0) {
+                                        $badgeBg = 'bg-warning'; $badgeText = 'text-dark'; $statusLabel = 'Belum Upload';
+                                    } else {
+                                        if ($pathObj && $pathObj->is_ujian_online && !$hasExamBeenTaken) {
+                                            $badgeBg = 'bg-info'; $badgeText = 'text-dark'; $statusLabel = 'Menunggu Ujian';
+                                        } else {
+                                            $badgeBg = 'bg-success'; $badgeText = 'text-dark'; $statusLabel = 'Lengkap';
+                                        }
+                                    }
+                                }
+                            } else {
+                                $badgeBg = 'bg-secondary'; $badgeText = 'text-white'; $statusLabel = $registration->status ?? 'Unknown';
+                            }
                         @endphp
-                        <span class="badge {{ $badge[0] }} {{ $badge[1] }} rounded-pill px-3 py-1 fw-semibold">{{ $badge[2] }}</span>
+                        <span class="badge {{ $badgeBg }} {{ $badgeText }} rounded-pill px-3 py-1 fw-semibold">{{ $statusLabel }}</span>
                     </td>
                     <td class="pe-4 py-3 text-end">
                         <a href="{{ route('pendaftaran.show', $registration->id) }}" class="btn btn-sm btn-outline-primary"><i class="ti ti-eye me-1"></i> Detail</a>

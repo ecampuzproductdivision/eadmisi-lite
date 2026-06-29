@@ -58,12 +58,21 @@ class PendaftaranController extends Controller
     {
         $registration = Registration::with([
             'user',
-            'registrationPath' => fn($q) => $q->withTrashed(),
+            'registrationPath' => fn($q) => $q->withTrashed()->with('templateBerkas.syaratDokumens'),
             'programStudi1',
             'programStudi2',
             'documents',
         ])->findOrFail($id);
 
-        return view('pendaftaran.show', compact('registration'));
+        // Get required documents from the specific path's template
+        $requiredDocuments = collect();
+        if ($registration->registrationPath && $registration->registrationPath->templateBerkas) {
+            $requiredDocuments = $registration->registrationPath->templateBerkas->syaratDokumens;
+        }
+
+        // Key uploaded documents by their syarat_dokumen id
+        $uploadedDocuments = $registration->documents->keyBy('type');
+
+        return view('pendaftaran.show', compact('registration', 'requiredDocuments', 'uploadedDocuments'));
     }
 }

@@ -193,51 +193,52 @@
         </div>
       </div>
 
-      <!-- Documents Card -->
+      <!-- Documents Card — Dynamically rendered from path-specific TemplateBerkas -->
       <div class="card shadow-sm border-0 rounded-3 mb-4">
         <div class="card-header bg-light border-bottom d-flex align-items-center gap-2 py-3">
           <i class="ti ti-file"></i>
-          <h6 class="fw-bold mb-0">Dokumen</h6>
+          <h6 class="fw-bold mb-0">Dokumen Persyaratan</h6>
         </div>
         <div class="card-body">
-          @php
-            $documentLabels = [
-              'foto_formal' => 'Foto Formal',
-              'ijazah' => 'Ijazah / SKHUN',
-              'kartu_keluarga' => 'Kartu Keluarga',
-              'akta_kelahiran' => 'Akta Kelahiran',
-            ];
-            // Key documents by type for easy lookup
-            $docsByType = $registration->documents->keyBy('type');
-          @endphp
-          <div class="row g-3">
-            @foreach($documentLabels as $type => $label)
-              @php $doc = $docsByType->get($type); @endphp
-              <div class="col-md-6">
-                <div class="d-flex align-items-center gap-3 p-3 border rounded-3">
-                  <div class="flex-shrink-0">
-                    @if($doc)
-                      <i class="ti ti-file-check text-success fs-2"></i>
-                    @else
-                      <i class="ti ti-file-off text-muted fs-2"></i>
-                    @endif
-                  </div>
-                  <div>
-                    <p class="fw-semibold mb-1 small">{{ $label }}</p>
-                    @if($doc)
-                      <small class="text-success">Sudah diupload</small>
-                      <br>
-                      <a href="{{ $doc->url }}" target="_blank" class="small text-decoration-none">
-                        <i class="ti ti-download me-1"></i> Download
-                      </a>
-                    @else
-                      <small class="text-muted">Belum diupload</small>
-                    @endif
+          @if($requiredDocuments->isEmpty())
+            <p class="text-muted small mb-0">Jalur ini tidak memerlukan dokumen tambahan.</p>
+          @else
+            <div class="row g-3">
+              @foreach($requiredDocuments as $requirement)
+                @php
+                  // Generate the type slug matching how RegistrationDocument stores it
+                  $typeSlug = \Illuminate\Support\Str::slug($requirement->nama_dokumen, '_');
+                  $uploadedFile = $uploadedDocuments->get($typeSlug);
+                @endphp
+                <div class="col-md-6">
+                  <div class="d-flex align-items-center gap-3 p-3 border rounded-3">
+                    <div class="flex-shrink-0">
+                      @if($uploadedFile)
+                        <i class="ti ti-file-check text-success fs-2"></i>
+                      @else
+                        <i class="ti ti-file-off text-muted fs-2"></i>
+                      @endif
+                    </div>
+                    <div>
+                      <p class="fw-semibold mb-1 small">{{ $requirement->nama_dokumen }}</p>
+                      @if($uploadedFile)
+                        <small class="text-success">Sudah diupload</small>
+                        <br>
+                        <a href="{{ asset('storage/' . $uploadedFile->file_path) }}" target="_blank" class="small text-decoration-none">
+                          <i class="ti ti-download me-1"></i> Download
+                        </a>
+                      @else
+                        <small class="text-muted">Belum diupload</small>
+                        @if($requirement->status_wajib)
+                          <br><small class="text-danger">Wajib</small>
+                        @endif
+                      @endif
+                    </div>
                   </div>
                 </div>
-              </div>
-            @endforeach
-          </div>
+              @endforeach
+            </div>
+          @endif
         </div>
       </div>
     </div>

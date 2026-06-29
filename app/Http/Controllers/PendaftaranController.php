@@ -20,6 +20,7 @@ class PendaftaranController extends Controller
             'programStudi1',
             'programStudi2',
             'documents',
+            'payments',
             'examResults',
         ])->whereIn('status', ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted', 'rejected']);
 

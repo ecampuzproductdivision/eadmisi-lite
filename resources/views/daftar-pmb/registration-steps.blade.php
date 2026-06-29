@@ -237,7 +237,7 @@
             <p class="text-muted mb-3">Silakan ikuti tes online sesuai jadwal yang ditentukan melalui menu Tes Online.</p>
             
             @if($currentStep == 4)
-              <a href="{{ route('daftar-pmb.exam.page', $path?->code) }}" class="btn btn-primary">
+              <a href="{{ route('tes-online.start', $registration?->id) }}" class="btn btn-primary">
                 <i class="ti ti-edit"></i> Ikuti Tes Online <i class="ti ti-arrow-right"></i>
               </a>
             @elseif($currentStep > 4)

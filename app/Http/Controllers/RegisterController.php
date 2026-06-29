@@ -54,24 +54,11 @@ class RegisterController extends Controller
             $q->active()->ordered();
         }])->findOrFail($request->jalur_id);
 
-        // Validate document berkas if required
-        if ($path->is_upload_berkas) {
-            foreach ($path->syaratBerkas as $berkas) {
-                if ($berkas->status_wajib) {
-                    $request->validate([
-                        'dokumen_berkas.' . $berkas->id => 'required|file|max:' . ($berkas->max_size ?? 2048),
-                    ], [], [
-                        'dokumen_berkas.' . $berkas->id => $berkas->nama_syarat
-                    ]);
-                } else {
-                    $request->validate([
-                        'dokumen_berkas.' . $berkas->id => 'nullable|file|max:' . ($berkas->max_size ?? 2048),
-                    ], [], [
-                        'dokumen_berkas.' . $berkas->id => $berkas->nama_syarat
-                    ]);
-                }
-            }
-        }
+        // NOTE: Document (berkas) upload validation is REMOVED from this single-step registration.
+        // File uploads (ijazah, KK, etc.) are handled in a separate dedicated document-upload step
+        // after initial registration is complete. See RegistrationController@uploadDocuments or
+        // the document-upload blade view for file upload handling.
+        // The dynamic form fields below contain the only validated inputs at this stage.
 
         // Build dynamic validation rules from form fields
         $dynamicRules = [];
@@ -198,7 +185,12 @@ class RegisterController extends Controller
                                 $registrationData['tanggal_lahir'] = $value;
                                 break;
                             case 'jenis_kelamin':
-                                $registrationData['jenis_kelamin'] = $value;
+                                // Map full label to single-char enum (L/P)
+                                $registrationData['jenis_kelamin'] = match (strtolower($value)) {
+                                    'laki-laki', 'laki laki', 'l' => 'L',
+                                    'perempuan', 'p' => 'P',
+                                    default => null,
+                                };
                                 break;
                             case 'agama':
                                 $registrationData['agama'] = $value;

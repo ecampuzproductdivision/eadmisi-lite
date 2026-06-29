@@ -279,24 +279,49 @@ class RegistrationPathController extends Controller
         $hasExam = $path && $path->is_ujian_online;
         $totalSteps = $hasExam ? 5 : 4;
 
+        // ── Check actual document upload status ──
+        $isStep3Completed = false;
+        $documentCount = 0;
+        if ($path && $path->is_upload_berkas && $path->templateBerkas) {
+            $totalRequiredDocs = $path->templateBerkas->syaratDokumens()
+                ->where('status_wajib', true)
+                ->count();
+            if ($registration) {
+                $documentCount = \App\Models\RegistrationDocument::where('registration_id', $registration->id)->count();
+                $isStep3Completed = $totalRequiredDocs > 0 && $documentCount >= $totalRequiredDocs;
+            }
+        } else {
+            // Path doesn't require documents - step 3 is auto-completed
+            $isStep3Completed = true;
+        }
+
         $currentStep = 1;
         if ($registration) {
             if ($registration->status === 'draft' && $registration->program_studi_1_id) {
                 $currentStep = 2; // Step 1 done, step 2 active
             }
             if ($registration->status === 'submitted') {
-                $currentStep = 3; // Step 1 & 2 complete, step 3 (Upload) active
+                // Step 1 & 2 complete, step 3 (Upload) active
+                $currentStep = 3;
             }
-            if (in_array($registration->status, ['documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted'])) {
-                if ($hasExam && $registration->status !== 'exam_completed') {
-                    $currentStep = 4; // Docs uploaded, but exam not done yet
+            // Step 3 is complete ONLY if actual documents have been uploaded
+            if (in_array($registration->status, ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted'])) {
+                if ($isStep3Completed) {
+                    if ($hasExam && !in_array($registration->status, ['exam_completed', 'reviewed', 'accepted'])) {
+                        $currentStep = 4; // Docs uploaded, but exam not done yet
+                    } elseif ($hasExam && in_array($registration->status, ['exam_completed', 'reviewed', 'accepted'])) {
+                        $currentStep = $totalSteps; // All steps complete
+                    } elseif (!$hasExam) {
+                        $currentStep = $totalSteps; // All steps complete (no exam)
+                    }
                 } else {
-                    $currentStep = $totalSteps; // All steps complete
+                    // Status says submitted/doc_uploaded but no docs uploaded yet
+                    $currentStep = 3;
                 }
             }
         }
 
-        return view('daftar-pmb.registration-steps', compact('path', 'registration', 'currentStep'));
+        return view('daftar-pmb.registration-steps', compact('path', 'registration', 'currentStep', 'hasExam', 'totalSteps', 'isStep3Completed', 'documentCount'));
     }
 
     /**

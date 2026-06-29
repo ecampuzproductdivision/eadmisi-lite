@@ -16,11 +16,13 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            // ── Master Data (prerequisite) ──
             UserSeeder::class,
             RegencySeeder::class,
             KategoriJalurSeeder::class,
             ProgramStudiSeeder::class,
-            RegistrationPathSeeder::class,
+
+            // ── Menu & Page (needed early) ──
             MenuRegistrationPathSeeder::class,
             PageRegistrationPathSeeder::class,
             DaftarPmbSeeder::class,
@@ -33,10 +35,12 @@ class DatabaseSeeder extends Seeder
             MenuBankSoalSeeder::class,
             MenuProgramStudiSeeder::class,
             PeriodeMenuSeeder::class,
+
+            // ── Core Business Data (prerequisites for JalurPendaftaran) ──
             PeriodeSeeder::class,
             WawancaraMenuSeeder::class,
-            SyaratBerkasSeeder::class,
-            PaketSoalSeeder::class,
+            SyaratBerkasSeeder::class,    // TemplateBerkas + SyaratDokumen
+            PaketSoalSeeder::class,       // PaketSoal + SoalUjian
             CrmLeadSeeder::class,
             CrmLeadMenuSeeder::class,
             LandingPageMenuSeeder::class,
@@ -45,7 +49,10 @@ class DatabaseSeeder extends Seeder
             LandingPageSeeder::class,
             LandingPageSubMenuSeeder::class,
             MenuFormPendaftaranSubMenuSeeder::class,
-            FormPendaftaranSeeder::class,
+            FormPendaftaranSeeder::class, // Form + FormField
+
+            // ── Jalur Pendaftaran (depends on all above) ──
+            JalurPendaftaranSeeder::class,
         ]);
     }
 }

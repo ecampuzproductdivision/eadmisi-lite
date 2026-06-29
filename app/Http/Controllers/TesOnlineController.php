@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ExamQuestion;
 use App\Models\ExamResult;
 use App\Models\Registration;
-use App\Models\RegistrationPath;
+use App\Models\SoalUjian;
 use Illuminate\Http\Request;
 
 class TesOnlineController extends Controller
@@ -35,6 +34,7 @@ class TesOnlineController extends Controller
 
     /**
      * Mulai ujian - buat exam result baru untuk jalur tertentu.
+     * Questions are fetched from the specific PaketSoal mapped to the applicant's registration path.
      */
     public function start($registrationId = null)
     {
@@ -46,6 +46,7 @@ class TesOnlineController extends Controller
         $registration = Registration::where('user_id', auth()->id())
             ->where('id', $registrationId)
             ->whereIn('status', ['payment_verified'])
+            ->with('registrationPath.paketSoal')
             ->first();
 
         if (!$registration) {
@@ -68,7 +69,24 @@ class TesOnlineController extends Controller
             ->first();
 
         if (!$examResult) {
-            $questions = ExamQuestion::orderBy('order')->get();
+            // Get the specific PaketSoal mapped to this registration path
+            $paketSoal = $registration->registrationPath?->paketSoal;
+
+            // Fetch questions from the mapped PaketSoal
+            $questions = collect();
+            if ($paketSoal) {
+                $questions = SoalUjian::where('paket_soal_id', $paketSoal->id)
+                    ->where('status_aktif', true)
+                    ->orderBy('urutan')
+                    ->get();
+            }
+
+            // Edge case guard: no questions found
+            if ($questions->isEmpty()) {
+                return redirect()->route('tes-online.index')
+                    ->with('error', 'Soal ujian belum siap untuk jalur ini. Silakan hubungi Helpdesk PMB.');
+            }
+
             $examResult = ExamResult::create([
                 'registration_id' => $registration->id,
                 'total_questions' => $questions->count(),
@@ -88,6 +106,7 @@ class TesOnlineController extends Controller
         $registration = Registration::where('user_id', auth()->id())
             ->where('id', $registrationId)
             ->whereIn('status', ['payment_verified'])
+            ->with('registrationPath.paketSoal')
             ->first();
 
         if (!$registration) {
@@ -102,7 +121,21 @@ class TesOnlineController extends Controller
             return redirect()->route('tes-online.index');
         }
 
-        $questions = ExamQuestion::orderBy('order')->get();
+        // Fetch questions from the specific mapped PaketSoal
+        $paketSoal = $registration->registrationPath?->paketSoal;
+        $questions = collect();
+        if ($paketSoal) {
+            $questions = SoalUjian::where('paket_soal_id', $paketSoal->id)
+                ->where('status_aktif', true)
+                ->orderBy('urutan')
+                ->get();
+        }
+
+        if ($questions->isEmpty()) {
+            return redirect()->route('tes-online.index')
+                ->with('error', 'Soal ujian belum siap untuk jalur ini. Silakan hubungi Helpdesk PMB.');
+        }
+
         $currentQuestion = $questions[$index] ?? null;
         $answers = $examResult->answers ?? [];
         $currentQuestionIndex = (int) $index;
@@ -126,6 +159,7 @@ class TesOnlineController extends Controller
     {
         $registration = Registration::where('user_id', auth()->id())
             ->whereIn('status', ['payment_verified'])
+            ->with('registrationPath.paketSoal')
             ->latest()
             ->first();
 
@@ -151,8 +185,16 @@ class TesOnlineController extends Controller
             ]);
         }
 
-        // Find current question index
-        $questions = ExamQuestion::orderBy('order')->get();
+        // Find current question index from the mapped package
+        $paketSoal = $registration->registrationPath?->paketSoal;
+        $questions = collect();
+        if ($paketSoal) {
+            $questions = SoalUjian::where('paket_soal_id', $paketSoal->id)
+                ->where('status_aktif', true)
+                ->orderBy('urutan')
+                ->get();
+        }
+
         $currentIndex = $questions->search(function ($q) use ($questionId) {
             return $q->id == $questionId;
         });
@@ -162,7 +204,7 @@ class TesOnlineController extends Controller
             $nextIndex = $questions->count() - 1;
         }
 
-        return redirect()->route('tes-online.question', $nextIndex);
+        return redirect()->route('tes-online.question', ['registrationId' => $registration->id, 'index' => $nextIndex]);
     }
 
     /**
@@ -172,6 +214,7 @@ class TesOnlineController extends Controller
     {
         $registration = Registration::where('user_id', auth()->id())
             ->whereIn('status', ['payment_verified'])
+            ->with('registrationPath.paketSoal')
             ->latest()
             ->first();
 
@@ -193,12 +236,20 @@ class TesOnlineController extends Controller
             $answers[$questionId] = $answer;
         }
 
-        // Grade the exam
-        $questions = ExamQuestion::orderBy('order')->get();
+        // Grade the exam using questions from the mapped PaketSoal
+        $paketSoal = $registration->registrationPath?->paketSoal;
+        $questions = collect();
+        if ($paketSoal) {
+            $questions = SoalUjian::where('paket_soal_id', $paketSoal->id)
+                ->where('status_aktif', true)
+                ->orderBy('urutan')
+                ->get();
+        }
+
         $correctAnswers = 0;
 
         foreach ($questions as $question) {
-            if (isset($answers[$question->id]) && $answers[$question->id] === $question->correct_answer) {
+            if (isset($answers[$question->id]) && $answers[$question->id] === $question->kunci_jawaban) {
                 $correctAnswers++;
             }
         }

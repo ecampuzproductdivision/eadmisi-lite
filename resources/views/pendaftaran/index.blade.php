@@ -87,18 +87,26 @@
                     <td class="py-3">{{ $registration->created_at->format('d/m/Y H:i') }}</td>
                     <td class="py-3">
                         @php
-                            // ── UNIFIED STATUS PIPELINE (identical to applicant portal) ──
-                            $pathObj = $registration->registrationPath;
+                            // ═══ RESET ALL STATE VARIABLES PER ITERATION ═══
+                            // CRITICAL: prevents domino effect where one row's status leaks to the next row
+                            $pathObj = null;
                             $totalRequiredDocs = 0;
                             $totalUploadedDocs = 0;
                             $hasExamBeenTaken = false;
                             $isPaymentLocked = true;
+                            $statusLabel = null;
+                            $badgeBg = 'bg-secondary';
+                            $badgeText = 'text-white';
+                            $subBadge = '';
 
-                            // Payment check
+                            // ── UNIFIED STATUS PIPELINE (identical to applicant portal) ──
+                            $pathObj = $registration->registrationPath;
+
+                            // Payment check — uses THIS registration's own payments (not Auth::user!)
                             $paidInvoice = $registration->payments->firstWhere('transaction_status', 'success');
                             if ($paidInvoice) $isPaymentLocked = false;
 
-                            // Document check
+                            // Document check — uses THIS registration's own documents
                             if ($pathObj && $pathObj->templateBerkas) {
                                 $totalRequiredDocs = $pathObj->templateBerkas->syaratDokumens()
                                     ->where('status_wajib', true)
@@ -106,7 +114,7 @@
                             }
                             $totalUploadedDocs = $registration->documents->count();
 
-                            // Exam check
+                            // Exam check — uses THIS registration's own exam results
                             if ($pathObj && $pathObj->is_ujian_online) {
                                 $hasExamBeenTaken = $registration->examResults
                                     ->where('status', 'completed')

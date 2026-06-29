@@ -145,7 +145,8 @@
               <input type="hidden" name="elapsed_seconds" id="elapsedSeconds" value="{{ $elapsedSeconds ?? 0 }}">
 
               <div class="d-flex flex-column gap-3 mb-4">
-                @foreach($currentQuestion->options as $option)
+                @php $soalOptions = $currentQuestion->options ?? []; @endphp
+                @forelse($soalOptions as $option)
                   @php
                     $optionLetter = substr($option, 0, 1);
                     $isSelected = isset($answers[$currentQuestion->id]) && $answers[$currentQuestion->id] === $optionLetter;
@@ -157,7 +158,9 @@
                       <span>{{ substr($option, 3) }}</span>
                     </div>
                   </label>
-                @endforeach
+                @empty
+                  <div class="alert alert-warning">Opsi jawaban tidak tersedia untuk soal ini.</div>
+                @endforelse
               </div>
 
               <div class="d-flex justify-content-between">

@@ -39,6 +39,36 @@ class SoalUjian extends Model
     }
 
     /**
+     * Alias: soal_ujian.pertanyaan → question (for view compatibility).
+     */
+    public function getQuestionAttribute()
+    {
+        return $this->pertanyaan;
+    }
+
+    /**
+     * Default category (soal_ujian doesn't have this column).
+     */
+    public function getCategoryAttribute()
+    {
+        return 'General';
+    }
+
+    /**
+     * Accessor: generate options array from opsi_a, opsi_b, opsi_c, opsi_d columns.
+     * Format: ["A. <value>", "B. <value>", ...] to match the tes-online view.
+     */
+    public function getOptionsAttribute()
+    {
+        $result = [];
+        if ($this->opsi_a) $result[] = 'A. ' . $this->opsi_a;
+        if ($this->opsi_b) $result[] = 'B. ' . $this->opsi_b;
+        if ($this->opsi_c) $result[] = 'C. ' . $this->opsi_c;
+        if ($this->opsi_d) $result[] = 'D. ' . $this->opsi_d;
+        return $result;
+    }
+
+    /**
      * A SoalUjian belongs to a PaketSoal.
      */
     public function paketSoal()

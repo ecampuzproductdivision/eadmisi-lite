@@ -2,9 +2,9 @@
 
 @section('content')
 @if($isCalonMahasiswa ?? false)
-  {{-- ═══════════════════════════════════════════════════ --}}
-  {{── STUDENT DASHBOARD: Multi-path application cards  --}}
-  {{-- ═══════════════════════════════════════════════════ --}}
+  {{-- ================================================= --}}
+  {{-- STUDENT DASHBOARD: Multi-path application cards   --}}
+  {{-- ================================================= --}}
   <main class="p-6">
     <div class="row mb-4">
       <div class="col-12">
@@ -79,9 +79,9 @@
   </main>
 
 @else
-  {{-- ═══════════════════════════════════════════════════ --}}
-  {{── ADMIN DASHBOARD: statistics, charts, recent data  --}}
-  {{-- ═══════════════════════════════════════════════════ --}}
+  {{-- ================================================= --}}
+  {{-- ADMIN DASHBOARD: statistics, charts, recent data   --}}
+  {{-- ================================================= --}}
   @component('components.data-page-layout')
     @slot('breadcrumbs', [
         ['label' => 'Home', 'active' => true],

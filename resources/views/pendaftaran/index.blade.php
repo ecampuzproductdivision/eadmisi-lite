@@ -9,9 +9,7 @@
     @slot('title', 'Pendaftaran PMB')
     @slot('description', 'Data pendaftaran yang sudah disubmit oleh calon mahasiswa.')
     @slot('actions')
-        <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
-            <i class="ti ti-users me-1"></i> Total: {{ $registrations->total() }}
-        </span>
+
     @endslot
     @slot('filters')
         <div class="col-md-3 col-12">

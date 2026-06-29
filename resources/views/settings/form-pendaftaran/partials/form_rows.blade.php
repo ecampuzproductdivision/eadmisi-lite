@@ -30,16 +30,26 @@
         <span class="text-muted">{{ $form->created_at->format('d/m/Y') }}</span>
     </td>
     <td class="text-center">
-        <div class="d-flex gap-1 justify-content-center">
-            <a href="{{ route('settings.form-pendaftaran.builder', $form->id) }}" class="btn btn-primary btn-sm" title="Atur Field">
-                <i class="ti ti-layout-board"></i>
-            </a>
-            <form action="{{ route('settings.form-pendaftaran.destroy', $form->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus form {{ $form->nama }}? Semua field akan ikut terhapus.')">
-                @csrf @method('DELETE')
-                <button type="submit" class="btn btn-danger btn-sm" title="Hapus">
-                    <i class="ti ti-trash"></i>
-                </button>
-            </form>
+        <div class="dropdown">
+            <button class="btn btn-sm btn-light border dropdown-actions-btn" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" title="Actions">
+                <i class="ti ti-dots-vertical fs-5"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <a class="dropdown-item" href="{{ route('settings.form-pendaftaran.builder', $form->id) }}">
+                        <i class="ti ti-layout-board me-2"></i> Atur Field
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form action="{{ route('settings.form-pendaftaran.destroy', $form->id) }}" method="POST" onsubmit="return confirm('Hapus form {{ $form->nama }}? Semua field akan ikut terhapus.')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="dropdown-item text-danger">
+                            <i class="ti ti-trash me-2"></i> Hapus
+                        </button>
+                    </form>
+                </li>
+            </ul>
         </div>
     </td>
 </tr>

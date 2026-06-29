@@ -110,6 +110,10 @@ html.collapsed #miniSidebar .nav-link .nav-icon,
 html.collapsed #miniSidebar .nav-link .nav-icon-sub {
   margin: 0 auto !important;
 }
+/* Expanded sidebar nav-link text full width */
+html.expanded #miniSidebar .nav-link .text {
+  width: 100% !important;
+}
 /* Sidebar nav link active & hover states (expanded) */
 html.expanded #miniSidebar .nav-link.active,
 html.expanded #miniSidebar .nav-link:hover {
@@ -347,6 +351,7 @@ html.expanded #miniSidebar .nav-link:hover {
 /* Expanded sidebar border right to solid */
 html.expanded #miniSidebar {
   border-right: 1px solid var(--bs-border-color, #e2e8f0) !important;
+  height: 100%;
 }
 
 /* Pagination style improvements */
@@ -449,5 +454,25 @@ textarea.form-control::placeholder {
     <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
 
     @stack('scripts')
+<script>
+// Handle dropdown overflow inside scrollable containers
+document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.dropdown-actions-btn');
+    if (btn) {
+        var container = btn.closest('.data-page-table-container');
+        if (container) {
+            container.style.overflow = 'visible';
+            var dropdownEl = btn.nextElementSibling;
+            if (dropdownEl) {
+                var onHidden = function() {
+                    container.style.overflow = '';
+                    dropdownEl.removeEventListener('hidden.bs.dropdown', onHidden);
+                };
+                dropdownEl.addEventListener('hidden.bs.dropdown', onHidden);
+            }
+        }
+    }
+});
+</script>
   </body>
 </html>

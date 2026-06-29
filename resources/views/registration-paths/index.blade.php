@@ -73,11 +73,7 @@
         </table>
     @endslot
     @slot('pagination')
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="text-muted small">
-                <i class="ti ti-database me-1"></i>
-                Menampilkan {{ $paths->firstItem() }} - {{ $paths->lastItem() }} dari {{ $paths->total() }} data
-            </div>
+        <div class="d-flex justify-content-end align-items-center">
             <div>
                 {{ $paths->links() }}
             </div>

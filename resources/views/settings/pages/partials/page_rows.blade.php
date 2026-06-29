@@ -26,17 +26,27 @@
             </span>
         </td>
         <td class="text-end">
-            <div class="d-inline-flex gap-2">
-                <a href="{{ route('pages.edit', $page->id) }}" class="btn btn-sm btn-light border" title="Edit">
-                    <i class="ti ti-edit fs-5"></i>
-                </a>
-                <form action="{{ route('pages.destroy', $page->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this page registration?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-light border text-danger" title="Delete">
-                        <i class="ti ti-trash fs-5"></i>
-                    </button>
-                </form>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light border dropdown-actions-btn" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" title="Actions">
+                    <i class="ti ti-dots-vertical fs-5"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="{{ route('pages.edit', $page->id) }}">
+                            <i class="ti ti-edit me-2"></i> Edit
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form action="{{ route('pages.destroy', $page->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this page registration?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="dropdown-item text-danger">
+                                <i class="ti ti-trash me-2"></i> Delete
+                            </button>
+                        </form>
+                    </li>
+                </ul>
             </div>
         </td>
     </tr>

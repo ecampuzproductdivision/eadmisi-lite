@@ -33,19 +33,29 @@
     </td>
     <td>{{ $user->created_at->format('M d, Y') }}</td>
     <td class="text-end">
-      <div class="d-inline-flex gap-2">
-        <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-light border" title="Edit">
-          <i class="ti ti-edit fs-5"></i>
-        </a>
-        @if(auth()->id() != $user->id)
-          <form action="{{ route('users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?');">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-sm btn-light border text-danger" title="Delete">
-              <i class="ti ti-trash fs-5"></i>
-            </button>
-          </form>
-        @endif
+      <div class="dropdown">
+        <button class="btn btn-sm btn-light border dropdown-actions-btn" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" title="Actions">
+          <i class="ti ti-dots-vertical fs-5"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <a class="dropdown-item" href="{{ route('users.edit', $user->id) }}">
+              <i class="ti ti-edit me-2"></i> Edit
+            </a>
+          </li>
+          @if(auth()->id() != $user->id)
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <form action="{{ route('users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="dropdown-item text-danger">
+                  <i class="ti ti-trash me-2"></i> Delete
+                </button>
+              </form>
+            </li>
+          @endif
+        </ul>
       </div>
     </td>
   </tr>

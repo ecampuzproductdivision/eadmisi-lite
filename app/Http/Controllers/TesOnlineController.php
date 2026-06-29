@@ -208,7 +208,8 @@ class TesOnlineController extends Controller
     }
 
     /**
-     * Selesai ujian - koreksi jawaban.
+     * Selesai ujian - koreksi jawaban menggunakan bobot/weight per soal.
+     * Score = akumulasi bobot dari jawaban benar, capped di 100.
      */
     public function submit(Request $request)
     {
@@ -236,7 +237,7 @@ class TesOnlineController extends Controller
             $answers[$questionId] = $answer;
         }
 
-        // Grade the exam using questions from the mapped PaketSoal
+        // Fetch questions from the mapped PaketSoal
         $paketSoal = $registration->registrationPath?->paketSoal;
         $questions = collect();
         if ($paketSoal) {
@@ -246,24 +247,34 @@ class TesOnlineController extends Controller
                 ->get();
         }
 
-        $correctAnswers = 0;
+        // ── WEIGHT-BASED SCORING ──
+        // Accumulate individual question weights (skor/bobot) for correct answers.
+        // Max score is capped at 100.
+        $totalScore = 0;
+        $correctCount = 0;
 
         foreach ($questions as $question) {
-            if (isset($answers[$question->id]) && $answers[$question->id] === $question->kunci_jawaban) {
-                $correctAnswers++;
+            $studentAnswer = $answers[$question->id] ?? '';
+            if (!empty($studentAnswer) && strtoupper(trim($studentAnswer)) === strtoupper(trim($question->kunci_jawaban))) {
+                $correctCount++;
+                $totalScore += (float) ($question->skor ?? 0);
             }
         }
 
+        // Enforce max 100 ceiling
+        if ($totalScore > 100) {
+            $totalScore = 100;
+        }
+
         $totalQuestions = $questions->count();
-        $wrongAnswers = $totalQuestions - $correctAnswers;
-        $score = $totalQuestions > 0 ? ($correctAnswers / $totalQuestions) * 100 : 0;
+        $wrongAnswers = $totalQuestions - $correctCount;
 
         $examResult->update([
             'answers' => $answers,
             'total_questions' => $totalQuestions,
-            'correct_answers' => $correctAnswers,
+            'correct_answers' => $correctCount,
             'wrong_answers' => $wrongAnswers,
-            'score' => $score,
+            'score' => $totalScore,
             'duration_seconds' => $elapsedSeconds,
             'status' => 'completed',
         ]);
@@ -274,6 +285,6 @@ class TesOnlineController extends Controller
             ->update(['status' => 'exam_completed', 'updated_at' => now()]);
 
         return redirect()->route('tes-online.index')
-            ->with('success', 'Ujian berhasil diselesaikan!');
+            ->with('success', 'Ujian berhasil diselesaikan! Skor: ' . number_format($totalScore, 1));
     }
 }

@@ -39,6 +39,14 @@ class SoalUjian extends Model
     }
 
     /**
+     * Skor per soal sebagai bobot (weight).
+     */
+    public function getBobotAttribute()
+    {
+        return (float) ($this->skor ?? 0);
+    }
+
+    /**
      * Alias: soal_ujian.pertanyaan → question (for view compatibility).
      */
     public function getQuestionAttribute()

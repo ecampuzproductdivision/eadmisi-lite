@@ -38,22 +38,13 @@
         <span class="badge bg-danger-subtle text-danger px-3 py-2">Nonaktif</span>
       @endif
     </td>
-    <td>
-      <div class="d-flex gap-2">
-        <a href="{{ route('registration-paths.show', $path) }}" class="btn btn-sm py-2 btn-white d-inline-flex align-items-center gap-1">
-          <i class="ti ti-list-details"></i>
-        </a>
-        <a href="{{ route('registration-paths.edit', $path) }}" class="btn btn-sm py-2 btn-white d-inline-flex align-items-center gap-1">
-          <i class="ti ti-pencil"></i>
-        </a>
-        <form action="{{ route('registration-paths.destroy', $path) }}" method="POST" onsubmit="return confirm('Hapus jalur {{ $path->name }}?')">
-          @csrf
-          @method('DELETE')
-          <button type="submit" class="btn btn-sm py-2 btn-white d-inline-flex align-items-center gap-1">
-            <i class="ti ti-trash"></i>
-          </button>
-        </form>
-      </div>
+    <td class="text-end">
+      @include('components.actions-dropdown', ['items' => [
+        ['url' => route('registration-paths.show', $path), 'icon' => 'ti ti-list-details', 'label' => 'Detail', 'title' => 'Lihat Detail'],
+        ['url' => route('registration-paths.edit', $path), 'icon' => 'ti ti-pencil', 'label' => 'Edit', 'title' => 'Edit Jalur Pendaftaran'],
+        ['divider' => true],
+        ['url' => route('registration-paths.destroy', $path), 'icon' => 'ti ti-trash', 'label' => 'Hapus', 'class' => 'text-danger', 'method' => 'DELETE', 'confirm' => 'Hapus jalur ' . $path->name . '?'],
+      ]])
     </td>
   </tr>
 @endforeach

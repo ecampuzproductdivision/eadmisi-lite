@@ -5,6 +5,9 @@
       ['url' => route('...'), 'icon' => 'ti ti-edit', 'label' => 'Edit'],
       ['divider' => true],
       ['url' => route('...'), 'icon' => 'ti ti-trash', 'label' => 'Delete', 'class' => 'text-danger', 'method' => 'DELETE', 'confirm' => 'Are you sure?'],
+      ['modal' => '#modalId', 'icon' => 'ti ti-calendar', 'label' => 'Schedule', 'data' => ['id' => 1, 'name' => 'John']],
+      ['onclick' => "functionName(id)", 'icon' => 'ti ti-trash', 'label' => 'Delete', 'class' => 'text-danger'],
+      ['html' => '<span>Custom HTML</span>'],
   ]])
 --}}
 <div class="dropdown">
@@ -15,17 +18,49 @@
         @foreach($items as $item)
             @if(isset($item['divider']) && $item['divider'])
                 <li><hr class="dropdown-divider"></li>
+            @elseif(isset($item['modal']))
+                <li>
+                    <button type="button" class="dropdown-item {{ $item['class'] ?? '' }}"
+                            data-bs-toggle="modal" data-bs-target="{{ $item['modal'] }}"
+                            @foreach(($item['data'] ?? []) as $key => $val)
+                                data-{{ $key }}="{{ $val }}"
+                            @endforeach
+                            @if(isset($item['title']))
+                                title="{{ $item['title'] }}"
+                            @endif>
+                        <i class="{{ $item['icon'] }} me-2"></i> {{ $item['label'] }}
+                    </button>
+                </li>
+            @elseif(isset($item['onclick']))
+                <li>
+                    <button type="button" class="dropdown-item {{ $item['class'] ?? '' }}"
+                            onclick="{{ $item['onclick'] }}"
+                            @if(isset($item['title']))
+                                title="{{ $item['title'] }}"
+                            @endif>
+                        <i class="{{ $item['icon'] }} me-2"></i> {{ $item['label'] }}
+                    </button>
+                </li>
             @elseif(isset($item['url']))
                 <li>
-                    @if(isset($item['method']) && $item['method'] === 'DELETE')
-                        <form action="{{ $item['url'] }}" method="POST" onsubmit="return confirm('{{ $item['confirm'] ?? 'Are you sure?' }}');">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="dropdown-item {{ $item['class'] ?? '' }}">
-                                <i class="{{ $item['icon'] }} me-2"></i> {{ $item['label'] }}
-                            </button>
+                    @if(isset($item['method']) && in_array($item['method'], ['DELETE', 'POST', 'PUT']))
+                        <form action="{{ $item['url'] }}" method="POST" class="d-inline">
+                            @csrf
+                            @method($item['method'])
+                            @if(isset($item['confirm']))
+                                <button type="submit" class="dropdown-item {{ $item['class'] ?? '' }}"
+                                        onclick="return confirm('{{ $item['confirm'] }}');">
+                                    <i class="{{ $item['icon'] }} me-2"></i> {{ $item['label'] }}
+                                </button>
+                            @else
+                                <button type="submit" class="dropdown-item {{ $item['class'] ?? '' }}">
+                                    <i class="{{ $item['icon'] }} me-2"></i> {{ $item['label'] }}
+                                </button>
+                            @endif
                         </form>
                     @else
-                        <a class="dropdown-item {{ $item['class'] ?? '' }}" href="{{ $item['url'] }}">
+                        <a class="dropdown-item {{ $item['class'] ?? '' }}" href="{{ $item['url'] }}"
+                           @if(isset($item['title'])) title="{{ $item['title'] }}" @endif>
                             <i class="{{ $item['icon'] }} me-2"></i> {{ $item['label'] }}
                         </a>
                     @endif

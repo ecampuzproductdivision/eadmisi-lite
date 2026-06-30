@@ -62,7 +62,7 @@
                     <th class="py-3 fw-semibold">No. HP</th>
                     <th class="py-3 fw-semibold">Tgl Daftar</th>
                     <th class="py-3 fw-semibold">Status</th>
-                    <th class="pe-4 py-3 fw-semibold text-end" style="width:90px;">Aksi</th>
+                    <th class="pe-4 py-3 fw-semibold text-end" style="width:60px;">Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -155,8 +155,10 @@
                             {!! $subBadge !!}
                         @endif
                     </td>
-                    <td class="pe-4 py-3 text-end">
-                        <a href="{{ route('pendaftaran.show', $registration->id) }}" class="btn btn-sm btn-outline-primary"><i class="ti ti-eye me-1"></i> Detail</a>
+                    <td class="text-end">
+                        @include('components.actions-dropdown', ['items' => [
+                            ['url' => route('pendaftaran.show', $registration->id), 'icon' => 'ti ti-eye', 'label' => 'Detail', 'title' => 'Lihat Detail Pendaftaran'],
+                        ]])
                     </td>
                 </tr>
                 @empty

@@ -18,35 +18,15 @@
         <span class="badge bg-secondary-subtle text-secondary">Nonaktif</span>
       @endif
     </td>
-    <td>
-      <div class="d-flex gap-1">
-        <a href="{{ route('paket-soal.kelola-soal', $paket->id) }}"
-           class="btn btn-sm btn-soft-info d-inline-flex align-items-center gap-1"
-           title="Kelola Soal">
-          <i class="ti ti-list-details fs-5"></i> Kelola Soal
-        </a>
-        <button type="button" class="btn btn-sm btn-soft-secondary d-inline-flex align-items-center gap-1"
-                data-bs-toggle="modal" data-bs-target="#modalEditPaket{{ $paket->id }}"
-                title="Edit Paket">
-          <i class="ti ti-edit fs-5"></i>
-        </button>
-        <form action="{{ route('paket-soal.toggle-status', $paket->id) }}" method="POST" class="d-inline">
-          @csrf
-          <button type="submit" class="btn btn-sm btn-soft-warning d-inline-flex align-items-center gap-1"
-                  title="{{ $paket->status_aktif ? 'Nonaktifkan' : 'Aktifkan' }}"
-                  onclick="return confirm('{{ $paket->status_aktif ? 'Nonaktifkan' : 'Aktifkan' }} paket soal ini?')">
-            <i class="ti ti-{{ $paket->status_aktif ? 'player-pause' : 'player-play' }} fs-5"></i>
-          </button>
-        </form>
-        <form action="{{ route('paket-soal.destroy', $paket->id) }}" method="POST" class="d-inline">
-          @csrf @method('DELETE')
-          <button type="submit" class="btn btn-sm btn-soft-danger d-inline-flex align-items-center gap-1"
-                  title="Hapus"
-                  onclick="return confirm('Hapus paket soal beserta semua soalnya?')">
-            <i class="ti ti-trash fs-5"></i>
-          </button>
-        </form>
-      </div>
+    <td class="text-end">
+      @include('components.actions-dropdown', ['items' => [
+        ['url' => route('paket-soal.kelola-soal', $paket->id), 'icon' => 'ti ti-list-details', 'label' => 'Kelola Soal', 'title' => 'Kelola Soal'],
+        ['divider' => true],
+        ['modal' => '#modalEditPaket' . $paket->id, 'icon' => 'ti ti-edit', 'label' => 'Edit', 'title' => 'Edit Paket Soal'],
+        ['url' => route('paket-soal.toggle-status', $paket->id), 'icon' => 'ti ti-' . ($paket->status_aktif ? 'player-pause' : 'player-play'), 'label' => $paket->status_aktif ? 'Nonaktifkan' : 'Aktifkan', 'method' => 'POST', 'confirm' => ($paket->status_aktif ? 'Nonaktifkan' : 'Aktifkan') . ' paket soal ini?'],
+        ['divider' => true],
+        ['url' => route('paket-soal.destroy', $paket->id), 'icon' => 'ti ti-trash', 'label' => 'Hapus', 'class' => 'text-danger', 'method' => 'DELETE', 'confirm' => 'Hapus paket soal beserta semua soalnya?'],
+      ]])
 
       <!-- Modal Edit Paket -->
       <div class="modal fade" id="modalEditPaket{{ $paket->id }}" tabindex="-1" aria-hidden="true">

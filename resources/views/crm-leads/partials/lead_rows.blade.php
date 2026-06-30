@@ -25,18 +25,13 @@
         </ul>
       </div>
     </td>
-    <td>
-      <div class="d-flex gap-1">
-        <a href="https://wa.me/{{ $lead->whatsapp }}?text=Halo%20{{ urlencode($lead->nama) }},%20saya%20Admin%20PMB..." target="_blank" class="btn btn-sm btn-outline-success border-0" title="Follow Up WA">
-          <i class="ti ti-brand-whatsapp"></i>
-        </a>
-        <button type="button" class="btn btn-sm btn-outline-info border-0" title="Detail & Catatan" onclick="openDetail({{ $lead->id }})">
-          <i class="ti ti-list-details"></i>
-        </button>
-        <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Hapus" onclick="deleteLead({{ $lead->id }}, '{{ addslashes($lead->nama) }}')">
-          <i class="ti ti-trash"></i>
-        </button>
-      </div>
+    <td class="text-end">
+      @include('components.actions-dropdown', ['items' => [
+        ['url' => 'https://wa.me/' . $lead->whatsapp . '?text=Halo%20' . urlencode($lead->nama) . ',%20saya%20Admin%20PMB...', 'icon' => 'ti ti-brand-whatsapp', 'label' => 'Follow Up WA', 'class' => 'text-success', 'title' => 'Follow Up via WhatsApp'],
+        ['onclick' => 'openDetail(' . $lead->id . ')', 'icon' => 'ti ti-list-details', 'label' => 'Detail & Catatan', 'title' => 'Lihat Detail & Catatan'],
+        ['divider' => true],
+        ['onclick' => 'deleteLead(' . $lead->id . ', \'' . addslashes($lead->nama) . '\')', 'icon' => 'ti ti-trash', 'label' => 'Hapus', 'class' => 'text-danger', 'title' => 'Hapus Lead'],
+      ]])
     </td>
   </tr>
 @endforeach

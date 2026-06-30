@@ -61,27 +61,23 @@
                 <span class="badge bg-secondary-subtle text-secondary px-3 py-2">Belum dijadwalkan</span>
             @endif
         </td>
-        <td class="py-3">
-            <div class="d-flex gap-2">
-                <button type="button" class="btn btn-sm py-2 btn-white d-inline-flex align-items-center gap-1"
-                        data-bs-toggle="modal" data-bs-target="#jadwalModal"
-                        data-pendaftaran-id="{{ $reg->id }}"
-                        data-nama="{{ $reg->nama_lengkap }}"
-                        data-tanggal="{{ $w?->tanggal_wawancara?->format('Y-m-d') ?? '' }}"
-                        data-jam="{{ $w?->jam_wawancara ?? '' }}"
-                        data-lokasi="{{ $w?->lokasi_wawancara ?? '' }}"
-                        data-nama-pewawancara="{{ $w?->nama_pewawancara ?? '' }}">
-                    <i class="ti ti-calendar-stats"></i> Jadwal
-                </button>
-                <button type="button" class="btn btn-sm py-2 btn-white d-inline-flex align-items-center gap-1"
-                        data-bs-toggle="modal" data-bs-target="#hasilModal"
-                        data-pendaftaran-id="{{ $reg->id }}"
-                        data-nama="{{ $reg->nama_lengkap }}"
-                        data-status="{{ $w?->status_wawancara ?? '' }}"
-                        data-catatan="{{ $w?->catatan_pewawancara ?? '' }}">
-                    <i class="ti ti-checklist"></i> Hasil
-                </button>
-            </div>
+        <td class="text-end">
+            @include('components.actions-dropdown', ['items' => [
+                ['modal' => '#jadwalModal', 'icon' => 'ti ti-calendar-stats', 'label' => 'Atur Jadwal', 'title' => 'Atur Jadwal Wawancara', 'data' => [
+                    'pendaftaran-id' => $reg->id,
+                    'nama' => $reg->nama_lengkap,
+                    'tanggal' => $w?->tanggal_wawancara?->format('Y-m-d') ?? '',
+                    'jam' => $w?->jam_wawancara ?? '',
+                    'lokasi' => $w?->lokasi_wawancara ?? '',
+                    'nama-pewawancara' => $w?->nama_pewawancara ?? '',
+                ]],
+                ['modal' => '#hasilModal', 'icon' => 'ti ti-checklist', 'label' => 'Input Hasil', 'title' => 'Input Hasil Wawancara', 'data' => [
+                    'pendaftaran-id' => $reg->id,
+                    'nama' => $reg->nama_lengkap,
+                    'status' => $w?->status_wawancara ?? '',
+                    'catatan' => $w?->catatan_pewawancara ?? '',
+                ]],
+            ]])
         </td>
     </tr>
 @empty

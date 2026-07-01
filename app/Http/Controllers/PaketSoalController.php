@@ -55,11 +55,11 @@ class PaketSoalController extends Controller
     }
 
     /**
-     * Show the form for editing the specified package.
+     * Show the form for editing the specified question (SoalUjian).
      */
-    public function edit(PaketSoal $paketSoal)
+    public function edit(SoalUjian $soalUjian)
     {
-        return response()->json($paketSoal);
+        return response()->json($soalUjian);
     }
 
     /**

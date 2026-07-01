@@ -317,7 +317,7 @@ function editSoal(id) {
       document.getElementById('edit_opsi_b').value = data.opsi_b;
       document.getElementById('edit_opsi_c').value = data.opsi_c;
       document.getElementById('edit_opsi_d').value = data.opsi_d;
-      document.getElementById('edit_kunci_jawaban').value = data.kunci_jawaban;
+      document.getElementById('edit_kunci_jawaban').value = data.kunci_jawaban.toUpperCase();
       document.getElementById('edit_skor').value = data.skor;
       document.getElementById('edit_urutan').value = data.urutan;
       document.getElementById('formEditSoal').action = '/settings/paket-soal/' + paketId + '/update-question/' + id;

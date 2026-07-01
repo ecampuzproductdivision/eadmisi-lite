@@ -43,11 +43,18 @@
 
         {{-- SECTION 2: Title Header --}}
         <div class="d-flex justify-content-between align-items-center my-5">
-            <div>
-                <h1 class="mb-1 fw-bold">{{ $title ?? 'Page Title' }}</h1>
-                @if(isset($description))
-                    <p class="text-muted mb-0">{{ $description }}</p>
+            <div class="d-flex align-items-top gap-3">
+                @if(isset($backUrl))
+                    <a href="{{ $backUrl }}" class="btn btn-light d-flex align-items-center justify-content-center flex-shrink-0 mt-1" style="width: 36px; height: 36px;" title="{{ $backLabel ?? 'Kembali' }}">
+                        <i class="ti ti-arrow-left fs-5"></i>
+                    </a>
                 @endif
+                <div>
+                    <h1 class="mb-1 fw-bold">{{ $title ?? 'Page Title' }}</h1>
+                    @if(isset($description))
+                        <p class="text-muted mb-0">{{ $description }}</p>
+                    @endif
+                </div>
             </div>
             @if(isset($actions))
                 <div class="d-flex gap-2">

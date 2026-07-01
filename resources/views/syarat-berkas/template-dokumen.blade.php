@@ -1,64 +1,54 @@
 @extends('layouts.app')
 
 @section('content')
-<main class="p-6">
-  <div class="row mb-6 align-items-center">
-    <div class="col-md-6 col-12">
-      <a href="{{ route('syarat-berkas.index') }}" class="btn btn-soft-secondary mb-3 d-inline-flex align-items-center gap-2">
-        <i class="ti ti-arrow-left fs-4"></i> Kembali
-      </a>
-      <h1 class="mb-1 fw-bold">{{ $templateBerkas->nama_template }}</h1>
-      <p class="mb-0 text-muted">
+@component('components.data-page-layout', ['data' => $dokumens])
+    @slot('breadcrumbs', [
+        ['label' => 'Home', 'url' => route('home')],
+        ['label' => 'Settings', 'url' => '#'],
+        ['label' => 'Syarat Berkas', 'url' => route('syarat-berkas.index')],
+        ['label' => $templateBerkas->nama_template, 'active' => true],
+    ])
+    @slot('title', $templateBerkas->nama_template)
+    @slot('description')
         Total Dokumen: {{ $templateBerkas->total_dokumen }} |
         Status: @if($templateBerkas->status_aktif) <span class="badge bg-success-subtle text-success">Aktif</span>
         @else <span class="badge bg-secondary-subtle text-secondary">Nonaktif</span> @endif
-      </p>
-      @if($templateBerkas->deskripsi)<p class="mt-2 text-muted">{{ $templateBerkas->deskripsi }}</p>@endif
-    </div>
-    <div class="col-md-6 col-12 text-md-end mt-3 mt-md-0">
-      <button type="button" class="btn btn-primary d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalTambahDokumen">
-        <i class="ti ti-plus fs-4"></i> Tambah Dokumen
-      </button>
-    </div>
-  </div>
-
-  @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <i class="ti ti-circle-check fs-4 me-2"></i>{{ session('success') }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  @endif
-
-  <div class="card border-1 shadow-sm">
-    <div class="card-body p-4">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead class="bg-light">
-            <tr>
-              <th style="width:50px;">No</th>
-              <th>Nama Dokumen</th>
-              <th>Format Ekstensi</th>
-              <th>Maks. Ukuran</th>
-              <th>Sifat</th>
-              <th style="width:120px;">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            @if($dokumens->isEmpty())
-              <tr><td colspan="6" class="text-center py-5">
-                <i class="ti ti-file-off text-muted" style="font-size:3rem;"></i>
-                <p class="mt-3 mb-0 text-muted">Belum ada dokumen dalam template ini.</p>
-                <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#modalTambahDokumen">Tambah Dokumen Pertama</button>
-              </td></tr>
-            @else
-              @include('syarat-berkas.partials.dokumen_rows')
-            @endif
-          </tbody>
+        @if($templateBerkas->deskripsi)<br><span class="text-muted">{{ $templateBerkas->deskripsi }}</span>@endif
+    @endslot
+    @slot('backUrl', route('syarat-berkas.index'))
+    @slot('actions')
+        <button type="button" class="btn btn-dark d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalTambahDokumen">
+            <i class="ti ti-plus fs-4"></i> Tambah Dokumen
+        </button>
+    @endslot
+    @slot('exports')
+    @endslot
+    @slot('table')
+        <table class="table table-hover align-middle mb-0 table-ead">
+            <thead class="table-light">
+                <tr>
+                    <th class="py-3" style="width:50px;">No</th>
+                    <th class="py-3">Nama Dokumen</th>
+                    <th class="py-3">Format Ekstensi</th>
+                    <th class="py-3">Maks. Ukuran</th>
+                    <th class="py-3">Sifat</th>
+                    <th class="py-3 text-center" style="width:80px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if($dokumens->isEmpty())
+                    <tr><td colspan="6" class="text-center py-5">
+                        <i class="ti ti-file-off text-muted" style="font-size:3rem;"></i>
+                        <p class="mt-3 mb-0 text-muted">Belum ada dokumen dalam template ini.</p>
+                        <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#modalTambahDokumen">Tambah Dokumen Pertama</button>
+                    </td></tr>
+                @else
+                    @include('syarat-berkas.partials.dokumen_rows')
+                @endif
+            </tbody>
         </table>
-      </div>
-    </div>
-  </div>
-</main>
+    @endslot
+@endcomponent
 
 <!-- Modal Tambah Dokumen -->
 <div class="modal fade" id="modalTambahDokumen" tabindex="-1" aria-hidden="true">

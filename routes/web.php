@@ -121,6 +121,13 @@ Route::post('/crm-leads/store', [CrmLeadController::class, 'storePublic'])->name
 Route::get('/api/regencies/select2', [RegencyController::class, 'select2'])->name('api.regencies.select2');
 
 Route::middleware(['auth'])->group(function () {
+    // Onboarding routes
+    Route::get('/onboarding/progress', [App\Http\Controllers\OnboardingController::class, 'progress'])->name('onboarding.progress');
+    Route::post('/onboarding/complete-welcome', [App\Http\Controllers\OnboardingController::class, 'completeWelcome'])->name('onboarding.complete-welcome');
+    Route::post('/onboarding/complete-step', [App\Http\Controllers\OnboardingController::class, 'completeStep'])->name('onboarding.complete-step');
+    Route::post('/onboarding/dismiss', [App\Http\Controllers\OnboardingController::class, 'dismiss'])->name('onboarding.dismiss');
+    Route::post('/onboarding/reset', [App\Http\Controllers\OnboardingController::class, 'reset'])->name('onboarding.reset');
+
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/account-settings', [AccountSettingsController::class, 'index'])->name('account.settings');
     Route::put('/account-settings/profile', [AccountSettingsController::class, 'updateProfile'])->name('account.settings.profile');

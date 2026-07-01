@@ -453,6 +453,89 @@ textarea.form-control::placeholder {
     <script src="{{ asset('assets/js/vendors/chart.js') }}"></script>
     <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
 
+    {{-- Driver.js --}}
+    <link rel="stylesheet" href="{{ asset('assets/js/onboarding/driver.css') }}" />
+    <script src="{{ asset('assets/js/onboarding/driver.js.iife.js') }}"></script>
+
+    {{-- Canvas Confetti for completion celebration --}}
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+
+    {{-- Onboarding Tour Script --}}
+    <script src="{{ asset('assets/js/onboarding/tour-dashboard.js') }}"></script>
+
+    {{-- Onboarding Components --}}
+    @include('components.onboarding.welcome-modal')
+    @include('components.onboarding.checklist-widget')
+    @include('components.onboarding.completion-modal')
+
+    {{-- Onboarding Initialization Script --}}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if onboarding should show
+        const welcomeModal = document.getElementById('welcomeOnboardingModal');
+        if (!welcomeModal) return;
+
+        // Check if we have onboarding progress data
+        fetch('{{ route("onboarding.progress") }}')
+            .then(r => r.json())
+            .then(data => {
+                // Show welcome modal if user hasn't completed welcome
+                if (!data.has_completed_welcome && !data.is_dismissed) {
+                    const modal = new bootstrap.Modal(welcomeModal, {
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    modal.show();
+                }
+
+                // Show checklist widget if onboarding has been started but not fully dismissed
+                const widget = document.getElementById('onboardingChecklistWidget');
+                const hasAnyProgress = data.tutorials_progress && Object.values(data.tutorials_progress).some(t => t.completed_steps && t.completed_steps.length > 0);
+                if (widget && (data.has_completed_welcome || hasAnyProgress) && !data.is_dismissed) {
+                    widget.style.display = 'block';
+                }
+            })
+            .catch(() => {});
+
+        // Handle onboarding menu entry click in profile dropdown
+        const onboardingMenuEntry = document.getElementById('onboardingMenuEntry');
+        if (onboardingMenuEntry) {
+            onboardingMenuEntry.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Close the dropdown
+                const dropdown = this.closest('.dropdown-menu');
+                if (dropdown) {
+                    const toggle = dropdown.parentElement.querySelector('[data-bs-toggle="dropdown"]');
+                    if (toggle) {
+                        const instance = bootstrap.Dropdown.getInstance(toggle);
+                        if (instance) instance.hide();
+                    }
+                }
+                // Show checklist widget
+                const widget = document.getElementById('onboardingChecklistWidget');
+                if (widget) {
+                    widget.style.display = 'block';
+                    const panel = document.getElementById('onboardingChecklistPanel');
+                    if (panel) panel.style.display = 'block';
+                }
+                // Start tour if not already completed
+                if (typeof startDashboardTour === 'function') {
+                    setTimeout(() => startDashboardTour(), 300);
+                }
+            });
+        }
+
+        // Handle completion modal close — clean up
+        const completionModal = document.getElementById('tutorialCompletionModal');
+        if (completionModal) {
+            completionModal.addEventListener('hidden.bs.modal', function() {
+                // Re-enable page interaction
+                document.body.classList.remove('modal-open');
+            });
+        }
+    });
+    </script>
+
     @stack('scripts')
 <script>
 // Handle dropdown overflow inside scrollable containers

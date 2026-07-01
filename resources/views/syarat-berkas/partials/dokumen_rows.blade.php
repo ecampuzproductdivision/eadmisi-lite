@@ -18,23 +18,33 @@
       <span class="badge bg-secondary-subtle text-secondary px-3 py-2">Opsional</span>
     @endif
   </td>
-  <td>
-    <div class="d-flex gap-1">
-      <a href="{{ route('syarat-berkas.edit-dokumen', $d->id) }}"
-         class="btn btn-sm btn-soft-warning edit-dokumen-btn"
-         data-id="{{ $d->id }}"
-         data-nama="{{ $d->nama_dokumen }}"
-         data-ekstensi="{{ $d->ekstensi_diizinkan }}"
-         data-maxsize="{{ $d->max_size }}"
-         data-wajib="{{ $d->status_wajib ? 'true' : 'false' }}"
-         data-urutan="{{ $d->urutan }}"
-         title="Edit">
-        <i class="ti ti-edit"></i>
-      </a>
-      <form action="{{ route('syarat-berkas.destroy-dokumen', [request()->route('templateBerkas'), $d->id]) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus dokumen ini?')">
-        @csrf @method('DELETE')
-        <button type="submit" class="btn btn-sm btn-soft-danger" title="Hapus"><i class="ti ti-trash"></i></button>
-      </form>
+  <td class="text-center">
+    <div class="dropdown">
+        <button class="btn btn-sm btn-light border dropdown-actions-btn" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" title="Actions">
+            <i class="ti ti-dots-vertical fs-5"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <a href="#" class="dropdown-item edit-dokumen-btn"
+                   data-id="{{ $d->id }}"
+                   data-nama="{{ $d->nama_dokumen }}"
+                   data-ekstensi="{{ $d->ekstensi_diizinkan }}"
+                   data-maxsize="{{ $d->max_size }}"
+                   data-wajib="{{ $d->status_wajib ? 'true' : 'false' }}"
+                   data-urutan="{{ $d->urutan }}">
+                    <i class="ti ti-edit me-2"></i> Edit
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <form action="{{ route('syarat-berkas.destroy-dokumen', [request()->route('templateBerkas'), $d->id]) }}" method="POST" onsubmit="return confirm('Hapus dokumen ini?');">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="dropdown-item text-danger">
+                        <i class="ti ti-trash me-2"></i> Hapus
+                    </button>
+                </form>
+            </li>
+        </ul>
     </div>
   </td>
 </tr>

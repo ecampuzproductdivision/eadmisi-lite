@@ -66,10 +66,12 @@ Menggunakan `@component('components.data-page-layout', ['data' => $collection])`
 
 **Tidak menggunakan** `data-page-layout`. Struktur mandiri dengan:
 
-1. Breadcrumb (manual `<nav aria-label="breadcrumb">`)
-2. Title dengan back button icon-only di kiri
+1. Breadcrumb (manual `<nav aria-label="breadcrumb">`) + `<hr>`
+2. Title dengan back button **icon-only** (36x36px) di kiri
 3. Card form (`<div class="card border-1 shadow-sm px-4 py-4">`)
-4. Submit & Cancel buttons di kanan bawah card
+4. Input fields menggunakan **`col-md-3 col-12`** (3 kolom per baris) dalam `row g-3`
+5. Section headers dengan `border-bottom: 1px dashed #dee2e6`
+6. Submit & Cancel buttons di kanan bawah card (`d-flex gap-2 justify-content-end mt-4`)
 
 **Struktur:**
 ```
@@ -77,12 +79,18 @@ Menggunakan `@component('components.data-page-layout', ['data' => $collection])`
 @section('content')
 <main class="p-2">
   <!-- Breadcrumb -->
-  <nav aria-label="breadcrumb" class="mb-3">...</nav>
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{{ route('...index') }}">Parent</a></li>
+      <li class="breadcrumb-item active">Current Page</li>
+    </ol>
+  </nav>
   <hr>
 
-  <!-- Title with Back Button -->
+  <!-- Title with Back Button (icon-only 36x36px) -->
   <div class="d-flex align-items-top gap-3 my-5">
-    <a href="{{ route('...') }}" class="btn btn-light d-flex align-items-center justify-content-center flex-shrink-0 mt-1"
+    <a href="{{ route('...index') }}" class="btn btn-light d-flex align-items-center justify-content-center flex-shrink-0 mt-1"
        style="width: 36px; height: 36px;" title="Back to List">
       <i class="ti ti-arrow-left fs-5"></i>
     </a>
@@ -94,19 +102,47 @@ Menggunakan `@component('components.data-page-layout', ['data' => $collection])`
 
   <!-- Card Form -->
   <div class="card border-1 shadow-sm px-4 py-4">
-    <form ...>
-      <!-- Form fields -->
-      <div class="col-12 d-flex gap-2 justify-content-end mt-4">
-        <a href="{{ route('...') }}" class="btn btn-light border">Cancel</a>
-        <button type="submit" class="btn btn-primary px-4">Save</button>
-      </div>
-    </form>
+    <div class="col-xl-12 col-12">
+      <form ...>
+        @csrf
+        @method('PUT') {{-- for edit --}}
+        @if($errors->any())
+          <div class="alert alert-danger mb-4 py-2 small">...</div>
+        @endif
+        <div class="row g-3">
+          {{-- Section header --}}
+          <div class="col-12">
+            <h6 class="text-secondary fw-bold pb-2 mb-0" style="border-bottom: 1px dashed #dee2e6;">Section Name</h6>
+          </div>
+          {{-- Input fields: 3 columns per row --}}
+          <div class="col-md-3 col-12">
+            <label class="form-label">Field <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" ...>
+            <div class="invalid-feedback">Error message</div>
+          </div>
+          {{-- Empty column to fill remaining space if needed --}}
+          <div class="col-md-3 col-12"></div>
+
+          {{-- Submit buttons --}}
+          <div class="col-12 d-flex gap-2 justify-content-end mt-4">
+            <a href="{{ route('...index') }}" class="btn btn-light border">Batal</a>
+            <button type="submit" class="btn btn-primary px-4">Simpan</button>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 </main>
 @endsection
 ```
 
-**Contoh:** `settings/users/create.blade.php`
+**Aturan Input 3-Kolom:**
+- Setiap input field menggunakan `col-md-3 col-12` (3 kolom per baris di layar besar)
+- Untuk field lebar penuh (textarea, tag input, dll): `col-12`
+- Jika dalam satu baris hanya ada 1-2 field, tambahkan `col-md-3 col-12` kosong untuk mengisi sisa
+- Gunakan `row g-3` untuk grid spacing
+
+**Contoh:** `settings/users/create.blade.php`, `settings/users/edit.blade.php`
 
 ### 2.3 Detail / Show Page
 

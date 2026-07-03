@@ -158,7 +158,7 @@
                     <li class="nav-item"><a class="nav-link text-white-50" href="#tanya-dulu">Tanya Dulu</a></li>
                     <li class="nav-item"><a class="nav-link text-white-50" href="#faq">FAQ</a></li>
                     <li class="nav-item">
-                        <a href="{{ route('register') }}" class="btn btn-outline-dark d-flex align-items-center gap-2">
+                        <a href="{{ route('register-account') }}" class="btn btn-outline-dark d-flex align-items-center gap-2">
                             <i class="ti ti-user-plus fs-5"></i> Daftar
                         </a>
                     </li>

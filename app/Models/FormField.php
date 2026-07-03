@@ -20,14 +20,15 @@ class FormField extends Model
             'placeholder' => 'Masukkan nama lengkap',
             'help_text'   => 'Nama lengkap sesuai identitas resmi',
         ],
-        'no_hp' => [
-            'field_label' => 'Nomor WhatsApp Aktif',
-            'field_type'  => 'tel',
+        'jenis_kelamin' => [
+            'field_label' => 'Jenis Kelamin',
+            'field_type'  => 'select',
             'section'     => 'Data Pribadi',
             'is_required' => true,
             'width'       => 'col-md-6',
-            'placeholder' => '08xxxxxxxxxx',
-            'help_text'   => 'Nomor WhatsApp yang aktif dan dapat dihubungi',
+            'placeholder' => 'Pilih jenis kelamin',
+            'options'     => ['Laki-Laki', 'Perempuan'],
+            'help_text'   => 'Pilih jenis kelamin sesuai identitas',
         ],
         'email' => [
             'field_label' => 'Alamat Email',
@@ -37,6 +38,24 @@ class FormField extends Model
             'width'       => 'col-md-6',
             'placeholder' => 'contoh@email.com',
             'help_text'   => 'Alamat email aktif untuk komunikasi pendaftaran',
+        ],
+        'no_hp' => [
+            'field_label' => 'Nomor Handphone',
+            'field_type'  => 'tel',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => '08xxxxxxxxxx',
+            'help_text'   => 'Nomor handphone yang aktif dan dapat dihubungi',
+        ],
+        'domisili_kabupaten' => [
+            'field_label' => 'Dimana Kamu Tinggal?',
+            'field_type'  => 'combo_search_location',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-12',
+            'placeholder' => 'Cari kota/kabupaten tempat tinggal',
+            'help_text'   => 'Ketik nama kota/kabupaten. Jika tidak ditemukan, Anda bisa mengetikkan lokasi secara manual.',
         ],
     ];
 
@@ -121,7 +140,7 @@ class FormField extends Model
                 ->where('field_name', $fieldName)
                 ->first();
             if (!$existing) {
-                $field = self::create([
+                $data = [
                     'form_id'     => $formId,
                     'field_type'  => $config['field_type'],
                     'field_name'  => $fieldName,
@@ -134,7 +153,11 @@ class FormField extends Model
                     'is_active'   => true,
                     'is_system'   => true,
                     'sort_order'  => $sortOrder++,
-                ]);
+                ];
+                if (isset($config['options']) && is_array($config['options'])) {
+                    $data['options'] = $config['options'];
+                }
+                $field = self::create($data);
                 $created[] = $field;
             }
             $sortOrder++;
@@ -159,6 +182,7 @@ class FormField extends Model
             'checkbox' => ['label' => 'Checkbox', 'icon' => 'ti-checkbox', 'color' => '#65a30d'],
             'file'     => ['label' => 'File Upload', 'icon' => 'ti-upload', 'color' => '#ea580c'],
             'color'    => ['label' => 'Color Picker', 'icon' => 'ti-color-picker', 'color' => '#9333ea'],
+            'combo_search_location' => ['label' => 'Cari Lokasi (Kab/Kota)', 'icon' => 'ti-map-pin', 'color' => '#0ea5e9'],
         ];
     }
 

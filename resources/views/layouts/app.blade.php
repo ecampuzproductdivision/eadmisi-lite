@@ -452,6 +452,7 @@ textarea.form-control::placeholder {
     <script src="{{ asset('assets/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendors/chart.js') }}"></script>
     <script src="{{ asset('assets/libs/select2/js/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/js/vendors/location-search.js') }}"></script>
 
     {{-- Driver.js --}}
     <link rel="stylesheet" href="{{ asset('assets/js/onboarding/driver.css') }}" />

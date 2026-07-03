@@ -17,6 +17,10 @@ use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
+    // ============================================================
+    // FLOW B: Path-Specific Dynamic Registration (landing page cards)
+    // ============================================================
+
     public function showRegistrationForm($jalurId = null)
     {
         // If no jalur_id provided, try from query string
@@ -264,6 +268,83 @@ class RegisterController extends Controller
             ]);
 
             return back()->withInput()->with('error', 'Terjadi kesalahan saat mendaftar. Silakan coba lagi. Error: ' . $e->getMessage());
+        }
+    }
+
+    // ============================================================
+    // FLOW A: Standalone Account Sign-Up (navbar "Daftar" button)
+    // ============================================================
+
+    public function showAccountForm()
+    {
+        return view('auth.register-account');
+    }
+
+    public function storeAccount(Request $request)
+    {
+        $validated = $request->validate([
+            'nama_lengkap' => 'required|string|max:255',
+            'jenis_kelamin' => 'required|in:L,P',
+            'email' => 'required|email|unique:users,email',
+            'nomor_handphone' => 'required|string|max:20',
+            'domisili' => 'required|string|max:255',
+            'password' => 'required|string|min:8|confirmed',
+        ], [
+            'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
+            'jenis_kelamin.required' => 'Jenis kelamin wajib dipilih.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email ini sudah terdaftar.',
+            'nomor_handphone.required' => 'Nomor handphone wajib diisi.',
+            'domisili.required' => 'Kota tempat tinggal wajib diisi.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            // Generate unique username from email prefix
+            $baseUsername = Str::slug(explode('@', $validated['email'])[0], '_') ?: 'user';
+            $username = $baseUsername;
+            $counter = 1;
+            while (User::where('username', $username)->exists()) {
+                $username = $baseUsername . '_' . $counter++;
+            }
+
+            // Create User account only — no Registration (Pendaftaran) record
+            $user = User::create([
+                'name' => $validated['nama_lengkap'],
+                'username' => $username,
+                'email' => $validated['email'],
+                'phone' => $validated['nomor_handphone'],
+                'domisili' => $validated['domisili'],
+                'password' => $validated['password'],
+                'status' => 'active',
+            ]);
+
+            // Assign CALON_MAHASISWA role
+            $calonMahasiswa = Role::where('role_code', 'CALON_MAHASISWA')->first();
+            if ($calonMahasiswa) {
+                $user->roles()->attach($calonMahasiswa->id);
+            }
+
+            // Auto-login the user
+            Auth::login($user);
+
+            ActivityLogger::log('register_account_complete', 'auth', 'Account created via standalone wizard: ' . $validated['email']);
+
+            DB::commit();
+
+            return redirect()->route('home')->with('success', 'Selamat! Akun Anda berhasil dibuat. Silakan pilih jalur pendaftaran untuk mendaftar.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Standalone account registration failed: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return back()->withInput()->with('error', 'Terjadi kesalahan saat mendaftar. Silakan coba lagi.');
         }
     }
 }

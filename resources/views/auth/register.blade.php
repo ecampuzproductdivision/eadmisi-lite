@@ -251,12 +251,33 @@
                                                         <input type="tel" class="form-control" name="{{ $fieldName }}" value="{{ $oldValue }}" placeholder="{{ $field->placeholder ?? '' }}"{{ $isRequiredAttr }}>
                                                         @break
 
+                                                    @case('combo_search_location')
+                                                         <select name="{{ $fieldName }}" class="form-control select2-location-search" style="width: 100%;"{{ $isRequiredAttr }}>
+                                                             <option value=""></option>
+                                                             @php
+                                                                 $locations = json_decode(file_get_contents(public_path('assets/data/wilayah_indonesia.json')), true) ?? [];
+                                                                 $oldLoc = old($fieldName);
+                                                                 $oldLocExists = false;
+                                                             @endphp
+                                                             @foreach($locations as $loc)
+                                                                 @php
+                                                                     $isSelected = $oldLoc === $loc['id'];
+                                                                     if ($isSelected) $oldLocExists = true;
+                                                                 @endphp
+                                                                 <option value="{{ $loc['id'] }}" {{ $isSelected ? 'selected' : '' }}>{{ $loc['text'] }}</option>
+                                                             @endforeach
+                                                             @if($oldLoc && !$oldLocExists)
+                                                                 <option value="{{ $oldLoc }}" selected>{{ $oldLoc }}</option>
+                                                             @endif
+                                                         </select>
+                                                         @break
+
                                                     @case('file')
                                                         <input type="file" class="form-control" name="{{ $fieldName }}"{{ $isRequiredAttr }}>
                                                         @break
 
                                                     @default
-                                                        <input type="text" class="form-control" name="{{ $fieldName }}" value="{{ $oldValue }}" placeholder="{{ $field->placeholder ?? '' }}"{{ $isRequiredAttr }}>
+                                                        <input type="text" class="form-control" name="{{ $fieldName }}" value="{{ $oldValue }}" placeholder="{{ $field->placeholder ?? '' }}"{{ $isRequiredAttr }}">
                                                 @endswitch
 
                                                 @if($field->help_text)
@@ -360,6 +381,7 @@
     <script src="{{ asset('assets/libs/simplebar/dist/simplebar.min.js') }}"></script>
     <script src="{{ asset('assets/js/theme.min.js') }}"></script>
     <script src="{{ asset('assets/js/vendors/password.js') }}"></script>
+    <script src="{{ asset('assets/js/vendors/location-search.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const selects = document.querySelectorAll('.prodi-select');

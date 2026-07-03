@@ -102,8 +102,13 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// FLOW B: Path-specific dynamic registration (landing page path cards)
 Route::get('/register/{jalur_id?}', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+
+// FLOW A: Standalone account sign-up (navbar "Daftar" button)
+Route::get('/register-account', [RegisterController::class, 'showAccountForm'])->name('register-account');
+Route::post('/register-account', [RegisterController::class, 'storeAccount'])->name('register-account.post');
 
 Route::get('/verify-otp', [OtpVerificationController::class, 'showVerificationForm'])->name('otp.verify.form');
 Route::post('/verify-otp', [OtpVerificationController::class, 'verifyOtp'])->name('otp.verify');

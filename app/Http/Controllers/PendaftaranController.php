@@ -22,7 +22,7 @@ class PendaftaranController extends Controller
             'documents',
             'payments',
             'examResults',
-        ])->whereIn('status', ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted', 'rejected']);
+        ])->whereIn('status', ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted', 'rejected', 'Menunggu Verifikasi Registrasi Ulang', 'registered']);
 
         // Filter by registration path
         if ($request->filled('path_id')) {
@@ -74,5 +74,29 @@ class PendaftaranController extends Controller
         $uploadedDocuments = $registration->documents->keyBy('type');
 
         return view('pendaftaran.show', compact('registration', 'requiredDocuments', 'uploadedDocuments'));
+    }
+
+    /**
+     * Verify re-registration and generate NIM for the student.
+     */
+    public function verifyReRegistration(Request $request, $id)
+    {
+        $registration = Registration::findOrFail($id);
+
+        $request->validate([
+            'nim' => 'required|string|max:20|unique:registrations,nim,' . $id,
+        ], [
+            'nim.unique' => 'NIM sudah terdaftar untuk mahasiswa lain.',
+        ]);
+
+        $registration->update([
+            'nim' => $request->nim,
+            'status' => 'registered',
+        ]);
+
+        \App\Helpers\ActivityLogger::log('update', 'registration', 'Admin approved re-registration and generated NIM: ' . $request->nim . ' for registration #' . $id);
+
+        return redirect()->route('pendaftaran.show', $id)
+            ->with('success', 'Registrasi ulang berhasil disetujui dan NIM ' . $request->nim . ' berhasil digenerate.');
     }
 }

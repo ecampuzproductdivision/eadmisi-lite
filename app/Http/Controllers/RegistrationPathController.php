@@ -79,6 +79,7 @@ class RegistrationPathController extends Controller
             'template_berkas_id' => 'nullable|exists:template_berkas,id',
             'metode_pengumuman' => 'required|in:langsung,ditahan',
             'gunakan_wawancara' => 'boolean',
+            'nilai_ambang_batas' => 'required_if:metode_pengumuman,langsung|nullable|integer|min:0|max:100',
         ]);
 
         // Auto-set metode_pengumuman to 'ditahan' if wawancara is enabled
@@ -177,6 +178,7 @@ class RegistrationPathController extends Controller
             'template_berkas_id' => 'nullable|exists:template_berkas,id',
             'metode_pengumuman' => 'required|in:langsung,ditahan',
             'gunakan_wawancara' => 'boolean',
+            'nilai_ambang_batas' => 'required_if:metode_pengumuman,langsung|nullable|integer|min:0|max:100',
         ]);
 
         if ($validator->fails()) {
@@ -314,7 +316,7 @@ class RegistrationPathController extends Controller
             }
 
             // ── Payment Gate: if no paid invoice, show payment step warning ──
-            if ($isPaymentLocked && in_array($registration->status, ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted'])) {
+            if ($isPaymentLocked && in_array($registration->status, ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted', 'Menunggu Verifikasi Registrasi Ulang', 'registered'])) {
                 $currentStep = 2; // Still show step 3 as locked
             } elseif ($registration->status === 'submitted') {
                 // Step 1 & 2 complete, step 3 (Upload) active
@@ -322,11 +324,11 @@ class RegistrationPathController extends Controller
             }
 
             // Step 3 is complete ONLY if actual documents have been uploaded
-            if (in_array($registration->status, ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted'])) {
+            if (in_array($registration->status, ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted', 'rejected', 'Menunggu Verifikasi Registrasi Ulang', 'registered'])) {
                 if (!$isPaymentLocked && $isStep3Completed) {
-                    if ($hasExam && !in_array($registration->status, ['exam_completed', 'reviewed', 'accepted'])) {
+                    if ($hasExam && !in_array($registration->status, ['exam_completed', 'reviewed', 'accepted', 'rejected', 'Menunggu Verifikasi Registrasi Ulang', 'registered'])) {
                         $currentStep = 4; // Docs uploaded, but exam not done yet
-                    } elseif ($hasExam && in_array($registration->status, ['exam_completed', 'reviewed', 'accepted'])) {
+                    } elseif ($hasExam && in_array($registration->status, ['exam_completed', 'reviewed', 'accepted', 'rejected', 'Menunggu Verifikasi Registrasi Ulang', 'registered'])) {
                         $currentStep = $totalSteps; // All steps complete
                     } elseif (!$hasExam) {
                         $currentStep = $totalSteps; // All steps complete (no exam)
@@ -341,7 +343,14 @@ class RegistrationPathController extends Controller
             }
         }
 
-        return view('daftar-pmb.registration-steps', compact('path', 'registration', 'currentStep', 'hasExam', 'totalSteps', 'isStep3Completed', 'documentCount', 'isPaymentLocked', 'hasPaidInvoice'));
+        $examResult = null;
+        if ($registration) {
+            $examResult = \App\Models\ExamResult::where('registration_id', $registration->id)
+                ->where('status', 'completed')
+                ->first();
+        }
+
+        return view('daftar-pmb.registration-steps', compact('path', 'registration', 'currentStep', 'hasExam', 'totalSteps', 'isStep3Completed', 'documentCount', 'isPaymentLocked', 'hasPaidInvoice', 'examResult'));
     }
 
     /**
@@ -910,6 +919,73 @@ class RegistrationPathController extends Controller
         ];
 
         return view('daftar-pmb.review', compact('path', 'registration', 'examResult', 'documents', 'documentLabels'));
+    }
+
+    /**
+     * Store the re-registration data for the applicant.
+     */
+    public function reRegistrationStore(Request $request, $pathCode = null)
+    {
+        $path = null;
+        $pathId = null;
+        if ($pathCode) {
+            $path = RegistrationPath::where('code', $pathCode)->first();
+            $pathId = $path?->id;
+        }
+
+        $registration = Registration::where('user_id', auth()->id())
+            ->where('registration_path_id', $pathId)
+            ->firstOrFail();
+
+        // Check if registration status is 'accepted'
+        if ($registration->status !== 'accepted') {
+            return redirect()->back()->with('error', 'Status pendaftaran Anda tidak valid untuk Registrasi Ulang.');
+        }
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'tempat_lahir' => 'required|string|max:100',
+            'tanggal_lahir' => 'required|date',
+            'agama' => 'required|string|in:Islam,Kristen,Katolik,Hindu,Budha,Khonghucu,Penghayat Kepercayaan,Lainnya',
+            'nik' => 'required|digits:16',
+            'nisn' => 'required|digits:10',
+            'nama_ibu_kandung' => 'required|string|max:255',
+            'penerima_kps' => 'required|string|in:Ya,Tidak',
+            'kebutuhan_khusus' => 'required|string|in:Ya,Tidak',
+            'kewarganegaraan' => 'required|string|max:100',
+            'regency_id' => 'required|exists:regencies,id',
+            'kecamatan_id' => 'required|exists:kecamatans,id',
+            'kelurahan_id' => 'required|exists:kelurahans,id',
+        ], [
+            'nik.digits' => 'NIK harus bernilai tepat 16 digit angka.',
+            'nisn.digits' => 'NISN harus bernilai tepat 10 digit angka.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // Update the registration details
+        $registration->update([
+            'tempat_lahir' => $request->tempat_lahir,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'agama' => $request->agama,
+            'nik' => $request->nik,
+            'nisn' => $request->nisn,
+            'nama_ibu_kandung' => $request->nama_ibu_kandung,
+            'penerima_kps' => $request->penerima_kps,
+            'kebutuhan_khusus' => $request->kebutuhan_khusus,
+            'kewarganegaraan' => $request->kewarganegaraan,
+            'regency_id' => $request->regency_id,
+            'kecamatan_id' => $request->kecamatan_id,
+            'kelurahan_id' => $request->kelurahan_id,
+            'status' => 'Menunggu Verifikasi Registrasi Ulang',
+            're_registration_submitted_at' => now(),
+        ]);
+
+        \App\Helpers\ActivityLogger::log('update', 'registration', 'Applicant completed re-registration for path: ' . ($path?->name ?? ''));
+
+        return redirect()->route('daftar-pmb.steps', $pathCode)
+            ->with('success', 'Registrasi Ulang berhasil dikirim. Silakan tunggu verifikasi admin.');
     }
 
     /**

@@ -25,6 +25,16 @@ class Registration extends Model
         'jurusan',
         'tahun_lulus',
         'status',
+        'nisn',
+        'nama_ibu_kandung',
+        'penerima_kps',
+        'kebutuhan_khusus',
+        'kewarganegaraan',
+        'regency_id',
+        'kecamatan_id',
+        'kelurahan_id',
+        'nim',
+        're_registration_submitted_at',
     ];
 
     protected $table = 'registrations';
@@ -73,5 +83,20 @@ class Registration extends Model
     public function examResults()
     {
         return $this->hasMany(ExamResult::class);
+    }
+
+    public function regency()
+    {
+        return $this->belongsTo(Regency::class, 'regency_id');
+    }
+
+    public function kecamatan()
+    {
+        return $this->belongsTo(Kecamatan::class, 'kecamatan_id');
+    }
+
+    public function kelurahan()
+    {
+        return $this->belongsTo(Kelurahan::class, 'kelurahan_id');
     }
 }

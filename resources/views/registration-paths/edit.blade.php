@@ -248,6 +248,14 @@
                         @error('metode_pengumuman') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
+                    <!-- Nilai Ambang Batas Kelulusan (conditional on One Day Service) -->
+                    <div class="col-12" id="nilai_ambang_batas_container" style="display: none;">
+                        <label for="nilai_ambang_batas" class="form-label fw-semibold">Nilai Ambang Batas Kelulusan <span class="text-danger">*</span></label>
+                        <input type="number" name="nilai_ambang_batas" id="nilai_ambang_batas" class="form-control @error('nilai_ambang_batas') is-invalid @enderror" value="{{ old('nilai_ambang_batas', $registrationPath->nilai_ambang_batas) }}" placeholder="Contoh: 80" min="0" max="100">
+                        <div class="form-text">Masukkan nilai ambang batas kelulusan untuk jalur One Day Service (0 - 100).</div>
+                        @error('nilai_ambang_batas') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
                     {{-- Submit --}}
                     <div class="col-12 d-flex gap-2 justify-content-end mt-4">
                         <a href="{{ route('registration-paths.index') }}" class="btn btn-light border">Batal</a>
@@ -397,6 +405,26 @@ document.addEventListener('DOMContentLoaded', function() {
   const section = document.getElementById('template-berkas-section');
   function toggleBerkasSection() { section.style.display = toggle.checked ? 'block' : 'none'; }
   toggle.addEventListener('change', toggleBerkasSection);
+});
+
+// Toggle Metode Pengumuman & Nilai Ambang Batas
+document.addEventListener('DOMContentLoaded', function() {
+  const metodePengumuman = document.getElementById('metode_pengumuman');
+  const thresholdContainer = document.getElementById('nilai_ambang_batas_container');
+  const thresholdInput = document.getElementById('nilai_ambang_batas');
+
+  function toggleThreshold() {
+    if (metodePengumuman.value === 'langsung') {
+      thresholdContainer.style.display = 'block';
+      thresholdInput.setAttribute('required', 'required');
+    } else {
+      thresholdContainer.style.display = 'none';
+      thresholdInput.removeAttribute('required');
+    }
+  }
+
+  metodePengumuman.addEventListener('change', toggleThreshold);
+  toggleThreshold();
 });
 </script>
 @endpush

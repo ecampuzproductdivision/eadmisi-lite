@@ -64,6 +64,7 @@ Route::get('/api/registration-paths', [RegistrationPathController::class, 'apiLi
         Route::get('/pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran.index');
         Route::get('/pendaftaran/{id}', [PendaftaranController::class, 'show'])->name('pendaftaran.show');
         Route::post('/payment/{paymentId}/verify', [PaymentController::class, 'manualVerify'])->name('payment.manual-verify');
+        Route::post('/pendaftaran/{id}/verify-re-registration', [PendaftaranController::class, 'verifyReRegistration'])->name('pendaftaran.verify-re-registration');
     });
 
 // Halaman "Daftar PMB" untuk calon mahasiswa (login required)
@@ -77,6 +78,7 @@ Route::get('/api/registration-paths', [RegistrationPathController::class, 'apiLi
         Route::get('/daftar-pmb/registrasi/{pathCode?}/upload', [RegistrationPathController::class, 'documentUpload'])->name('daftar-pmb.document.upload');
         Route::post('/daftar-pmb/registrasi/{pathCode?}/upload', [RegistrationPathController::class, 'documentStore'])->name('daftar-pmb.document.store');
         Route::get('/daftar-pmb/registrasi/{pathCode?}/review', [RegistrationPathController::class, 'review'])->name('daftar-pmb.review');
+        Route::post('/daftar-pmb/registrasi/{pathCode?}/re-registration', [RegistrationPathController::class, 'reRegistrationStore'])->name('daftar-pmb.re-registration.store');
 
         // Riwayat Pendaftaran
         Route::get('/riwayat-pendaftaran', [RiwayatPendaftaranController::class, 'index'])->name('riwayat-pendaftaran.index');
@@ -124,6 +126,8 @@ Route::get('/auth/google/simulation', [GoogleAuthController::class, 'showSimulat
 Route::post('/crm-leads/store', [CrmLeadController::class, 'storePublic'])->name('crm-leads.store-public');
 
 Route::get('/api/regencies/select2', [RegencyController::class, 'select2'])->name('api.regencies.select2');
+Route::get('/api/wilayah/kecamatan/{kabupaten_id}', [\App\Http\Controllers\Api\WilayahController::class, 'getKecamatans'])->name('api.wilayah.kecamatan');
+Route::get('/api/wilayah/kelurahan/{kecamatan_id}', [\App\Http\Controllers\Api\WilayahController::class, 'getKelurahans'])->name('api.wilayah.kelurahan');
 
 Route::middleware(['auth'])->group(function () {
     // Onboarding routes

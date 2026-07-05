@@ -271,7 +271,7 @@
             </div>
           </div>
 
-          <!-- Metode Pengumuman Hasil Ujian (below interview/wawancara block) -->
+           <!-- Metode Pengumuman Hasil Ujian (below interview/wawancara block) -->
           <div class="col-12">
             <label for="metode_pengumuman" class="form-label fw-semibold">Metode Pengumuman Hasil Ujian <span class="text-danger">*</span></label>
             <select name="metode_pengumuman" id="metode_pengumuman" class="form-select @error('metode_pengumuman') is-invalid @enderror">
@@ -280,6 +280,16 @@
             </select>
             <div class="form-text">Pilih apakah hasil ujian diumumkan langsung atau ditahan untuk verifikasi lanjutan.</div>
             @error('metode_pengumuman')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+          </div>
+
+          <!-- Nilai Ambang Batas Kelulusan (conditional on One Day Service) -->
+          <div class="col-12" id="nilai_ambang_batas_container" style="display: none;">
+            <label for="nilai_ambang_batas" class="form-label fw-semibold">Nilai Ambang Batas Kelulusan <span class="text-danger">*</span></label>
+            <input type="number" name="nilai_ambang_batas" id="nilai_ambang_batas" class="form-control @error('nilai_ambang_batas') is-invalid @enderror" value="{{ old('nilai_ambang_batas') }}" placeholder="Contoh: 80" min="0" max="100">
+            <div class="form-text">Masukkan nilai ambang batas kelulusan untuk jalur One Day Service (0 - 100).</div>
+            @error('nilai_ambang_batas')
               <div class="invalid-feedback">{{ $message }}</div>
             @enderror
           </div>
@@ -481,6 +491,24 @@ document.addEventListener('DOMContentLoaded', function() {
   
   toggle.addEventListener('change', toggleBerkasSection);
   if (toggle.checked) toggleBerkasSection();
+// Toggle Metode Pengumuman & Nilai Ambang Batas
+document.addEventListener('DOMContentLoaded', function() {
+  const metodePengumuman = document.getElementById('metode_pengumuman');
+  const thresholdContainer = document.getElementById('nilai_ambang_batas_container');
+  const thresholdInput = document.getElementById('nilai_ambang_batas');
+
+  function toggleThreshold() {
+    if (metodePengumuman.value === 'langsung') {
+      thresholdContainer.style.display = 'block';
+      thresholdInput.setAttribute('required', 'required');
+    } else {
+      thresholdContainer.style.display = 'none';
+      thresholdInput.removeAttribute('required');
+    }
+  }
+
+  metodePengumuman.addEventListener('change', toggleThreshold);
+  toggleThreshold();
 });
 </script>
 @endpush

@@ -99,12 +99,26 @@ class HomeController extends Controller
                 $actionLabel = null;
                 $actionUrl = null;
             } elseif ($reg->status === 'accepted') {
-                $statusLabel = 'Diterima';
+                $statusLabel = 'Lulus Seleksi (Registrasi Ulang)';
                 $badgeBg = 'bg-success';
                 $badgeText = 'text-white';
                 $subBadge = '';
+                $actionLabel = 'Registrasi Ulang';
+                $actionUrl = route('daftar-pmb.steps', $pathObj?->code);
+            } elseif ($reg->status === 'Menunggu Verifikasi Registrasi Ulang') {
+                $statusLabel = 'Menunggu Verifikasi Registrasi Ulang';
+                $badgeBg = 'bg-warning';
+                $badgeText = 'text-dark';
+                $subBadge = '';
                 $actionLabel = 'Lihat Detail';
-                $actionUrl = route('daftar-pmb.review', $pathObj?->code);
+                $actionUrl = route('daftar-pmb.steps', $pathObj?->code);
+            } elseif ($reg->status === 'registered') {
+                $statusLabel = 'Terregistrasi (Aktif)';
+                $badgeBg = 'bg-success';
+                $badgeText = 'text-white';
+                $subBadge = $reg->nim ? '<span class="badge bg-info text-white mt-1 d-inline-block" style="font-size:0.65rem;">NIM: ' . $reg->nim . '</span>' : '';
+                $actionLabel = 'Lihat Detail';
+                $actionUrl = route('daftar-pmb.steps', $pathObj?->code);
             } elseif ($reg->status === 'reviewed') {
                 $statusLabel = 'Direview';
                 $badgeBg = 'bg-secondary';
@@ -265,7 +279,7 @@ class HomeController extends Controller
 
         // ── Chart data: registration path distribution ──
         $pathDistribution = RegistrationPath::withCount(['registrations' => function ($q) {
-                $q->whereIn('status', ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted']);
+                $q->whereIn('status', ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted', 'Menunggu Verifikasi Registrasi Ulang', 'registered']);
             }])
             ->when($activePeriodeId, function ($q) use ($activePeriodeId) {
                 $q->where('periode_id', $activePeriodeId);

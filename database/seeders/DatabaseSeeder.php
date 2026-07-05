@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             // ── Master Data (prerequisite) ──
             UserSeeder::class,
             RegencySeeder::class,
+            KecamatanKelurahanSeeder::class,
             KategoriJalurSeeder::class,
             ProgramStudiSeeder::class,
 

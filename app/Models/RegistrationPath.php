@@ -29,6 +29,7 @@ class RegistrationPath extends Model
         'template_berkas_id',
         'metode_pengumuman',
         'gunakan_wawancara',
+        'nilai_ambang_batas',
     ];
 
     protected $casts = [
@@ -42,6 +43,7 @@ class RegistrationPath extends Model
         'gunakan_berkas' => 'boolean',
         'metode_pengumuman' => 'string',
         'gunakan_wawancara' => 'boolean',
+        'nilai_ambang_batas' => 'integer',
     ];
 
     public function scopeActive($query)

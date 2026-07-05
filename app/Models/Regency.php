@@ -16,4 +16,9 @@ class Regency extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function kecamatans()
+    {
+        return $this->hasMany(Kecamatan::class);
+    }
 }

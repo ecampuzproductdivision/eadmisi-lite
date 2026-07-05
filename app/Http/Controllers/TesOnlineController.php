@@ -280,9 +280,26 @@ class TesOnlineController extends Controller
         ]);
 
         // Update registration status
-        \Illuminate\Support\Facades\DB::table('registrations')
-            ->where('id', $registration->id)
-            ->update(['status' => 'exam_completed', 'updated_at' => now()]);
+        $jalur = $registration->registrationPath;
+        if ($jalur && in_array($jalur->metode_pengumuman, ['langsung', 'Langsung (One Day Service)'])) {
+            $threshold = $jalur->nilai_ambang_batas ?? 75;
+            if ($totalScore >= $threshold) {
+                $registration->update([
+                    'status' => 'accepted',
+                    'updated_at' => now()
+                ]);
+            } else {
+                $registration->update([
+                    'status' => 'rejected',
+                    'updated_at' => now()
+                ]);
+            }
+        } else {
+            $registration->update([
+                'status' => 'exam_completed',
+                'updated_at' => now()
+            ]);
+        }
 
         return redirect()->route('tes-online.index')
             ->with('success', 'Ujian berhasil diselesaikan! Skor: ' . number_format($totalScore, 1));

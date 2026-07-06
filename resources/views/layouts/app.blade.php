@@ -105,10 +105,45 @@ body {
   width: 20px !important;
   height: 20px !important;
 }
+/* Collapsed sidebar brand logo - override theme.min.css padding */
+html.collapsed #miniSidebar .brand-logo {
+  padding: 1.2rem !important;
+}
+/* Sidebar Divider - separates brand logo from menu items */
+.sidebar-divider {
+  margin: 0.35rem 1rem;
+  border: 0;
+  border-top: 1px solid var(--ds-border-color, #dfe3e8);
+  opacity: 1;
+}
+/* Expanded content padding - override theme.min.css default 80px 10px */
+html.expanded #content {
+  padding: 64px 16px !important;
+}
+/* Collapsed content padding - override theme.min.css default 80px 40px */
+html.collapsed #content {
+  padding: 64px 16px !important;
+}
+/* Collapsed sidebar: thinner divider with less margin */
+html.collapsed #miniSidebar .sidebar-divider {
+  margin: 0 0.5rem;
+  border-top-width: 1px;
+}
+/* Dark mode sidebar divider */
+[data-bs-theme="dark"] .sidebar-divider {
+  border-top-color: rgba(99, 115, 129, 0.25);
+}
+
 /* Collapsed sidebar ensures icons center */
 html.collapsed #miniSidebar .nav-link .nav-icon,
 html.collapsed #miniSidebar .nav-link .nav-icon-sub {
   margin: 0 auto !important;
+}
+/* Expanded sidebar navbar-nav - override theme.min.css padding-bottom:30px */
+html.expanded #miniSidebar .navbar-nav {
+  padding: 8px;
+  height: calc(100vh - 4.5rem);
+  overflow: auto;
 }
 /* Expanded sidebar nav-link text full width */
 html.expanded #miniSidebar .nav-link .text {
@@ -394,6 +429,31 @@ html.expanded #miniSidebar {
   color: var(--ds-primary-text-emphasis, #66caa9);
 }
 
+/* Empty State Component Styles */
+.empty-state-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  background-color: var(--ds-gray-200, #f4f6f8);
+}
+.empty-state-icon {
+  font-size: 2rem;
+}
+.empty-state-title {
+  color: var(--ds-gray-700, #454f5b);
+}
+.empty-state-subtitle {
+  color: var(--ds-gray-500, #919eab);
+}
+[data-bs-theme="dark"] .empty-state-icon-wrapper {
+  background-color: var(--ds-gray-700, #454f5b) !important;
+}
+[data-bs-theme="dark"] .empty-state-title {
+  color: var(--ds-gray-300, #dfe3e8);
+}
+[data-bs-theme="dark"] .empty-state-subtitle {
+  color: var(--ds-gray-500, #919eab);
+}
+
 /* Input value color - darker than placeholder for better contrast */
 .form-control,
 .form-select,
@@ -557,6 +617,19 @@ document.addEventListener('click', function(e) {
         }
     }
 });
+
+// Sidebar toggle function - called from navbar toggle button
+function toggleSidebar() {
+    if (localStorage.getItem('sidebarExpanded') === 'false') {
+        document.documentElement.classList.add('expanded');
+        document.documentElement.classList.remove('collapsed');
+        localStorage.setItem('sidebarExpanded', 'true');
+    } else {
+        document.documentElement.classList.add('collapsed');
+        document.documentElement.classList.remove('expanded');
+        localStorage.setItem('sidebarExpanded', 'false');
+    }
+}
 </script>
   </body>
 </html>

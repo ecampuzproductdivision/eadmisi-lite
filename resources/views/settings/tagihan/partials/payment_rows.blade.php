@@ -61,8 +61,7 @@
 @empty
 <tr>
     <td colspan="7" class="text-center py-5">
-        <i class="ti ti-receipt-off text-muted" style="font-size: 3rem;"></i>
-        <p class="mt-2 mb-0 text-muted">Belum ada data tagihan.</p>
+        @include('components.empty-state')
     </td>
 </tr>
 @endforelse

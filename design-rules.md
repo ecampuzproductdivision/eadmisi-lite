@@ -96,7 +96,7 @@ Menggunakan `@component('components.data-page-layout', ['data' => $collection])`
     </a>
     <div>
       <h1 class="mb-1 fw-bold">Title</h1>
-      <p class="text-muted mb-0">Description</p>
+      <p class="text-secondary mb-4">Description</p>
     </div>
   </div>
 
@@ -361,22 +361,34 @@ Semua komponen harus mendukung dark mode dengan prefix `[data-bs-theme="dark"]`.
 
 ### 6.1 Modal Structure
 
+**Aturan:**
+- **Tidak menggunakan** `style="background: linear-gradient(...)"` atau inline styling apapun
+- **Tidak menggunakan** `btn-close-white` (gunakan `btn-close` default)
+- **Tidak menggunakan** `text-white` pada modal title
+- Struktur terdiri dari 3 bagian: **Modal Header**, **Modal Body**, **Modal Footer** (jika ada button action)
+- Modal header: `border-0 pb-0` (tanpa border bawah)
+- Modal footer: `border-0` (tanpa border atas)
+- Modal content: `border-0 shadow`
+
 ```blade
 <div class="modal fade" id="modalTambah" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content border-0 shadow">
+      {{-- Modal Header --}}
       <div class="modal-header border-0 pb-0">
         <h5 class="modal-title fw-bold">Title</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
+      {{-- Modal Body --}}
       <div class="modal-body p-4">
         <form ...>
           <!-- Fields -->
-          <div class="d-flex gap-2 justify-content-end">
-            <button type="button" class="btn btn-soft-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" class="btn btn-primary">Simpan</button>
-          </div>
         </form>
+      </div>
+      {{-- Modal Footer (jika ada button action) --}}
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
+        <button type="submit" class="btn btn-primary px-4">Simpan</button>
       </div>
     </div>
   </div>
@@ -390,6 +402,18 @@ Semua komponen harus mendukung dark mode dengan prefix `[data-bs-theme="dark"]`.
 | `modal-dialog` (default) | Form sederhana |
 | `modal-dialog modal-lg` | Form kompleks |
 | `modal-dialog modal-xl` | Tabel atau form besar |
+
+### 6.3 Aturan Modal
+
+1. **Dilarang** menggunakan `style="background: linear-gradient(...)"` pada modal header
+2. **Dilarang** menggunakan inline styling (`style="..."`) pada komponen modal
+3. **Dilarang** menggunakan `btn-close-white` — gunakan `btn-close` default
+4. **Dilarang** menggunakan `text-white` pada modal title
+5. **Modal Header** harus menggunakan `class="modal-header border-0 pb-0"`
+6. **Modal Footer** (jika ada) harus menggunakan `class="modal-footer border-0"`
+7. **Modal Content** harus menggunakan `class="modal-content border-0 shadow"`
+8. Button Batal di footer: `btn btn-light border`
+9. Button Submit di footer: `btn btn-primary px-4`
 
 ---
 
@@ -422,6 +446,95 @@ Semua komponen harus mendukung dark mode dengan prefix `[data-bs-theme="dark"]`.
 ```
 
 ### 7.2 Empty State
+
+Semua halaman yang menampilkan data tabel harus menggunakan component `components.empty-state` untuk kondisi data kosong.
+
+**Component:** `resources/views/components/empty-state.blade.php`
+
+**Usage:**
+```blade
+{{-- Default (icon: ti-inbox, title: "Tidak Ada Data", subtitle: "Belum ada data yang tersedia saat ini.") --}}
+@include('components.empty-state')
+
+{{-- Dengan custom icon, title, dan subtitle --}}
+@include('components.empty-state', [
+    'icon' => 'ti-inbox',
+    'title' => 'Belum ada data pendaftaran',
+    'subtitle' => 'Belum ada calon mahasiswa yang melakukan submit pendaftaran.',
+])
+
+{{-- Dengan slot action (tombol) --}}
+@include('components.empty-state', [
+    'icon' => 'ti-file-off',
+    'title' => 'Belum ada dokumen',
+    'action' => '<a href="#" class="btn btn-dark btn-sm mt-2"><i class="ti ti-plus"></i> Tambah</a>',
+])
+```
+
+**Component Code:**
+```blade
+<div class="empty-state text-center py-5">
+    <div class="d-inline-flex align-items-center justify-content-center rounded-circle empty-state-icon-wrapper">
+        <i class="ti {{ $icon ?? 'ti-inbox' }} text-muted empty-state-icon"></i>
+    </div>
+    <h6 class="mt-3 mb-1 fw-semibold empty-state-title">{{ $title ?? 'Tidak Ada Data' }}</h6>
+    <p class="text-secondary mb-0 small empty-state-subtitle">{{ $subtitle ?? 'Belum ada data yang tersedia saat ini.' }}</p>
+    @if(isset($action))
+        <div class="mt-3">{{ $action }}</div>
+    @endif
+</div>
+```
+
+**CSS (di `layouts/app.blade.php`):**
+```css
+.empty-state-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  background-color: var(--ds-gray-200, #f4f6f8);
+}
+.empty-state-icon {
+  font-size: 2rem;
+}
+.empty-state-title {
+  color: var(--ds-gray-700, #454f5b);
+}
+.empty-state-subtitle {
+  color: var(--ds-gray-500, #919eab);
+}
+[data-bs-theme="dark"] .empty-state-icon-wrapper {
+  background-color: var(--ds-gray-700, #454f5b) !important;
+}
+[data-bs-theme="dark"] .empty-state-title {
+  color: var(--ds-gray-300, #dfe3e8);
+}
+[data-bs-theme="dark"] .empty-state-subtitle {
+  color: var(--ds-gray-500, #919eab);
+}
+```
+
+**Aturan Empty State di Tabel:**
+```blade
+@forelse($items as $item)
+  <tr>...</tr>
+@empty
+  <tr>
+    <td colspan="7" class="text-center py-5">
+        @include('components.empty-state')
+    </td>
+  </tr>
+@endforelse
+```
+
+1. Gunakan `@forelse` / `@empty` untuk iterasi data
+2. Di dalam `@empty`, gunakan `@include('components.empty-state')`
+3. Kolom `colspan` harus sesuai jumlah kolom tabel
+4. **Dilarang** menggunakan icon `ti-zoom-question`, `ti-receipt-off`, atau icon tidak standar lainnya untuk empty state
+5. **Dilarang** menggunakan inline `style="font-size: 3rem;"` pada icon empty state
+6. Default icon: `ti-inbox`, bisa diubah sesuai konteks via parameter `icon`
+7. Default title: "Tidak Ada Data", bisa diubah via parameter `title`
+8. Default subtitle: "Belum ada data yang tersedia saat ini.", bisa diubah via parameter `subtitle`
+
+### 7.3 Actions Column
 
 - Gunakan icon `ti-*` dengan `font-size: 3rem`
 - Pesan informatif "Belum ada data."
@@ -457,9 +570,24 @@ Semua komponen harus mendukung dark mode dengan prefix `[data-bs-theme="dark"]`.
 | `btn btn-soft-secondary` | Batal di modal |
 | `btn btn-white` | Export / Print |
 | `btn btn-outline-secondary` | Navigasi sekunder |
-| `btn btn-subtle-primary` | Reset filter |
+| `btn btn-white border` | Filter row buttons (Terapkan, Reset) |
 
-### 8.3 Button with Icon
+### 8.3 Filter Row Button Standards
+
+Semua button di section filter row (di dalam `data-page-layout` slot `@slot('filters')`) menggunakan `btn-white border`:
+
+```blade
+<div class="col-md-3 col-12 d-flex gap-2">
+    <button type="submit" class="btn btn-white border"><i class="ti ti-filter"></i> Terapkan</button>
+    <a href="{{ route('...index') }}" class="btn btn-white border px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
+</div>
+```
+- **Filter/Apply button:** `btn btn-white border` dengan icon `ti ti-filter`
+- **Reset button:** `btn btn-white border px-3` dengan icon `ti ti-refresh` dan title `"Reset Filter"`
+- **Tidak menggunakan** `btn-primary` atau `btn-subtle-primary` untuk filter row
+- Posisi: `col-md-3 col-12 d-flex gap-2`
+
+### 8.4 Button with Icon
 
 Gunakan pattern `d-inline-flex align-items-center gap-2` untuk button dengan icon:
 ```blade
@@ -640,7 +768,57 @@ Setiap step di tutorial menggunakan `data-step` attribute. Step ID harus sesuai 
 
 ---
 
-## 13. Color Palette
+## 13. Badge Standards
+
+Semua badge (`<span class="badge">`) harus menggunakan **subtle variants** dengan `-subtle` background, `-emphasis` text color, dan border yang sesuai.
+
+### 13.1 Standard Badge Classes
+
+| Color | Class yang Digunakan |
+|-------|----------------------|
+| Primary | `badge text-primary-emphasis bg-primary-subtle border border-primary-subtle` |
+| Secondary | `badge text-secondary-emphasis bg-secondary-subtle border border-secondary-subtle` |
+| Success | `badge text-success-emphasis bg-success-subtle border border-success-subtle` |
+| Danger | `badge text-danger-emphasis bg-danger-subtle border border-danger-subtle` |
+| Warning | `badge text-warning-emphasis bg-warning-subtle` (tanpa border) |
+| Info | `badge text-info-emphasis bg-info-subtle border border-info-subtle` |
+| Dark | `badge text-dark-emphasis bg-dark-subtle border border-dark-subtle` |
+| Light | `badge text-dark-emphasis bg-light-subtle border border-light-subtle` |
+
+### 13.2 Contoh Penggunaan
+
+```blade
+{{-- Status aktif --}}
+<span class="badge text-success-emphasis bg-success-subtle border border-success-subtle px-3 py-2">Aktif</span>
+
+{{-- Status nonaktif --}}
+<span class="badge text-danger-emphasis bg-danger-subtle border border-danger-subtle px-3 py-2">Nonaktif</span>
+
+{{-- Status warning --}}
+<span class="badge text-warning-emphasis bg-warning-subtle px-3 py-2">Menunggu</span>
+
+{{-- Badge dengan icon --}}
+<span class="badge text-success-emphasis bg-success-subtle border border-success-subtle px-3 py-2">
+    <i class="ti ti-circle-check me-1"></i> Selesai
+</span>
+```
+
+### 13.3 Aturan
+
+1. **Semua badge** harus menggunakan `bg-{color}-subtle` + `text-{color}-emphasis`
+2. **Semua badge** (kecuali warning) harus menyertakan `border border-{color}-subtle`
+3. **Warning** tidak menggunakan border (cukup `bg-warning-subtle text-warning-emphasis`)
+4. **Jangan gunakan** `bg-{color}` (tanpa `-subtle`) atau `text-bg-{color}` untuk badge
+5. **Jangan gunakan** `text-white` pada badge — gunakan `text-{color}-emphasis`
+6. Untuk badge dinamis via PHP variable, gunakan string class lengkap:
+   ```php
+   $badgeBg = 'bg-success-subtle text-success-emphasis border border-success-subtle';
+   ```
+7. Padding standar: `px-3 py-2` untuk ukuran normal, `px-2 py-1` untuk ukuran kecil
+
+---
+
+## 14. Color Palette
 
 | Token | Value | Usage |
 |-------|-------|-------|
@@ -648,14 +826,220 @@ Setiap step di tutorial menggunakan `data-step` attribute. Step ID harus sesuai 
 | `--ds-btn-hover-bg` | `#d82939` | Button hover |
 | `--ds-btn-active-bg` | `#c82635` | Button active |
 | `--ds-gray-300` | (theme) | Sidebar hover/active |
-| `text-muted` | (theme) | Description text |
+| `text-secondary` | (theme) | Description text (subtitle di title header) |
 | `text-danger` | `#dc3545` | Required field marker, delete |
 | `text-success` | (theme) | Active status |
 | `text-secondary` | (theme) | Inactive status |
 
 ---
 
-## 14. Key Rules Summary
+## 15. Sidebar Component Standards
+
+### 15.1 Sidebar Structure (`layouts/menu.blade.php`)
+
+Sidebar menggunakan `#miniSidebar` dengan dua mode: **expanded** (lebar 250px) dan **collapsed** (lebar 60px).
+
+**Struktur:**
+```
+<div id="miniSidebar">
+  <div class="brand-logo">
+    <a href="/home">
+      <img class="brand-logo-img" width="24px" alt="" />
+      <span class="fw-bold fs-4 site-logo-text">Admisi</span>
+    </a>
+  </div>
+  <hr class="sidebar-divider">          <!-- Pemisah logo & menu -->
+  <ul class="navbar-nav flex-column">
+    <!-- Dynamic menu items from $sideMenus -->
+  </ul>
+</div>
+```
+
+### 15.2 Sidebar Divider
+
+Garis pemisah antara brand logo dan menu list menggunakan `<hr class="sidebar-divider">`.
+
+**CSS (di `layouts/app.blade.php`):**
+```css
+.sidebar-divider {
+  margin: 0.35rem 1rem;
+  border: 0;
+  border-top: 1px solid var(--ds-border-color, #dfe3e8);
+  opacity: 1;
+}
+html.collapsed #miniSidebar .sidebar-divider {
+  margin: 0 0.5rem;
+  border-top-width: 1px;
+}
+[data-bs-theme="dark"] .sidebar-divider {
+  border-top-color: rgba(99, 115, 129, 0.25);
+}
+```
+
+### 15.3 Sidebar Toggle (Maximize/Minimize)
+
+**Trigger:** Tombol dengan class `.sidebar-toggle` di navbar (`layouts/header.blade.php`)
+
+**Behavior:**
+- Toggle class `collapsed` / `expanded` pada `<html>` element
+- State disimpan di `localStorage` dengan key `sidebarExpanded`
+- **Expanded:** Sidebar width 250px, menampilkan teks menu, icon, dan dropdown
+- **Collapsed:** Sidebar width 60px, hanya menampilkan icon, teks menu disembunyikan
+
+**CSS Classes:**
+| Class | Sidebar Width | Content Margin | Tampilan |
+|-------|---------------|----------------|----------|
+| `html.expanded` | 250px | `margin-left: 15.875rem` | Teks + icon |
+| `html.collapsed` | 60px | `margin-left: 3.75rem` | Icon saja |
+
+**Content area padding (override dari tema default):**
+```css
+html.expanded #content {
+  padding: 64px 16px !important;
+}
+html.collapsed #content {
+  padding: 64px 16px !important;
+}
+```
+- Padding seragam: `64px` (top/bottom) dan `16px` (left/right) — menggantikan default `80px 10px` (expanded) dan `80px 40px` (collapsed) dari tema
+- Memberikan ruang konten yang lebih konsisten di kedua mode sidebar
+- Diterapkan dengan `!important` untuk meng-override tema
+
+**JavaScript (`sidebarnav.js`):**
+```javascript
+// Toggle sidebar state
+document.querySelectorAll('.sidebar-toggle').forEach(el => {
+  el.addEventListener('click', () => {
+    if (localStorage.getItem('sidebarExpanded') === 'true') {
+      document.documentElement.classList.add('collapsed');
+      document.documentElement.classList.remove('expanded');
+      localStorage.setItem('sidebarExpanded', 'false');
+    } else {
+      document.documentElement.classList.remove('collapsed');
+      document.documentElement.classList.add('expanded');
+      localStorage.setItem('sidebarExpanded', 'true');
+    }
+  });
+});
+```
+
+### 15.4 Navbar Toggle Button
+
+Tombol toggle di navbar menggunakan dua icon:
+- **Expanded state:** `tabler-arrow-bar-left` (collapse icon) — class `collapse-mini`
+- **Collapsed state:** `tabler-arrow-bar-right` (expand icon) — class `collapse-expanded`
+
+Hanya tampil di layar `d-none d-lg-block` (desktop). Untuk mobile menggunakan offcanvas.
+
+### 15.5 Brand Logo Padding
+
+**Collapsed mode:**
+```css
+html.collapsed #miniSidebar .brand-logo {
+  padding: 1.2rem !important;
+}
+```
+- Padding: 1.2rem seragam di semua sisi — menggantikan default `.75rem 1rem` dari tema
+- Memberikan ruang yang lebih proporsional untuk logo pada sidebar collapsed (60px)
+
+### 15.6 Navbar Nav Container
+
+**Expanded mode:**
+```css
+html.expanded #miniSidebar .navbar-nav {
+  padding: 8px;
+  height: calc(100vh - 4.5rem);
+  overflow: auto;
+}
+```
+- Padding: 8px (seragam di semua sisi) — menggantikan `padding-bottom: 30px` dari tema default
+- Height: `calc(100vh - 4.5rem)` agar menu dapat di-scroll penuh
+- Overflow: auto untuk scroll konten menu yang panjang
+
+### 15.7 Nav Link Styling
+
+| State | Background | Text Color |
+|-------|-----------|------------|
+| Default | Transparent | `var(--ds-gray-600)` |
+| Hover | `var(--ds-gray-100)` | `var(--ds-gray-700)` |
+| Active | `var(--ds-light-bg-subtle)` | `var(--ds-light-text-emphasis)` |
+
+### 15.8 Dark Mode
+
+```css
+[data-bs-theme="dark"] #miniSidebar {
+  background-color: #141a21 !important;
+}
+[data-bs-theme="dark"] html.expanded #miniSidebar .nav-link.active,
+[data-bs-theme="dark"] html.expanded #miniSidebar .nav-link:hover {
+  background-color: var(--ds-gray-300) !important;
+}
+[data-bs-theme="dark"] .sidebar-divider {
+  border-top-color: rgba(99, 115, 129, 0.25);
+}
+```
+
+### 15.9 Mobile Behavior
+
+Pada layar < 990px:
+- Sidebar disembunyikan (`display: none`)
+- Navigasi menggunakan offcanvas (`#offcanvasExample`)
+- Toggle button di navbar diganti dengan hamburger menu (`ti ti-menu-2`)
+
+---
+
+## 16. Language Switcher (Navbar)
+
+### 16.1 Standard Language Switcher (Dropdown)
+
+**File:** `resources/views/layouts/header.blade.php`
+
+Language switcher menggunakan **Bootstrap dropdown**, bukan toggle pills:
+
+```blade
+<!-- Language Switcher (dropdown) -->
+<li class="dropdown">
+    @php $currentLocale = app()->getLocale(); @endphp
+    <a class="btn btn-white border d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="{{ __('Switch Language') }}">
+      @if($currentLocale === 'id')
+        <span class="lh-1" style="font-size: 1.1rem;">🇮🇩</span>
+        <span class="d-none d-lg-inline">ID</span>
+      @else
+        <span class="lh-1" style="font-size: 1.1rem;">🇺🇸</span>
+        <span class="d-none d-lg-inline">EN</span>
+      @endif
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end shadow">
+      <li>
+        <a class="dropdown-item d-flex align-items-center gap-2 {{ $currentLocale === 'id' ? 'active' : '' }}"
+           href="{{ route('locale.switch', 'id') }}">
+          <span class="lh-1" style="font-size: 1.1rem;">🇮🇩</span>
+          <span>{{ __('Indonesia') }}</span>
+        </a>
+      </li>
+      <li>
+        <a class="dropdown-item d-flex align-items-center gap-2 {{ $currentLocale === 'en' ? 'active' : '' }}"
+           href="{{ route('locale.switch', 'en') }}">
+          <span class="lh-1" style="font-size: 1.1rem;">🇺🇸</span>
+          <span>English (US)</span>
+        </a>
+      </li>
+    </ul>
+</li>
+```
+
+**Aturan:**
+- Tombol trigger: `btn btn-white border` dengan flag + label singkat (ID/EN)
+- Label singkat hanya tampil di layar `d-lg-block` (desktop)
+- Dropdown menu: `dropdown-menu dropdown-menu-end shadow` (sejajar kanan)
+- Setiap item dropdown: `dropdown-item d-flex align-items-center gap-2`
+- Item aktif mendapat class `active` (otomatis di-highlight Bootstrap)
+- Route: `route('locale.switch', 'id')` / `route('locale.switch', 'en')`
+- **Dilarang** menggunakan `nav nav-pills nav-custom-pill` untuk language switcher
+
+---
+
+## 17. Key Rules Summary
 
 1. **Semua halaman** harus `@extends('layouts.app')` dan konten di `@section('content')`
 2. **Halaman data tabel** harus menggunakan `components.data-page-layout`
@@ -669,5 +1053,6 @@ Setiap step di tutorial menggunakan `data-step` attribute. Step ID harus sesuai 
 10. **Dark mode** harus didukung dengan prefix `[data-bs-theme="dark"]`
 11. **Icon** harus menggunakan Tabler Icons (`ti ti-*`)
 12. **Form validation** harus menggunakan `needs-validation` + `novalidate`
-13. **Onboarding** welcome modal + Driver.js tour + checklist widget untuk user baru
-14. **Onboarding entry points** welcome modal otomatis, menu "Panduan Aplikasi" di profile dropdown, dan floating button di kanan bawah
+13. **Badge** harus menggunakan subtle variants: `bg-{color}-subtle text-{color}-emphasis border border-{color}-subtle` (kecuali warning tanpa border)
+14. **Onboarding** welcome modal + Driver.js tour + checklist widget untuk user baru
+15. **Onboarding entry points** welcome modal otomatis, menu "Panduan Aplikasi" di profile dropdown, dan floating button di kanan bawah

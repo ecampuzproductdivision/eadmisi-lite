@@ -29,8 +29,8 @@
             </select>
         </div>
         <div class="col-md-3 col-12 d-flex gap-2">
-            <button type="submit" class="btn btn-primary"><i class="ti ti-filter"></i> Terapkan</button>
-            <a href="{{ route('paket-soal.index') }}" class="btn btn-subtle-primary px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
+            <button type="submit" class="btn btn-white border"><i class="ti ti-filter"></i> Terapkan</button>
+            <a href="{{ route('paket-soal.index') }}" class="btn btn-white border px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
         </div>
     @endslot
     @slot('table')
@@ -50,8 +50,7 @@
                 @if($pakets->isEmpty())
                     <tr>
                         <td colspan="6" class="text-center py-5">
-                            <i class="ti ti-zoom-question text-muted" style="font-size: 3rem;"></i>
-                            <p class="mt-3 mb-0 text-muted">Belum ada paket soal.</p>
+                            @include('components.empty-state')
                             <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#modalTambahPaket">Tambah Paket Soal Pertama</button>
                         </td>
                     </tr>

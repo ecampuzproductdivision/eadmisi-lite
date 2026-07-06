@@ -43,8 +43,7 @@
                 @if($soals->isEmpty())
                     <tr>
                         <td colspan="6" class="text-center py-5">
-                            <i class="ti ti-zoom-question text-muted" style="font-size: 3rem;"></i>
-                            <p class="mt-3 mb-0 text-muted">Belum ada soal dalam paket ini.</p>
+                            @include('components.empty-state')
                             <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#modalTambahSoal">Tambah Soal Pertama</button>
                         </td>
                     </tr>

@@ -237,7 +237,7 @@
                       </td>
                     </tr>
                   @empty
-                    <tr id="empty-pa"><td colspan="6" class="text-center text-muted py-4">Belum ada data pendidikan asal</td></tr>
+                    <tr id="empty-pa"><td colspan="6" class="text-center py-4">@include('components.empty-state', ['title' => 'Belum ada data pendidikan asal', 'subtitle' => ''])</td></tr>
                   @endforelse
                 </tbody>
               </table>

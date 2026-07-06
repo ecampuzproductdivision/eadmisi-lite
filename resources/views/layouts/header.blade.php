@@ -151,24 +151,31 @@
         </li>
       @endif
 
-      <!-- Language Switcher (nav-custom-pill) -->
-      <li>
+      <!-- Language Switcher (dropdown) -->
+      <li class="dropdown">
         @php $currentLocale = app()->getLocale(); @endphp
-        <ul class="nav nav-pills nav-custom-pill mb-0" role="tablist">
-          <li class="nav-item" role="presentation">
-            <a class="nav-link {{ $currentLocale === 'id' ? 'active' : '' }}"
-               href="{{ route('locale.switch', 'id') }}"
-               title="{{ __('Indonesia') }}">
+        <a class="btn btn-white border d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="{{ __('Switch Language') }}">
+          @if($currentLocale === 'id')
+            <span class="lh-1" style="font-size: 1.1rem;">🇮🇩</span>
+            <span class="d-none d-lg-inline">ID</span>
+          @else
+            <span class="lh-1" style="font-size: 1.1rem;">🇺🇸</span>
+            <span class="d-none d-lg-inline">EN</span>
+          @endif
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end shadow">
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 {{ $currentLocale === 'id' ? 'active' : '' }}"
+               href="{{ route('locale.switch', 'id') }}">
               <span class="lh-1" style="font-size: 1.1rem;">🇮🇩</span>
-              <span class="ms-1 d-none d-lg-block">ID</span>
+              <span>{{ __('Indonesia') }}</span>
             </a>
           </li>
-          <li class="nav-item" role="presentation">
-            <a class="nav-link {{ $currentLocale === 'en' ? 'active' : '' }}"
-               href="{{ route('locale.switch', 'en') }}"
-               title="English (US)">
+          <li>
+            <a class="dropdown-item d-flex align-items-center gap-2 {{ $currentLocale === 'en' ? 'active' : '' }}"
+               href="{{ route('locale.switch', 'en') }}">
               <span class="lh-1" style="font-size: 1.1rem;">🇺🇸</span>
-              <span class="ms-1 d-none d-lg-block">EN</span>
+              <span>English (US)</span>
             </a>
           </li>
         </ul>

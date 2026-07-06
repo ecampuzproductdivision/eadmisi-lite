@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 
 @section('content')
 @component('components.data-page-layout', ['data' => $registrations])
@@ -40,8 +40,8 @@
             </select>
         </div>
         <div class="col-md-3 col-12 d-flex gap-2">
-            <button type="submit" class="btn btn-primary"><i class="ti ti-filter"></i> Filter</button>
-            <a href="{{ route('pendaftaran.index') }}" class="btn btn-subtle-primary px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
+            <button type="submit" class="btn btn-white border"><i class="ti ti-filter"></i> Filter</button>
+            <a href="{{ route('pendaftaran.index') }}" class="btn btn-white border px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
         </div>
     @endslot
     @slot('exports')
@@ -93,8 +93,8 @@
                             $hasExamBeenTaken = false;
                             $isPaymentLocked = true;
                             $statusLabel = null;
-                            $badgeBg = 'bg-secondary';
-                            $badgeText = 'text-white';
+                            $badgeBg = 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle';
+                            $badgeText = '';
                             $subBadge = '';
 
                             // ── UNIFIED STATUS PIPELINE (identical to applicant portal) ──
@@ -123,13 +123,13 @@
 
                             // Terminal states (payment_verified is NOT terminal — cascade handles it)
                             if ($registration->status === 'rejected') {
-                                $badgeBg = 'bg-danger'; $badgeText = 'text-white'; $statusLabel = 'Ditolak'; $subBadge = '';
+                                $badgeBg = 'bg-danger-subtle text-danger-emphasis border border-danger-subtle'; $badgeText = ''; $statusLabel = 'Ditolak'; $subBadge = '';
                             } elseif ($registration->status === 'accepted') {
-                                $badgeBg = 'bg-success'; $badgeText = 'text-white'; $statusLabel = 'Diterima'; $subBadge = '';
+                                $badgeBg = 'bg-success-subtle text-success-emphasis border border-success-subtle'; $badgeText = ''; $statusLabel = 'Diterima'; $subBadge = '';
                             } elseif ($registration->status === 'reviewed') {
-                                $badgeBg = 'bg-secondary'; $badgeText = 'text-white'; $statusLabel = 'Direview'; $subBadge = '';
+                                $badgeBg = 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle'; $badgeText = ''; $statusLabel = 'Direview'; $subBadge = '';
                             } elseif ($registration->status === 'exam_completed') {
-                                $badgeBg = 'bg-primary'; $badgeText = 'text-white'; $statusLabel = 'Ujian Selesai'; $subBadge = '';
+                                $badgeBg = 'bg-primary-subtle text-primary-emphasis border border-primary-subtle'; $badgeText = ''; $statusLabel = 'Ujian Selesai'; $subBadge = '';
                             } elseif ($registration->status === 'payment_pending') {
                                 $isPaymentLocked = true;
                             }
@@ -137,20 +137,20 @@
                             // Cascade for unresolved statuses
                             if (!isset($statusLabel)) {
                                 if ($isPaymentLocked) {
-                                    $badgeBg = 'bg-danger'; $badgeText = 'text-white'; $statusLabel = 'Menunggu Pembayaran'; $subBadge = '';
+                                    $badgeBg = 'bg-danger-subtle text-danger-emphasis border border-danger-subtle'; $badgeText = ''; $statusLabel = 'Menunggu Pembayaran'; $subBadge = '';
                                 } else {
-                                    $subBadge = '<span class="badge bg-success text-white mt-1 d-inline-block" style="font-size:0.65rem;">Pembayaran Terverifikasi</span>';
+                                    $subBadge = '<span class="badge bg-success-subtle text-success-emphasis border border-success-subtle mt-1 d-inline-block" style="font-size:0.65rem;">Pembayaran Terverifikasi</span>';
                                     if ($totalRequiredDocs > 0 && !$isStep3Completed) {
-                                        $badgeBg = 'bg-warning'; $badgeText = 'text-dark'; $statusLabel = 'Belum Unggah Berkas';
+                                        $badgeBg = 'bg-warning-subtle text-warning-emphasis'; $badgeText = ''; $statusLabel = 'Belum Unggah Berkas';
                                     } elseif ($pathObj && $pathObj->is_ujian_online && !$hasExamBeenTaken) {
-                                        $badgeBg = 'bg-info'; $badgeText = 'text-dark'; $statusLabel = 'Menunggu Ujian';
+                                        $badgeBg = 'bg-info-subtle text-info-emphasis border border-info-subtle'; $badgeText = ''; $statusLabel = 'Menunggu Ujian';
                                     } else {
-                                        $badgeBg = 'bg-secondary'; $badgeText = 'text-white'; $statusLabel = 'Menunggu Verifikasi Berkas';
+                                        $badgeBg = 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle'; $badgeText = ''; $statusLabel = 'Menunggu Verifikasi Berkas';
                                     }
                                 }
                             }
                         @endphp
-                        <span class="badge {{ $badgeBg }} {{ $badgeText }} rounded-pill px-3 py-1 fw-semibold">{{ $statusLabel }}</span>
+                        <span class="badge {{ $badgeBg }} rounded-pill px-3 py-1 fw-semibold">{{ $statusLabel }}</span>
                         @if(!empty($subBadge))
                             {!! $subBadge !!}
                         @endif
@@ -162,7 +162,7 @@
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="7" class="text-center py-5"><i class="ti ti-inbox text-muted" style="font-size: 3rem;"></i><span class="mt-3 text-muted fw-semibold">Belum ada data pendaftaran</span><p class="text-muted mb-0">Belum ada calon mahasiswa yang melakukan submit pendaftaran.</p></td></tr>
+                <tr><td colspan="7" class="text-center py-5">@include('components.empty-state', ['icon' => 'ti-inbox', 'title' => 'Belum ada data pendaftaran', 'subtitle' => 'Belum ada calon mahasiswa yang melakukan submit pendaftaran.'])</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -172,3 +172,5 @@
     @endslot
 @endcomponent
 @endsection
+
+

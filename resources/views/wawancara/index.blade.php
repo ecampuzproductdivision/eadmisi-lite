@@ -25,8 +25,8 @@
             </select>
         </div>
         <div class="col-md-3 col-12 d-flex gap-2">
-            <button type="submit" class="btn btn-primary"><i class="ti ti-filter"></i> Terapkan</button>
-            <a href="{{ route('wawancara.index') }}" class="btn btn-subtle-primary px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
+            <button type="submit" class="btn btn-white border"><i class="ti ti-filter"></i> Terapkan</button>
+            <a href="{{ route('wawancara.index') }}" class="btn btn-white border px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
         </div>
     @endslot
     @slot('table')

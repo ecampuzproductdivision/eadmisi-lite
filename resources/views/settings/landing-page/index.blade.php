@@ -96,7 +96,7 @@
                                     <td class="py-3 text-end"><div class="d-flex gap-1 justify-content-end"><button class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1" title="Edit" onclick="openEditFeature({{ $f->id }}, '{{ $f->judul_poin }}', '{{ $f->deskripsi_poin }}', '{{ $f->nama_icon }}', '{{ $f->warna_skema }}')"><i class="ti ti-edit fs-5"></i></button><a href="{{ route('settings.landing-page.toggle-feature', $f) }}" class="btn btn-sm btn-light border d-inline-flex align-items-center gap-1"><i class="ti ti-{{ $f->is_active ? 'eye-off' : 'eye' }} fs-5"></i></a><form action="{{ route('settings.landing-page.destroy-feature', $f) }}" method="POST" onsubmit="return confirm('Hapus keunggulan ini?')">@csrf @method('DELETE')<button class="btn btn-sm btn-light border text-danger d-inline-flex align-items-center gap-1"><i class="ti ti-trash fs-5"></i></button></form></div></td>
                                 </tr>
                                 @empty
-                                <tr><td colspan="8" class="text-center py-5 text-muted">Belum ada data keunggulan.</td></tr>
+                                <tr><td colspan="$1" class="text-center py-5">@include('components.empty-state')</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -172,7 +172,7 @@
                                     <td class="py-3 text-end"><form action="{{ route('settings.landing-page.destroy-facility', $f) }}" method="POST" onsubmit="return confirm('Hapus fasilitas ini?')">@csrf @method('DELETE')<button class="btn btn-sm btn-light border text-danger d-inline-flex align-items-center gap-1"><i class="ti ti-trash fs-5"></i></button></form></td>
                                 </tr>
                                 @empty
-                                <tr><td colspan="7" class="text-center py-5 text-muted">Belum ada data fasilitas.</td></tr>
+                                <tr><td colspan="$1" class="text-center py-5">@include('components.empty-state')</td></tr>
                                 @endforelse
                             </tbody>
                         </table>

@@ -22,7 +22,7 @@ class PendaftaranController extends Controller
             'documents',
             'payments',
             'examResults',
-        ])->whereIn('status', ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted', 'rejected', 'Menunggu Verifikasi Registrasi Ulang', 'registered']);
+        ])->whereIn('status', ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted', 'rejected', 'Menunggu Verifikasi Registrasi Ulang', 'registered', 'Lulus', 'Gagal']);
 
         // Filter by registration path
         if ($request->filled('path_id')) {

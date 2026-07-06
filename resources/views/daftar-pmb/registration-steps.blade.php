@@ -9,6 +9,11 @@
     $totalSteps = $hasExam ? 5 : 4;
     $berkasList = $path && $path->templateBerkas && $path->templateBerkas->syaratDokumens
         ? $path->templateBerkas->syaratDokumens : collect();
+
+    $pendaftaran = $registration;
+    if ($registration) {
+        $registration->skor_ujian = (isset($examResult) && $examResult) ? $examResult->score : null;
+    }
 @endphp
 
 <main class="p-6">
@@ -292,7 +297,11 @@
                     </div>
                   @else
                     <div class="step-status text-success mt-4">
-                      <i class="ti ti-circle-check me-1"></i> Tahap ujian telah diselesaikan. Silakan tunggu pengumuman hasil.
+                      @if($path && in_array($path->metode_pengumuman, ['langsung', 'Langsung (One Day Service)']))
+                        <i class="ti ti-circle-check me-1"></i> Evaluasi skor ujian selesai diproses secara langsung.
+                      @else
+                        <i class="ti ti-circle-check me-1"></i> Tahap ujian telah diselesaikan. Silakan tunggu pengumuman hasil.
+                      @endif
                     </div>
                   @endif
                 </div>
@@ -314,21 +323,24 @@
         @php
           $finalStep = $totalSteps;
           $finalStepStatus = 'locked';
-          if ($registration && $registration->status !== 'rejected') {
+          if ($registration && !in_array($registration->status, ['rejected', 'Gagal']) && $registration->status_kelulusan !== 'Tidak Lulus') {
               if (in_array($registration->status, ['Menunggu Verifikasi Registrasi Ulang', 'registered'])) {
                   $finalStepStatus = 'completed';
               } elseif ($currentStep == $totalSteps) {
                   $finalStepStatus = 'active';
               }
           }
+
+          // Stabilize status layout for Langkah 5
+          $isReRegistrationActive = request()->has('re_registration') || request()->get('step') == '5';
         @endphp
         <div class="step-item {{ $finalStepStatus }}" id="stepFinal">
           <div class="step-indicator">
-            <div class="step-circle {{ $finalStepStatus === 'completed' ? 'bg-success' : ($finalStepStatus === 'active' ? 'bg-primary' : 'bg-light') }}">
+            <div class="step-circle {{ $finalStepStatus === 'completed' ? 'bg-success' : ($finalStepStatus === 'active' ? ($isReRegistrationActive ? 'bg-primary' : 'bg-secondary') : 'bg-light') }}">
               @if($finalStepStatus === 'completed')
                 <i class="ti ti-check text-white"></i>
               @elseif($finalStepStatus === 'active')
-                <i class="ti ti-id-badge text-white"></i>
+                <i class="ti {{ $isReRegistrationActive ? 'ti-id-badge' : 'ti-file-text' }} text-white"></i>
               @else
                 <i class="ti ti-lock text-muted"></i>
               @endif
@@ -336,20 +348,65 @@
           </div>
           <div class="step-content">
             <div class="step-header">
-              <span class="badge {{ $finalStepStatus === 'completed' ? 'bg-success-subtle text-success' : ($finalStepStatus === 'active' ? 'bg-primary-subtle text-primary' : 'bg-secondary-subtle text-secondary') }} px-3 py-2 fw-semibold">Langkah {{ $finalStep }}</span>
+              <span class="badge {{ $finalStepStatus === 'completed' ? 'bg-success-subtle text-success' : ($finalStepStatus === 'active' ? ($isReRegistrationActive ? 'bg-primary-subtle text-primary' : 'bg-secondary-subtle text-secondary') : 'bg-secondary-subtle text-secondary') }} px-3 py-2 fw-semibold">Langkah {{ $finalStep }}</span>
               @if($finalStepStatus === 'completed')
                 <span class="badge bg-success-subtle text-success px-3 py-2"><i class="ti ti-check me-1"></i> Selesai</span>
               @elseif($finalStepStatus === 'active')
-                <span class="badge bg-primary-subtle text-primary px-3 py-2"><i class="ti ti-loader me-1"></i> Sedang Aktif</span>
+                @if($isReRegistrationActive)
+                  <span class="badge bg-primary-subtle text-primary px-3 py-2"><i class="ti ti-loader me-1"></i> Sedang Aktif</span>
+                @else
+                  <span class="badge bg-secondary-subtle text-secondary px-3 py-2"><i class="ti ti-info-circle me-1"></i> Siap Diisi</span>
+                @endif
               @else
                 <span class="badge bg-secondary-subtle text-secondary px-3 py-2"><i class="ti ti-lock me-1"></i> Terkunci</span>
               @endif
             </div>
 
             @if($finalStepStatus === 'active')
-              @if($registration && $registration->status === 'accepted')
-                <h5 class="fw-bold mt-3 text-primary"><i class="ti ti-id-badge me-2"></i>Formulir Registrasi Ulang</h5>
-                <p class="text-muted mb-4">Selamat! Anda dinyatakan <strong>Lulus Seleksi</strong>. Silakan lengkapi data registrasi ulang di bawah ini untuk penerbitan NIM dan pelaporan PDDikti.</p>
+              @if($registration && ($registration->status === 'accepted' || $registration->status === 'Lulus' || $registration->status_kelulusan === 'Lulus'))
+                
+                @if(!$isReRegistrationActive)
+                  <!-- Automated Re-registration Entry Trigger -->
+                  @if($pendaftaran->status_kelulusan === 'Lulus')
+                      <div class="card border-success shadow-sm my-4" style="background-color: #f8fff9; border-left: 5px solid #28a745;">
+                          <div class="card-body p-4">
+                              <div class="d-flex align-items-center mb-3">
+                                  <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px; flex-shrink: 0;">
+                                      <i class="ti ti-trophy fs-4"></i>
+                                  </div>
+                                  <div>
+                                      <span class="badge bg-success px-3 py-1 font-weight-bold" style="font-size: 0.85rem;">PENGUMUMAN HASIL SELEKSI</span>
+                                      <h4 class="card-title text-success font-weight-bold mb-0 mt-1">Selamat! Anda Dinyatakan LULUS</h4>
+                                  </div>
+                              </div>
+                              
+                              <p class="card-text text-dark" style="font-size: 0.95rem; line-height: 1.6;">
+                                  Berdasarkan hasil evaluasi ujian online CBT dengan perolehan skor <strong>{{ $pendaftaran->skor_ujian }}</strong>, Anda telah memenuhi nilai ambang batas kelulusan yang ditentukan. Silakan melanjutkan ke tahap berikutnya untuk melengkapi berkas administrasi dan mengunci status kemahasiswaan Anda.
+                              </p>
+                              
+                              <hr class="my-3" style="border-top: 1px dashed #28a745;">
+                              
+                              <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                  <span class="text-muted small mb-2 mb-md-0">
+                                      <i class="ti ti-clock me-1"></i> Diproses secara instan melalui sistem One Day Service.
+                                  </span>
+                                  <a href="{{ route('daftar-pmb.steps', ['pathCode' => $path?->code, 're_registration' => 1]) }}" class="btn btn-success px-4 py-2 font-weight-bold shadow-sm">
+                                      <i class="ti ti-arrow-right me-2"></i> Mulai Registrasi Ulang <i class="ti ti-file-text ms-1"></i>
+                                  </a>
+                              </div>
+                          </div>
+                      </div>
+                  @elseif($pendaftaran->status_kelulusan === 'Tidak Lulus')
+                      <div class="card border-danger shadow-sm my-4" style="background-color: #fffafb; border-left: 5px solid #dc3545;">
+                          <div class="card-body p-4">
+                              <h5 class="text-danger font-weight-bold">Mohon Maaf, Anda Dinyatakan Belum Lulus</h5>
+                              <p class="small text-muted mb-0">Skor Anda belum mencapai kriteria minimal ambang batas kelulusan jalur ini. Terima kasih telah berpartisipasi.</p>
+                          </div>
+                      </div>
+                  @endif
+                @else
+                  <h5 class="fw-bold mt-3 text-primary"><i class="ti ti-id-badge me-2"></i>Formulir Registrasi Ulang</h5>
+                  <p class="text-muted mb-4">Selamat! Anda dinyatakan <strong>Lulus Seleksi</strong>. Silakan lengkapi data registrasi ulang di bawah ini untuk penerbitan NIM dan pelaporan PDDikti.</p>
 
                 <form action="{{ route('daftar-pmb.re-registration.store', $path?->code) }}" method="POST" id="reRegistrationForm" class="mt-3">
                   @csrf
@@ -462,50 +519,42 @@
                       </select>
                     </div>
 
-                    <!-- 14. Kabupaten (Searchable Combo Dropdown) -->
+                    <!-- 14. Kabupaten (server-side rendered options) -->
                     <div class="col-md-6">
                       <label class="form-label fw-semibold text-uppercase small text-muted">Kabupaten/Kota <span class="text-danger">*</span></label>
-                      <select class="form-select" name="regency_id" id="kabupaten_select" required style="width: 100%;">
-                        @php
-                          $selectedRegency = old('regency_id', $registration->regency_id ?? auth()->user()->regency_id);
-                          $regencyObj = $selectedRegency ? \App\Models\Regency::find($selectedRegency) : null;
-                        @endphp
-                        @if($regencyObj)
-                          <option value="{{ $regencyObj->id }}" selected>{{ $regencyObj->type }} {{ $regencyObj->name }}, {{ $regencyObj->province }}</option>
+                      <select class="form-select select2-location-search" name="regency_id" id="regency-select" required style="width: 100%;">
+                        <option value="">-- Pilih Kabupaten/Kota --</option>
+                        @php $selectedRegency = old('regency_id', $registration->regency_id ?? ''); @endphp
+                        @if(isset($masterRegencies) && $masterRegencies->isNotEmpty())
+                          @foreach($masterRegencies as $kab)
+                            <option value="{{ $kab->id }}" {{ $selectedRegency == $kab->id ? 'selected' : '' }}>{{ $kab->display }}</option>
+                          @endforeach
+                        @else
+                          <option value="Sleman">Kab. Sleman, D.I. Yogyakarta</option>
+                          <option value="Bantul">Kab. Bantul, D.I. Yogyakarta</option>
+                          <option value="Jakarta Selatan">Kota Jakarta Selatan, D.K.I. Jakarta</option>
+                          <option value="Bandung">Kota Bandung, Jawa Barat</option>
+                          <option value="Surabaya">Kota Surabaya, Jawa Timur</option>
+                          <option value="Medan">Kota Medan, Sumatera Utara</option>
+                          <option value="Palu">Kota Palu, Sulawesi Tengah</option>
                         @endif
                       </select>
                       <small class="text-muted">Ketik nama kabupaten/kota untuk mencari.</small>
                     </div>
 
-                    <!-- 15. Kecamatan (Cascading) -->
+                    <!-- 15. Kecamatan (API-powered live search) -->
                     <div class="col-md-6">
                       <label class="form-label fw-semibold text-uppercase small text-muted">Kecamatan <span class="text-danger">*</span></label>
-                      <select class="form-select" name="kecamatan_id" id="kecamatan_select" required>
+                      <select class="form-select" name="kecamatan_id" id="district-select" required style="width: 100%;" disabled>
                         <option value="" disabled selected>-- Pilih Kecamatan --</option>
-                        @if(old('kecamatan_id', $registration->kecamatan_id))
-                          @php
-                            $selectedKec = \App\Models\Kecamatan::find(old('kecamatan_id', $registration->kecamatan_id));
-                          @endphp
-                          @if($selectedKec)
-                            <option value="{{ $selectedKec->id }}" selected>{{ $selectedKec->name }}</option>
-                          @endif
-                        @endif
                       </select>
                     </div>
 
-                    <!-- 16. Kelurahan (Cascading) -->
+                    <!-- 16. Kelurahan (API-powered live search) -->
                     <div class="col-md-6">
                       <label class="form-label fw-semibold text-uppercase small text-muted">Desa/Kelurahan <span class="text-danger">*</span></label>
-                      <select class="form-select" name="kelurahan_id" id="kelurahan_select" required>
+                      <select class="form-select" name="kelurahan_id" id="village-select" required style="width: 100%;" disabled>
                         <option value="" disabled selected>-- Pilih Desa/Kelurahan --</option>
-                        @if(old('kelurahan_id', $registration->kelurahan_id))
-                          @php
-                            $selectedKel = \App\Models\Kelurahan::find(old('kelurahan_id', $registration->kelurahan_id));
-                          @endphp
-                          @if($selectedKel)
-                            <option value="{{ $selectedKel->id }}" selected>{{ $selectedKel->name }}</option>
-                          @endif
-                        @endif
                       </select>
                     </div>
                   </div>
@@ -515,7 +564,8 @@
                       <i class="ti ti-send me-1"></i> Submit Registrasi Ulang
                     </button>
                   </div>
-                </form>
+                  </form>
+                @endif
               @else
                 <h5 class="fw-bold mt-3">Selesai</h5>
                 <p class="text-muted mb-3">
@@ -744,119 +794,107 @@
   }
 </style>
 
+@push('scripts')
 <script>
-  $(document).ready(function() {
-      // Initialize Select2 with dynamic AJAX lookup for Kabupaten/Kota
-      var kabSelect = $('#kabupaten_select');
-      
-      // Failsafe: Destroy if already initialized
-      if (kabSelect.hasClass("select2-hidden-accessible")) {
-          kabSelect.select2('destroy');
-      }
+// ── REMOTE API-POWERED CASCADING REGION DROPDOWNS ──
+// Uses public API proxy endpoints for live search of Kabupaten, Kecamatan, Kelurahan
+// WARNING: This runs inside @stack('scripts') which is AFTER jQuery and Select2 are loaded!
+function initRegionalDropdowns() {
+    // Safety check: ensure jQuery and Select2 are available
+    if (typeof jQuery === 'undefined') {
+        setTimeout(initRegionalDropdowns, 100);
+        return;
+    }
+    var $ = jQuery;
+    if (typeof $.fn.select2 === 'undefined') {
+        setTimeout(initRegionalDropdowns, 100);
+        return;
+    }
+    
+    console.log('Regional dropdowns: jQuery/Select2 ready. Initializing...');
+    
+    var $regency = $('#regency-select');
+    var $district = $('#district-select');
+    var $village = $('#village-select');
+    
+    if (!$regency.length) return;
+    
+    // ── 1. Initialize Searchable Kabupaten via Live Remote API search ──
+    $regency.select2({
+        placeholder: "-- Ketik nama Kabupaten atau Kota --",
+        allowClear: true,
+        width: '100%',
+        minimumInputLength: 0,
+        ajax: {
+            url: '/api/regions/regencies',
+            dataType: 'json',
+            delay: 200,
+            data: function(params) {
+                return { q: params.term };
+            },
+            processResults: function(data) {
+                return { results: data };
+            },
+            cache: true
+        }
+    });
+    
+    // ── 2. Cascade Chain Handler for Kecamatan ──
+    $regency.on('change', function() {
+        var regencyId = $(this).val();
+        
+        $district.val(null).trigger('change').prop('disabled', !regencyId);
+        $village.val(null).trigger('change').prop('disabled', true);
+        
+        if (!regencyId) return;
+        
+        if ($district.hasClass('select2-hidden-accessible')) {
+            $district.select2('destroy');
+        }
+        
+        $district.select2({
+            placeholder: "-- Ketik nama Kecamatan --",
+            allowClear: true,
+            width: '100%',
+            ajax: {
+                url: '/api/regions/districts/' + regencyId,
+                dataType: 'json',
+                delay: 150,
+                data: function(params) { return { q: params.term }; },
+                processResults: function(data) { return { results: data }; }
+            }
+        });
+    });
+    
+    // ── 3. Cascade Chain Handler for Kelurahan ──
+    $district.on('change', function() {
+        var districtId = $(this).val();
+        
+        $village.val(null).trigger('change').prop('disabled', !districtId);
+        
+        if (!districtId) return;
+        
+        if ($village.hasClass('select2-hidden-accessible')) {
+            $village.select2('destroy');
+        }
+        
+        $village.select2({
+            placeholder: "-- Ketik nama Desa atau Kelurahan --",
+            allowClear: true,
+            width: '100%',
+            ajax: {
+                url: '/api/regions/villages/' + districtId,
+                dataType: 'json',
+                delay: 150,
+                data: function(params) { return { q: params.term }; },
+                processResults: function(data) { return { results: data }; }
+            }
+        });
+    });
+}
 
-      kabSelect.select2({
-          placeholder: "-- Pilih Kabupaten/Kota --",
-          allowClear: true,
-          ajax: {
-              url: "{{ route('api.regencies.select2') }}",
-              dataType: 'json',
-              delay: 250,
-              data: function (params) {
-                  return {
-                      q: params.term, // search term
-                      page: params.page || 1
-                  };
-              },
-              processResults: function (data, params) {
-                  params.page = params.page || 1;
-                  return {
-                      results: data.results,
-                      pagination: {
-                          more: data.pagination.more
-                      }
-                  };
-              },
-              cache: true
-          },
-          width: '100%'
-      });
-
-      // Handle Kabupaten select change -> load Kecamatan
-      kabSelect.on('change', function() {
-          var regencyId = $(this).val();
-          
-          // Clear cascading dropdowns
-          $('#kecamatan_select').empty().append('<option value="" disabled selected>-- Pilih Kecamatan --</option>');
-          $('#kelurahan_select').empty().append('<option value="" disabled selected>-- Pilih Desa/Kelurahan --</option>');
-          
-          if (regencyId) {
-              $.ajax({
-                  url: '/api/wilayah/kecamatan/' + regencyId,
-                  type: 'GET',
-                  dataType: 'json',
-                  success: function(data) {
-                      $.each(data, function(key, val) {
-                          $('#kecamatan_select').append('<option value="' + val.id + '">' + val.name + '</option>');
-                      });
-                  }
-              });
-          }
-      });
-
-      // Handle Kecamatan select change -> load Kelurahan
-      $('#kecamatan_select').on('change', function() {
-          var kecamatanId = $(this).val();
-          
-          // Clear cascading dropdown
-          $('#kelurahan_select').empty().append('<option value="" disabled selected>-- Pilih Desa/Kelurahan --</option>');
-          
-          if (kecamatanId) {
-              $.ajax({
-                  url: '/api/wilayah/kelurahan/' + kecamatanId,
-                  type: 'GET',
-                  dataType: 'json',
-                  success: function(data) {
-                      $.each(data, function(key, val) {
-                          $('#kelurahan_select').append('<option value="' + val.id + '">' + val.name + '</option>');
-                      });
-                  }
-              });
-          }
-      });
-
-      // Prefill cascade if kabupaten is already selected initially (e.g. from user profile or old input)
-      var initialKabupaten = kabSelect.val();
-      if (initialKabupaten) {
-          var selectedKecId = "{{ old('kecamatan_id', $registration->kecamatan_id ?? '') }}";
-          var selectedKelId = "{{ old('kelurahan_id', $registration->kelurahan_id ?? '') }}";
-          
-          $.ajax({
-              url: '/api/wilayah/kecamatan/' + initialKabupaten,
-              type: 'GET',
-              dataType: 'json',
-              success: function(data) {
-                  $.each(data, function(key, val) {
-                      var isSelected = (val.id == selectedKecId) ? 'selected' : '';
-                      $('#kecamatan_select').append('<option value="' + val.id + '" ' + isSelected + '>' + val.name + '</option>');
-                  });
-                  
-                  // If kecamatan was already selected, trigger load for Kelurahan
-                  if (selectedKecId) {
-                      $.ajax({
-                          url: '/api/wilayah/kelurahan/' + selectedKecId,
-                          type: 'GET',
-                          dataType: 'json',
-                          success: function(data) {
-                              $.each(data, function(key, val) {
-                                  var isSelected = (val.id == selectedKelId) ? 'selected' : '';
-                                  $('#kelurahan_select').append('<option value="' + val.id + '" ' + isSelected + '>' + val.name + '</option>');
-                              });
-                          }
-                      });
-                  }
-              }
-          });
-      }
-  });
+// Start initialization with polling fallback for jQuery/Select2 loading
+initRegionalDropdowns();
 </script>
+@endpush
 @endsection

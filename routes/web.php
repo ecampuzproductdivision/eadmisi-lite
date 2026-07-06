@@ -80,6 +80,15 @@ Route::get('/api/registration-paths', [RegistrationPathController::class, 'apiLi
         Route::get('/daftar-pmb/registrasi/{pathCode?}/review', [RegistrationPathController::class, 'review'])->name('daftar-pmb.review');
         Route::post('/daftar-pmb/registrasi/{pathCode?}/re-registration', [RegistrationPathController::class, 'reRegistrationStore'])->name('daftar-pmb.re-registration.store');
 
+        // Dynamic re-registration route
+        Route::get('/mahasiswa/registrasi-ulang', function() {
+            $reg = \App\Models\Registration::where('user_id', auth()->id())
+                ->latest()
+                ->first();
+            $pathCode = $reg && $reg->registrationPath ? $reg->registrationPath->code : null;
+            return redirect()->route('daftar-pmb.steps', ['pathCode' => $pathCode, 're_registration' => 1]);
+        })->name('mahasiswa.registrasi-ulang');
+
         // Riwayat Pendaftaran
         Route::get('/riwayat-pendaftaran', [RiwayatPendaftaranController::class, 'index'])->name('riwayat-pendaftaran.index');
 
@@ -128,6 +137,11 @@ Route::post('/crm-leads/store', [CrmLeadController::class, 'storePublic'])->name
 Route::get('/api/regencies/select2', [RegencyController::class, 'select2'])->name('api.regencies.select2');
 Route::get('/api/wilayah/kecamatan/{kabupaten_id}', [\App\Http\Controllers\Api\WilayahController::class, 'getKecamatans'])->name('api.wilayah.kecamatan');
 Route::get('/api/wilayah/kelurahan/{kecamatan_id}', [\App\Http\Controllers\Api\WilayahController::class, 'getKelurahans'])->name('api.wilayah.kelurahan');
+
+// Centralized regional API proxy (idn-public-api + emsifa fallback)
+Route::get('/api/regions/regencies', [\App\Http\Controllers\Api\RegionalApiController::class, 'getRegencies']);
+Route::get('/api/regions/districts/{regencyId}', [\App\Http\Controllers\Api\RegionalApiController::class, 'getDistricts']);
+Route::get('/api/regions/villages/{districtId}', [\App\Http\Controllers\Api\RegionalApiController::class, 'getVillages']);
 
 Route::middleware(['auth'])->group(function () {
     // Onboarding routes

@@ -281,22 +281,20 @@ class TesOnlineController extends Controller
 
         // Update registration status
         $jalur = $registration->registrationPath;
-        if ($jalur && in_array($jalur->metode_pengumuman, ['langsung', 'Langsung (One Day Service)'])) {
-            $threshold = $jalur->nilai_ambang_batas ?? 75;
-            if ($totalScore >= $threshold) {
-                $registration->update([
-                    'status' => 'accepted',
-                    'updated_at' => now()
-                ]);
-            } else {
-                $registration->update([
-                    'status' => 'rejected',
-                    'updated_at' => now()
-                ]);
-            }
+        $threshold = ($jalur && $jalur->nilai_ambang_batas !== null) ? $jalur->nilai_ambang_batas : 75;
+
+        if ($totalScore >= $threshold) {
+            $registration->update([
+                'status' => 'accepted',
+                'status_kelulusan' => 'Lulus',
+                'status_pendaftaran' => 'Lulus',
+                'updated_at' => now()
+            ]);
         } else {
             $registration->update([
-                'status' => 'exam_completed',
+                'status' => 'rejected',
+                'status_kelulusan' => 'Tidak Lulus',
+                'status_pendaftaran' => 'Gagal',
                 'updated_at' => now()
             ]);
         }

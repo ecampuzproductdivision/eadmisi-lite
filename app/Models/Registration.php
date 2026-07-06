@@ -25,6 +25,8 @@ class Registration extends Model
         'jurusan',
         'tahun_lulus',
         'status',
+        'status_kelulusan',
+        'status_pendaftaran',
         'nisn',
         'nama_ibu_kandung',
         'penerima_kps',

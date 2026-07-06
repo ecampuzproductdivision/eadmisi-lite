@@ -59,6 +59,13 @@ class RegistrationPathController extends Controller
      */
     public function store(Request $request)
     {
+        if (!$request->boolean('gunakan_ujian')) {
+            $request->merge([
+                'paket_soal_id' => null,
+                'nilai_ambang_batas' => null,
+            ]);
+        }
+
         $validator = Validator::make($request->all(), [
             'code' => 'required|string|max:50|unique:registration_paths,code',
             'name' => 'required|string|max:200',
@@ -79,7 +86,7 @@ class RegistrationPathController extends Controller
             'template_berkas_id' => 'nullable|exists:template_berkas,id',
             'metode_pengumuman' => 'required|in:langsung,ditahan',
             'gunakan_wawancara' => 'boolean',
-            'nilai_ambang_batas' => 'required_if:metode_pengumuman,langsung|nullable|integer|min:0|max:100',
+            'nilai_ambang_batas' => 'nullable|integer|min:0|max:100',
         ]);
 
         // Auto-set metode_pengumuman to 'ditahan' if wawancara is enabled
@@ -158,6 +165,13 @@ class RegistrationPathController extends Controller
      */
     public function update(Request $request, RegistrationPath $registrationPath)
     {
+        if (!$request->boolean('gunakan_ujian')) {
+            $request->merge([
+                'paket_soal_id' => null,
+                'nilai_ambang_batas' => null,
+            ]);
+        }
+
         $validator = Validator::make($request->all(), [
             'code' => 'required|string|max:50|unique:registration_paths,code,' . $registrationPath->id,
             'name' => 'required|string|max:200',
@@ -178,7 +192,7 @@ class RegistrationPathController extends Controller
             'template_berkas_id' => 'nullable|exists:template_berkas,id',
             'metode_pengumuman' => 'required|in:langsung,ditahan',
             'gunakan_wawancara' => 'boolean',
-            'nilai_ambang_batas' => 'required_if:metode_pengumuman,langsung|nullable|integer|min:0|max:100',
+            'nilai_ambang_batas' => 'nullable|integer|min:0|max:100',
         ]);
 
         if ($validator->fails()) {
@@ -316,7 +330,7 @@ class RegistrationPathController extends Controller
             }
 
             // ── Payment Gate: if no paid invoice, show payment step warning ──
-            if ($isPaymentLocked && in_array($registration->status, ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted', 'Menunggu Verifikasi Registrasi Ulang', 'registered'])) {
+            if ($isPaymentLocked && in_array($registration->status, ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted', 'Menunggu Verifikasi Registrasi Ulang', 'registered', 'Lulus', 'Gagal'])) {
                 $currentStep = 2; // Still show step 3 as locked
             } elseif ($registration->status === 'submitted') {
                 // Step 1 & 2 complete, step 3 (Upload) active
@@ -324,11 +338,11 @@ class RegistrationPathController extends Controller
             }
 
             // Step 3 is complete ONLY if actual documents have been uploaded
-            if (in_array($registration->status, ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted', 'rejected', 'Menunggu Verifikasi Registrasi Ulang', 'registered'])) {
+            if (in_array($registration->status, ['submitted', 'documents_uploaded', 'payment_pending', 'payment_verified', 'exam_completed', 'reviewed', 'accepted', 'rejected', 'Menunggu Verifikasi Registrasi Ulang', 'registered', 'Lulus', 'Gagal'])) {
                 if (!$isPaymentLocked && $isStep3Completed) {
-                    if ($hasExam && !in_array($registration->status, ['exam_completed', 'reviewed', 'accepted', 'rejected', 'Menunggu Verifikasi Registrasi Ulang', 'registered'])) {
+                    if ($hasExam && !in_array($registration->status, ['exam_completed', 'reviewed', 'accepted', 'rejected', 'Menunggu Verifikasi Registrasi Ulang', 'registered', 'Lulus', 'Gagal'])) {
                         $currentStep = 4; // Docs uploaded, but exam not done yet
-                    } elseif ($hasExam && in_array($registration->status, ['exam_completed', 'reviewed', 'accepted', 'rejected', 'Menunggu Verifikasi Registrasi Ulang', 'registered'])) {
+                    } elseif ($hasExam && in_array($registration->status, ['exam_completed', 'reviewed', 'accepted', 'rejected', 'Menunggu Verifikasi Registrasi Ulang', 'registered', 'Lulus', 'Gagal'])) {
                         $currentStep = $totalSteps; // All steps complete
                     } elseif (!$hasExam) {
                         $currentStep = $totalSteps; // All steps complete (no exam)
@@ -350,7 +364,72 @@ class RegistrationPathController extends Controller
                 ->first();
         }
 
-        return view('daftar-pmb.registration-steps', compact('path', 'registration', 'currentStep', 'hasExam', 'totalSteps', 'isStep3Completed', 'documentCount', 'isPaymentLocked', 'hasPaidInvoice', 'examResult'));
+        // ── Auto-grade existing exam results (backward compatibility) ──
+        // If exam is completed but status is still 'exam_completed' and path uses
+        // 'langsung' (One Day Service), re-evaluate the score against ambang batas.
+        if ($registration && $examResult && $registration->status === 'exam_completed') {
+            $metode = $path ? $path->metode_pengumuman : 'ditahan';
+            if ($metode === 'langsung' || $metode === 'Langsung (One Day Service)') {
+                $score = $examResult->score ?? 0;
+                $threshold = ($path && $path->nilai_ambang_batas !== null) ? $path->nilai_ambang_batas : 75;
+
+                if ($score >= $threshold) {
+                    $registration->update([
+                        'status' => 'accepted',
+                        'status_kelulusan' => 'Lulus',
+                        'status_pendaftaran' => 'Lulus',
+                        'updated_at' => now(),
+                    ]);
+                } else {
+                    $registration->update([
+                        'status' => 'rejected',
+                        'status_kelulusan' => 'Tidak Lulus',
+                        'status_pendaftaran' => 'Gagal',
+                        'updated_at' => now(),
+                    ]);
+                }
+                // Refresh the model
+                $registration->refresh();
+            }
+        }
+
+        // ── Fetch master regencies from API fallback chain ──
+        $masterRegencies = collect();
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(3)->get('https://cahya.github.io/api-wilayah-indonesia/api/regencies.json');
+            if ($response->successful()) {
+                $provResponse = \Illuminate\Support\Facades\Http::timeout(2)->get('https://cahya.github.io/api-wilayah-indonesia/api/provinces.json');
+                $provinces = $provResponse->successful() ? collect($provResponse->json())->keyBy('id') : collect();
+                
+                $masterRegencies = collect($response->json())->map(function ($item) use ($provinces) {
+                    $prov = $provinces->get($item['province_id']);
+                    $provName = $prov['name'] ?? '';
+                    $name = $item['name'] ?? '';
+                    $type = str_starts_with($name, 'KAB.') ? 'Kab.' : 'Kota';
+                    $cleanName = str_replace(['KAB. ', 'KOTA '], '', $name);
+                    return (object)[
+                        'id' => $item['id'],
+                        'display' => "{$type} {$cleanName}, {$provName}"
+                    ];
+                })->sortBy('display')->values();
+            }
+        } catch (\Exception $e) {
+            // Fallback: use local JSON file
+            $jsonPath = public_path('assets/data/wilayah_indonesia.json');
+            if (file_exists($jsonPath)) {
+                $localData = json_decode(file_get_contents($jsonPath), true);
+                $masterRegencies = collect($localData)->map(fn($item) => (object)[
+                    'id' => $item['id'],
+                    'display' => $item['text']
+                ]);
+            }
+        }
+
+        return view('daftar-pmb.registration-steps', compact(
+            'path', 'registration', 'currentStep', 'hasExam', 'totalSteps',
+            'isStep3Completed', 'documentCount', 'isPaymentLocked',
+            'hasPaidInvoice', 'examResult', 'masterRegencies'
+        ));
     }
 
     /**
@@ -873,10 +952,37 @@ class RegistrationPathController extends Controller
             'status' => 'completed',
         ]);
 
-        // Update registration status
-        \Illuminate\Support\Facades\DB::table('registrations')
-            ->where('id', $registration->id)
-            ->update(['status' => 'exam_completed', 'updated_at' => now()]);
+        // ── Auto-grade with Nilai Ambang Batas (One Day Service) ──
+        $jalur = $registrationPath ?? ($registration->registrationPath ?? null);
+        $threshold = ($jalur && $jalur->nilai_ambang_batas !== null) ? $jalur->nilai_ambang_batas : 75;
+        $metodePengumuman = $jalur ? $jalur->metode_pengumuman : 'ditahan';
+
+        if ($metodePengumuman === 'langsung' || $metodePengumuman === 'Langsung (One Day Service)') {
+            if ($score >= $threshold) {
+                \Illuminate\Support\Facades\DB::table('registrations')
+                    ->where('id', $registration->id)
+                    ->update([
+                        'status' => 'accepted',
+                        'status_kelulusan' => 'Lulus',
+                        'status_pendaftaran' => 'Lulus',
+                        'updated_at' => now(),
+                    ]);
+            } else {
+                \Illuminate\Support\Facades\DB::table('registrations')
+                    ->where('id', $registration->id)
+                    ->update([
+                        'status' => 'rejected',
+                        'status_kelulusan' => 'Tidak Lulus',
+                        'status_pendaftaran' => 'Gagal',
+                        'updated_at' => now(),
+                    ]);
+            }
+        } else {
+            // Ditahan mode: just mark exam_completed, admin will review
+            \Illuminate\Support\Facades\DB::table('registrations')
+                ->where('id', $registration->id)
+                ->update(['status' => 'exam_completed', 'updated_at' => now()]);
+        }
 
         return redirect()->route('daftar-pmb.exam.page', $pathCode)
             ->with('success', 'Ujian berhasil diselesaikan!');
@@ -937,8 +1043,8 @@ class RegistrationPathController extends Controller
             ->where('registration_path_id', $pathId)
             ->firstOrFail();
 
-        // Check if registration status is 'accepted'
-        if ($registration->status !== 'accepted') {
+        // Check if registration status is 'accepted' or 'Lulus'
+        if ($registration->status !== 'accepted' && $registration->status_kelulusan !== 'Lulus') {
             return redirect()->back()->with('error', 'Status pendaftaran Anda tidak valid untuk Registrasi Ulang.');
         }
 

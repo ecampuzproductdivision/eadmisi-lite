@@ -216,18 +216,27 @@
                     </div>
 
                     <div class="col-12" id="paket-soal-section" style="{{ old('gunakan_ujian', $registrationPath->gunakan_ujian) ? '' : 'display:none;' }}">
-                        <label for="paket_soal_id" class="form-label fw-semibold">Pilih Paket Soal Ujian <span class="text-danger">*</span></label>
-                        <select name="paket_soal_id" id="paket_soal_id" class="form-select @error('paket_soal_id') is-invalid @enderror">
-                            <option value="">Pilih paket soal...</option>
-                            @foreach($paketSoals as $paket)
-                                <option value="{{ $paket->id }}"
-                                    {{ (old('paket_soal_id') !== null && old('paket_soal_id') == $paket->id) || (old('paket_soal_id') === null && $registrationPath->paket_soal_id == $paket->id) ? 'selected' : '' }}>
-                                    {{ $paket->nama_paket }} ({{ $paket->total_soal }} soal, skor: {{ $paket->total_skor }})
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('paket_soal_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        <div class="form-text">Pilih paket soal ujian yang akan digunakan.</div>
+                        <div class="mb-3">
+                            <label for="paket_soal_id" class="form-label fw-semibold">Pilih Paket Soal Ujian <span class="text-danger">*</span></label>
+                            <select name="paket_soal_id" id="paket_soal_id" class="form-select @error('paket_soal_id') is-invalid @enderror">
+                                <option value="">Pilih paket soal...</option>
+                                @foreach($paketSoals as $paket)
+                                    <option value="{{ $paket->id }}"
+                                        {{ (old('paket_soal_id') !== null && old('paket_soal_id') == $paket->id) || (old('paket_soal_id') === null && $registrationPath->paket_soal_id == $paket->id) ? 'selected' : '' }}>
+                                        {{ $paket->nama_paket }} ({{ $paket->total_soal }} soal, skor: {{ $paket->total_skor }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('paket_soal_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            <div class="form-text">Pilih paket soal ujian yang akan digunakan.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="nilai_ambang_batas" class="form-label fw-semibold">Nilai Ambang Batas Kelulusan <span class="text-danger">*</span></label>
+                            <input type="number" name="nilai_ambang_batas" id="nilai_ambang_batas" class="form-control @error('nilai_ambang_batas') is-invalid @enderror" value="{{ old('nilai_ambang_batas', $registrationPath->nilai_ambang_batas) }}" placeholder="Contoh: 80" min="0" max="100">
+                            @error('nilai_ambang_batas') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            <div class="form-text">Masukkan nilai ambang batas kelulusan untuk jalur ini (0 - 100).</div>
+                        </div>
                     </div>
 
                     <div class="col-12">
@@ -248,13 +257,7 @@
                         @error('metode_pengumuman') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
-                    <!-- Nilai Ambang Batas Kelulusan (conditional on One Day Service) -->
-                    <div class="col-12" id="nilai_ambang_batas_container" style="display: none;">
-                        <label for="nilai_ambang_batas" class="form-label fw-semibold">Nilai Ambang Batas Kelulusan <span class="text-danger">*</span></label>
-                        <input type="number" name="nilai_ambang_batas" id="nilai_ambang_batas" class="form-control @error('nilai_ambang_batas') is-invalid @enderror" value="{{ old('nilai_ambang_batas', $registrationPath->nilai_ambang_batas) }}" placeholder="Contoh: 80" min="0" max="100">
-                        <div class="form-text">Masukkan nilai ambang batas kelulusan untuk jalur One Day Service (0 - 100).</div>
-                        @error('nilai_ambang_batas') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
+
 
                     {{-- Submit --}}
                     <div class="col-12 d-flex gap-2 justify-content-end mt-4">
@@ -395,36 +398,46 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
   const toggle = document.getElementById('gunakan_ujian');
   const section = document.getElementById('paket-soal-section');
-  function togglePaketSection() { section.style.display = toggle.checked ? 'block' : 'none'; }
+  const paketSoalSelect = document.getElementById('paket_soal_id');
+  const thresholdInput = document.getElementById('nilai_ambang_batas');
+  
+  function togglePaketSection() {
+    if (toggle.checked) {
+      section.style.display = 'block';
+      paketSoalSelect.setAttribute('required', 'required');
+      thresholdInput.setAttribute('required', 'required');
+    } else {
+      section.style.display = 'none';
+      paketSoalSelect.removeAttribute('required');
+      thresholdInput.removeAttribute('required');
+      paketSoalSelect.value = '';
+      thresholdInput.value = '';
+    }
+  }
+  
   toggle.addEventListener('change', togglePaketSection);
+  togglePaketSection();
 });
 
 // Toggle Gunakan Unggah Berkas
 document.addEventListener('DOMContentLoaded', function() {
   const toggle = document.getElementById('gunakan_berkas');
   const section = document.getElementById('template-berkas-section');
-  function toggleBerkasSection() { section.style.display = toggle.checked ? 'block' : 'none'; }
-  toggle.addEventListener('change', toggleBerkasSection);
-});
-
-// Toggle Metode Pengumuman & Nilai Ambang Batas
-document.addEventListener('DOMContentLoaded', function() {
-  const metodePengumuman = document.getElementById('metode_pengumuman');
-  const thresholdContainer = document.getElementById('nilai_ambang_batas_container');
-  const thresholdInput = document.getElementById('nilai_ambang_batas');
-
-  function toggleThreshold() {
-    if (metodePengumuman.value === 'langsung') {
-      thresholdContainer.style.display = 'block';
-      thresholdInput.setAttribute('required', 'required');
+  const templateSelect = document.getElementById('template_berkas_id');
+  
+  function toggleBerkasSection() {
+    if (toggle.checked) {
+      section.style.display = 'block';
+      templateSelect.setAttribute('required', 'required');
     } else {
-      thresholdContainer.style.display = 'none';
-      thresholdInput.removeAttribute('required');
+      section.style.display = 'none';
+      templateSelect.removeAttribute('required');
+      templateSelect.value = '';
     }
   }
-
-  metodePengumuman.addEventListener('change', toggleThreshold);
-  toggleThreshold();
+  
+  toggle.addEventListener('change', toggleBerkasSection);
+  toggleBerkasSection();
 });
 </script>
 @endpush

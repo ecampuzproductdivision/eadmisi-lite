@@ -25,7 +25,7 @@
         </a>
       </div>
       <div class="d-none d-lg-block">
-        <a class="sidebar-toggle d-flex texttooltip p-3" href="javascript:void(0)" data-template="collapseMessage">
+        <a class="sidebar-toggle d-flex texttooltip p-3" href="javascript:void(0)" data-template="collapseMessage" onclick="toggleSidebar(event)">
           <span class="collapse-mini">
             <svg
               xmlns="http://www.w3.org/2000/svg"

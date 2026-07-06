@@ -116,14 +116,6 @@ html.collapsed #miniSidebar .brand-logo {
   border-top: 1px solid var(--ds-border-color, #dfe3e8);
   opacity: 1;
 }
-/* Expanded content padding - override theme.min.css default 80px 10px */
-html.expanded #content {
-  padding: 64px 16px !important;
-}
-/* Collapsed content padding - override theme.min.css default 80px 40px */
-html.collapsed #content {
-  padding: 64px 16px !important;
-}
 /* Collapsed sidebar: thinner divider with less margin */
 html.collapsed #miniSidebar .sidebar-divider {
   margin: 0 0.5rem;
@@ -619,14 +611,16 @@ document.addEventListener('click', function(e) {
 });
 
 // Sidebar toggle function - called from navbar toggle button
-function toggleSidebar() {
-    if (localStorage.getItem('sidebarExpanded') === 'false') {
-        document.documentElement.classList.add('expanded');
+function toggleSidebar(e) {
+    if (e) e.stopImmediatePropagation();
+    var expanded = localStorage.getItem('sidebarExpanded');
+    if (expanded === 'false') {
         document.documentElement.classList.remove('collapsed');
+        document.documentElement.classList.add('expanded');
         localStorage.setItem('sidebarExpanded', 'true');
     } else {
-        document.documentElement.classList.add('collapsed');
         document.documentElement.classList.remove('expanded');
+        document.documentElement.classList.add('collapsed');
         localStorage.setItem('sidebarExpanded', 'false');
     }
 }

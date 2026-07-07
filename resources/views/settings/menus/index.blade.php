@@ -94,7 +94,13 @@
                     @endif
                 </div>
                 @empty
-                <div class="text-center py-5"><i class="ti ti-menu-off text-muted" style="font-size: 3rem;"></i><p class="mt-2 mb-0 text-muted">No sidebar menus found.</p></div>
+                <div class="text-center py-5">
+                    @include('components.empty-state', [
+                        'icon' => 'ti-menu-off',
+                        'title' => 'No Sidebar Menus Found',
+                        'subtitle' => 'Click "Add New Menu" to create your first sidebar menu item.',
+                    ])
+                </div>
                 @endforelse
             </div>
         </div>

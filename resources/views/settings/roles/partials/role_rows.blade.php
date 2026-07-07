@@ -57,5 +57,11 @@
     </td>
 </tr>
 @empty
-<tr><td colspan="6" class="text-center py-5"><i class="ti ti-shield-off text-muted" style="font-size: 3rem;"></i><p class="mt-2 mb-0 text-muted">No roles found.</p></td></tr>
+<tr><td colspan="6" class="text-center py-5">
+    @include('components.empty-state', [
+        'icon' => 'ti-shield-off',
+        'title' => 'No Roles Found',
+        'subtitle' => 'Click "Add New Role" to create a role and assign permissions.',
+    ])
+</td></tr>
 @endforelse

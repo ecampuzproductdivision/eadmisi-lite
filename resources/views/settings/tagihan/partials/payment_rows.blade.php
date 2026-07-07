@@ -61,7 +61,11 @@
 @empty
 <tr>
     <td colspan="7" class="text-center py-5">
-        @include('components.empty-state')
+        @include('components.empty-state', [
+            'icon' => 'ti-wallet-off',
+            'title' => 'Belum Ada Pembayaran',
+            'subtitle' => 'Pembayaran dari pendaftar akan muncul di sini setelah mereka melakukan transaksi.',
+        ])
     </td>
 </tr>
 @endforelse

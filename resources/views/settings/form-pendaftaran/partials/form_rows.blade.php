@@ -56,9 +56,11 @@
 @empty
 <tr>
     <td colspan="7" class="text-center py-5">
-        <i class="ti ti-file-off text-muted" style="font-size: 3rem;"></i>
-        <p class="mt-2 mb-0 text-muted">Belum Ada Form</p>
-        <span class="text-muted">Klik "Tambah Form" untuk membuat formulir pendaftaran baru.</span>
+        @include('components.empty-state', [
+            'icon' => 'ti-file-off',
+            'title' => 'Belum Ada Form',
+            'subtitle' => 'Klik "Tambah Form" untuk membuat formulir pendaftaran baru.',
+        ])
     </td>
 </tr>
 @endforelse

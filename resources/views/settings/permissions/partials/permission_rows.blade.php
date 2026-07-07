@@ -32,5 +32,11 @@
     </td>
 </tr>
 @empty
-<tr><td colspan="3" class="text-center py-5"><i class="ti ti-lock-off text-muted" style="font-size: 3rem;"></i><p class="mt-2 mb-0 text-muted">No action permissions defined.</p></td></tr>
+<tr><td colspan="3" class="text-center py-5">
+    @include('components.empty-state', [
+        'icon' => 'ti-lock-off',
+        'title' => 'No Action Permissions Defined',
+        'subtitle' => 'Permissions are auto-registered when you assign them to role-menu mappings.',
+    ])
+</td></tr>
 @endforelse

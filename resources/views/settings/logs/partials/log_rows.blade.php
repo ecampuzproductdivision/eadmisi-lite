@@ -36,8 +36,11 @@
 @empty
     <tr>
         <td colspan="6" class="text-center py-5">
-            <i class="ti ti-activity-heartbeat text-muted" style="font-size: 3rem;"></i>
-            <p class="mt-2 mb-0 text-muted">No activity logs found.</p>
+            @include('components.empty-state', [
+                'icon' => 'ti-activity-heartbeat',
+                'title' => 'No Activity Logs Found',
+                'subtitle' => 'Activity logs will appear here as users perform actions in the system.',
+            ])
         </td>
     </tr>
 @endforelse

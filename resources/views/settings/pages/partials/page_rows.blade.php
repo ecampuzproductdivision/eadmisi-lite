@@ -53,8 +53,11 @@
 @empty
     <tr>
         <td colspan="7" class="text-center py-5">
-            <i class="ti ti-file-off text-muted" style="font-size: 3rem;"></i>
-            <p class="mt-2 mb-0 text-muted">No registered pages found.</p>
+            @include('components.empty-state', [
+                'icon' => 'ti-file-off',
+                'title' => 'No Registered Pages Found',
+                'subtitle' => 'Click "Add New Page" to register a new page or route.',
+            ])
         </td>
     </tr>
 @endforelse

@@ -83,9 +83,11 @@
 @empty
     <tr>
         <td colspan="8" class="text-center py-5">
-            <i class="ti ti-users text-muted" style="font-size: 3rem;"></i>
-            <p class="mt-3 mb-0 text-muted">Belum ada pendaftar pada jalur yang menggunakan wawancara.</p>
-            <p class="text-muted small">Aktifkan opsi "Gunakan Tahapan Wawancara" pada pengaturan Jalur Pendaftaran.</p>
+            @include('components.empty-state', [
+                'icon' => 'ti-users',
+                'title' => 'Belum Ada Pendaftar Wawancara',
+                'subtitle' => 'Aktifkan opsi "Gunakan Tahapan Wawancara" pada pengaturan Jalur Pendaftaran untuk menampilkan pendaftar di sini.',
+            ])
         </td>
     </tr>
 @endforelse

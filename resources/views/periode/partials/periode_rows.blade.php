@@ -56,11 +56,12 @@
 @empty
     <tr>
         <td colspan="5" class="text-center py-5">
-            <i class="ti ti-calendar-off text-muted" style="font-size: 3rem;"></i>
-            <p class="mt-3 mb-0 text-muted">Belum ada periode akademik.</p>
-            <a href="{{ route('periode.create') }}" class="btn btn-primary mt-3">
-                Tambah Periode Pertama
-            </a>
+            @include('components.empty-state', [
+                'icon' => 'ti-calendar-off',
+                'title' => 'Belum Ada Periode Akademik',
+                'subtitle' => 'Klik "Tambah Periode" untuk membuat periode akademik baru.',
+                'action' => '<a href="' . route('periode.create') . '" class="btn btn-primary mt-3"><i class="ti ti-plus me-1"></i> Tambah Periode Pertama</a>',
+            ])
         </td>
     </tr>
 @endforelse

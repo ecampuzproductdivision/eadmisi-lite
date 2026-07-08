@@ -418,7 +418,7 @@ function addPddiktiField(key) {
   formData.append('section', config.section || '');
   formData.append('width', config.width || 'col-12');
   formData.append('is_required', config.is_required ? '1' : '0');
-  formData.append('is_system', '1');
+  formData.append('is_system', '0');
   if (config.options) {
     config.options.forEach(function(opt) { formData.append('options[]', opt); });
   }

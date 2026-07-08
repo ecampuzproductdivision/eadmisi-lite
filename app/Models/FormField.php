@@ -252,7 +252,7 @@ class FormField extends Model
 
     public function isCoreField(): bool
     {
-        return $this->is_system || array_key_exists($this->field_name, self::CORE_FIELDS) || array_key_exists($this->field_name, self::PDDIKTI_STANDARD_FIELDS);
+        return $this->is_system;
     }
 
     public static function coreFieldNames(): array { return array_keys(self::CORE_FIELDS); }

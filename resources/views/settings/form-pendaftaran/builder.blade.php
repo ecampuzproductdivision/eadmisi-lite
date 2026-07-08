@@ -36,26 +36,66 @@
       @endif
 
       <div class="row g-4">
-        <!-- Left: Field Palette -->
+        <!-- Left: Field Palette with Accordion -->
         <div class="col-lg-3">
           <div class="card border-1 shadow-sm sticky-top" style="top: 80px;">
             <div class="card-header bg-light py-3">
               <h6 class="fw-bold mb-0"><i class="ti ti-box me-2"></i>Tambah Field</h6>
             </div>
             <div class="card-body p-3">
-              <p class="text-muted small mb-3">Klik tipe field untuk menambahkan:</p>
-              <div class="d-grid gap-2">
-                @foreach($fieldTypes as $type => $config)
-                <button type="button" class="btn btn-outline-secondary text-start d-flex align-items-center gap-2 py-2 field-type-btn"
-                  style="border-style: dashed; font-size: 0.82rem;"
-                  onclick="openAddModal('{{ $type }}')">
-                  <span class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 28px; height: 28px; background: {{ $config['color'] }}15;">
-                    <i class="{{ $config['icon'] }} small" style="color: {{ $config['color'] }}"></i>
-                  </span>
-                  <span>{{ $config['label'] }}</span>
-                </button>
-                @endforeach
+              <div class="accordion" id="fieldAccordion">
+                <!-- Card 1: Generic Fields -->
+                <div class="accordion-item border-0 mb-2">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button fw-semibold py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#genericFields" aria-expanded="true">
+                      <i class="ti ti-settings me-2"></i> Komponen Dasar (Generic)
+                    </button>
+                  </h2>
+                  <div id="genericFields" class="accordion-collapse collapse show" data-bs-parent="#fieldAccordion">
+                    <div class="accordion-body p-2">
+                      <div class="d-grid gap-2">
+                        @foreach($fieldTypes as $type => $config)
+                        <button type="button" class="btn btn-outline-secondary text-start d-flex align-items-center gap-2 py-2 field-type-btn"
+                          style="border-style: dashed; font-size: 0.82rem;"
+                          onclick="openAddModal('{{ $type }}')">
+                          <span class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 28px; height: 28px; background: {{ $config['color'] }}15;">
+                            <i class="{{ $config['icon'] }} small" style="color: {{ $config['color'] }}"></i>
+                          </span>
+                          <span>{{ $config['label'] }}</span>
+                        </button>
+                        @endforeach
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card 2: PDDIKTI Standard Fields -->
+                <div class="accordion-item border-0">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button fw-semibold py-2 px-3 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pddiktiFields" aria-expanded="false">
+                      <i class="ti ti-gift me-2" style="color: #dc3545;"></i> Standar PDDIKTI (Siap Pakai)
+                    </button>
+                  </h2>
+                  <div id="pddiktiFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">
+                    <div class="accordion-body p-2">
+                      <p class="text-muted small mb-2"><i class="ti ti-info-circle me-1"></i>Klik untuk menambahkan field standar PDDIKTI:</p>
+                      <div class="d-grid gap-2">
+                        @foreach(\App\Models\FormField::PDDIKTI_STANDARD_FIELDS as $pddiktiKey => $pddiktiConfig)
+                        <button type="button" class="btn btn-outline-danger text-start d-flex align-items-center gap-2 py-2 field-type-btn pddikti-btn"
+                          style="border-style: dashed; font-size: 0.82rem; border-color: #dc3545 !important;"
+                          onclick="addPddiktiField('{{ $pddiktiKey }}')">
+                          <span class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 28px; height: 28px; background: #dc354515;">
+                            <i class="ti ti-shield-check small" style="color: #dc3545;"></i>
+                          </span>
+                          <span>{{ $pddiktiConfig['field_label'] }}</span>
+                        </button>
+                        @endforeach
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
+
               <hr>
               <small class="text-muted"><i class="ti ti-arrows-move me-1"></i>Drag & drop untuk mengubah urutan</small>
             </div>
@@ -96,17 +136,8 @@
 
           <!-- Canvas -->
           <div id="formCanvas" class="{{ $fields->isEmpty() ? 'd-none' : '' }}">
-            @forelse($fields as $sectionName => $sectionFields)
-            <div class="mb-3 section-container">
-              @if($sectionName)
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <div class="bg-light px-3 py-1 rounded-3 d-inline-flex align-items-center gap-2">
-                  <i class="ti ti-menu-2 text-muted" style="font-size: 0.8rem;"></i>
-                  <span class="fw-semibold small text-uppercase text-muted">{{ $sectionName }}</span>
-                </div>
-              </div>
-              @endif
-              <div class="sortable-fields" data-section="{{ $sectionName }}">
+            <div class="sortable-fields" id="masterSortable">
+              @forelse($fields as $sectionName => $sectionFields)
                 @foreach($sectionFields as $field)
                 <div class="field-item card border-1 shadow-sm mb-2" data-field-id="{{ $field->id }}" data-sort="{{ $field->sort_order }}" style="border-radius: 8px; {{ !$field->is_active ? 'opacity: 0.5;' : '' }}">
                   <div class="card-body py-3 px-4">
@@ -125,6 +156,9 @@
                             <span class="badge bg-primary-subtle text-primary px-2" style="font-size: 0.6rem;"><i class="ti ti-shield-check me-1"></i>Sistem</span>
                           @endif
                           @if(!$field->is_active)<span class="badge bg-warning-subtle text-warning" style="font-size: 0.6rem;">Disabled</span>@endif
+                          @if(in_array($field->field_name, \App\Models\FormField::pddiktiFieldNames()))
+                            <span class="badge bg-danger-subtle text-danger px-2" style="font-size: 0.6rem;"><i class="ti ti-gift me-1"></i>PDDIKTI</span>
+                          @endif
                         </div>
                         <div class="d-flex align-items-center gap-2 mt-1 ms-4">
                           <code class="small text-muted" style="font-size: 0.65rem;">{{ $field->field_name }}</code>
@@ -153,10 +187,9 @@
                   @endif
                 </div>
                 @endforeach
-              </div>
+              @empty
+              @endforelse
             </div>
-            @empty
-            @endforelse
           </div>
         </div>
       </div>
@@ -178,6 +211,7 @@
         <input type="hidden" name="field_type" id="field_type_input" value="text">
         <input type="hidden" name="_method" id="field_method" value="POST">
         <input type="hidden" name="field_id" id="field_id" value="">
+        <input type="hidden" name="is_system" id="field_is_system" value="0">
 
         <div class="modal-body p-4" style="max-height: 60vh; overflow-y: auto;">
           <div class="row g-3">
@@ -282,6 +316,9 @@
 .field-item.sortable-ghost { opacity: 0.3; background: #f0f4ff; }
 .sortable-fields { min-height: 40px; }
 .field-type-btn:hover { border-color: #667eea !important; background: #f0f4ff !important; }
+.field-type-btn.pddikti-btn:hover { border-color: #dc3545 !important; background: #fff5f5 !important; }
+.accordion-button:not(.collapsed) { background: transparent; box-shadow: none; }
+.accordion-button:focus { box-shadow: none; }
 </style>
 
 @push('scripts')
@@ -292,8 +329,14 @@ const formId = {{ $form->id }};
 let editingFieldId = null;
 
 document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.sortable-fields').forEach(el => {
-    new Sortable(el, { group: 'fields', animation: 200, handle: '.drag-handle', ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen', onEnd: updateFieldCount });
+  // Single unified sortable - all fields mix freely
+  new Sortable(document.getElementById('masterSortable'), {
+    group: 'fields',
+    animation: 200,
+    handle: '.drag-handle',
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    onEnd: updateFieldCount
   });
   updateFieldCount();
 
@@ -313,7 +356,7 @@ function updateFieldCount() {
 
 function getFieldOrder() {
   const fields = []; let o = 1;
-  document.querySelectorAll('.sortable-fields').forEach(s => s.querySelectorAll('.field-item').forEach(i => fields.push({id:i.dataset.fieldId, sort_order:o++})));
+  document.querySelectorAll('#masterSortable > .field-item').forEach(i => fields.push({id:i.dataset.fieldId, sort_order:o++}));
   return fields;
 }
 
@@ -330,6 +373,7 @@ function openAddModal(type) {
   editingFieldId = null;
   document.getElementById('field_type_input').value = type;
   document.getElementById('field_method').value = 'POST';
+  document.getElementById('field_is_system').value = '0';
   document.getElementById('fieldForm').reset();
   document.getElementById('field_name').value = '';
   delete document.getElementById('field_name').dataset.manual;
@@ -340,6 +384,37 @@ function openAddModal(type) {
 }
 
 function openEditModal(id) { showToast('info', 'Edit field akan segera hadir.'); }
+
+function addPddiktiField(key) {
+  // Add a PDDIKTI standard field via AJAX - marked as system
+  const pddiktiFields = @json(\App\Models\FormField::PDDIKTI_STANDARD_FIELDS);
+  const config = pddiktiFields[key];
+  if (!config) return showToast('danger', 'Field PDDIKTI tidak ditemukan');
+
+  const formData = new FormData();
+  formData.append('form_id', formId);
+  formData.append('field_type', config.field_type);
+  formData.append('field_name', key);
+  formData.append('field_label', config.field_label);
+  formData.append('placeholder', config.placeholder || '');
+  formData.append('help_text', config.help_text || '');
+  formData.append('section', config.section || '');
+  formData.append('width', config.width || 'col-12');
+  formData.append('is_required', config.is_required ? '1' : '0');
+  formData.append('is_system', '1');
+  if (config.options) {
+    config.options.forEach(function(opt) { formData.append('options[]', opt); });
+  }
+
+  fetch('{{ route("settings.form-builder.store") }}', {
+    method:'POST',
+    headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json', 'X-Requested-With':'XMLHttpRequest'},
+    body: formData
+  }).then(r=>r.json()).then(d=>{
+    if(d.success) { showToast('success','Field PDDIKTI "'+config.field_label+'" ditambahkan!'); setTimeout(()=>location.reload(),500); }
+    else showToast('danger', d.message||'Gagal');
+  }).catch(()=>showToast('danger','Gagal menambahkan field PDDIKTI'));
+}
 
 function updateFieldTypeUI(type) {
   const c=fieldTypes[type]||fieldTypes.text, d=document.getElementById('fieldTypeIconDisplay');
@@ -358,7 +433,6 @@ function addOption(v='') {
 }
 function removeOption(b){if(document.querySelectorAll('.option-item').length>1)b.closest('.option-item').remove();}
 
-// Submit form via AJAX
 document.getElementById('fieldForm').addEventListener('submit', function(e) {
   e.preventDefault();
   const formData = new FormData(this);

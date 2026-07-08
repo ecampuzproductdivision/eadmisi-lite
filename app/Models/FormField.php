@@ -8,7 +8,6 @@ class FormField extends Model
 {
     /**
      * Core/default fields that MUST exist in every form template.
-     * These are protected from deletion/editing by admins.
      */
     const CORE_FIELDS = [
         'nama_lengkap' => [
@@ -59,6 +58,161 @@ class FormField extends Model
         ],
     ];
 
+    /**
+     * PDDIKTI standard 16 fields ready-to-use.
+     */
+    const PDDIKTI_STANDARD_FIELDS = [
+        'nama_lengkap_pddikti' => [
+            'field_label' => 'Nama Lengkap',
+            'field_type'  => 'text',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => 'Masukkan nama lengkap',
+            'help_text'   => 'Nama lengkap sesuai KTP/Ijazah',
+        ],
+        'jenis_kelamin_pddikti' => [
+            'field_label' => 'Jenis Kelamin',
+            'field_type'  => 'select',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => 'Pilih jenis kelamin',
+            'options'     => ['Laki-Laki', 'Perempuan'],
+            'help_text'   => 'Pilih jenis kelamin sesuai identitas resmi',
+        ],
+        'tempat_lahir' => [
+            'field_label' => 'Tempat Lahir',
+            'field_type'  => 'text',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => 'Contoh: Sleman',
+            'help_text'   => 'Tempat lahir sesuai akta kelahiran',
+        ],
+        'tanggal_lahir' => [
+            'field_label' => 'Tanggal Lahir',
+            'field_type'  => 'date',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => '',
+            'help_text'   => 'Tanggal lahir sesuai akta kelahiran',
+        ],
+        'agama' => [
+            'field_label' => 'Agama',
+            'field_type'  => 'select',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => 'Pilih agama',
+            'options'     => ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Budha', 'Khonghucu', 'Penghayat Kepercayaan', 'Lainnya'],
+            'help_text'   => 'Pilih agama sesuai identitas resmi',
+        ],
+        'nik' => [
+            'field_label' => 'NIK',
+            'field_type'  => 'text',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => '16 Digit Nomor KTP',
+            'help_text'   => 'Nomor Induk Kependudukan (16 digit)',
+        ],
+        'nisn' => [
+            'field_label' => 'NISN',
+            'field_type'  => 'text',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => '10 Digit NISN',
+            'help_text'   => 'Nomor Induk Siswa Nasional (10 digit)',
+        ],
+        'no_hp_pddikti' => [
+            'field_label' => 'Nomor Handphone',
+            'field_type'  => 'tel',
+            'section'     => 'Kontak & Alamat',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => '08xxxxxxxxxx',
+            'help_text'   => 'Nomor handphone aktif',
+        ],
+        'email_pddikti' => [
+            'field_label' => 'Alamat Email',
+            'field_type'  => 'email',
+            'section'     => 'Kontak & Alamat',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => 'contoh@email.com',
+            'help_text'   => 'Alamat email aktif',
+        ],
+        'nama_ibu_kandung' => [
+            'field_label' => 'Nama Ibu Kandung',
+            'field_type'  => 'text',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => 'Masukkan nama ibu kandung',
+            'help_text'   => 'Nama ibu kandung sesuai dokumen resmi',
+        ],
+        'penerima_kps' => [
+            'field_label' => 'Penerima KPS?',
+            'field_type'  => 'select',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => '-- Pilih --',
+            'options'     => ['Ya', 'Tidak'],
+            'help_text'   => 'Apakah Anda penerima KPS?',
+        ],
+        'kebutuhan_khusus' => [
+            'field_label' => 'Kebutuhan Khusus',
+            'field_type'  => 'select',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => '-- Pilih --',
+            'options'     => ['Ya', 'Tidak'],
+            'help_text'   => 'Apakah Anda memiliki kebutuhan khusus?',
+        ],
+        'kewarganegaraan' => [
+            'field_label' => 'Kewarganegaraan',
+            'field_type'  => 'select',
+            'section'     => 'Data Pribadi',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => 'Pilih kewarganegaraan',
+            'options'     => ['Indonesia', 'Malaysia', 'Singapore', 'Australia', 'Brunei Darussalam', 'East Timor', 'Philippines', 'Thailand', 'Vietnam', 'Cambodia', 'Myanmar', 'Japan', 'South Korea'],
+            'help_text'   => 'Pilih kewarganegaraan Anda',
+        ],
+        'kabupaten' => [
+            'field_label' => 'Kabupaten/Kota',
+            'field_type'  => 'select',
+            'section'     => 'Kontak & Alamat',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => '-- Pilih Kabupaten/Kota --',
+            'help_text'   => 'Pilih kabupaten/kota domisili',
+        ],
+        'kecamatan' => [
+            'field_label' => 'Kecamatan',
+            'field_type'  => 'select',
+            'section'     => 'Kontak & Alamat',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => '-- Pilih Kecamatan --',
+            'help_text'   => 'Pilih kecamatan domisili',
+        ],
+        'desa_kelurahan' => [
+            'field_label' => 'Desa/Kelurahan',
+            'field_type'  => 'select',
+            'section'     => 'Kontak & Alamat',
+            'is_required' => true,
+            'width'       => 'col-md-6',
+            'placeholder' => '-- Pilih Desa/Kelurahan --',
+            'help_text'   => 'Pilih desa/kelurahan domisili',
+        ],
+    ];
+
     protected $fillable = [
         'form_id',
         'field_type',
@@ -91,54 +245,26 @@ class FormField extends Model
         return $this->belongsTo(Form::class);
     }
 
-    public function scopeActive($query)
-    {
-        return $query->where('is_active', true);
-    }
+    public function scopeActive($query) { return $query->where('is_active', true); }
+    public function scopeOrdered($query) { return $query->orderBy('sort_order'); }
+    public function scopeSystem($query) { return $query->where('is_system', true); }
+    public function scopeNotSystem($query) { return $query->where('is_system', false); }
 
-    public function scopeOrdered($query)
-    {
-        return $query->orderBy('sort_order');
-    }
-
-    public function scopeSystem($query)
-    {
-        return $query->where('is_system', true);
-    }
-
-    public function scopeNotSystem($query)
-    {
-        return $query->where('is_system', false);
-    }
-
-    /**
-     * Check if this field is a core/system field.
-     */
     public function isCoreField(): bool
     {
-        return $this->is_system || array_key_exists($this->field_name, self::CORE_FIELDS);
+        return $this->is_system || array_key_exists($this->field_name, self::CORE_FIELDS) || array_key_exists($this->field_name, self::PDDIKTI_STANDARD_FIELDS);
     }
 
-    /**
-     * Get the list of core field names.
-     */
-    public static function coreFieldNames(): array
-    {
-        return array_keys(self::CORE_FIELDS);
-    }
+    public static function coreFieldNames(): array { return array_keys(self::CORE_FIELDS); }
 
-    /**
-     * Auto-create core fields for a given form if they don't exist.
-     * Returns the created fields.
-     */
+    public static function pddiktiFieldNames(): array { return array_keys(self::PDDIKTI_STANDARD_FIELDS); }
+
     public static function ensureCoreFields($formId): array
     {
         $created = [];
         $sortOrder = 1;
         foreach (self::CORE_FIELDS as $fieldName => $config) {
-            $existing = self::where('form_id', $formId)
-                ->where('field_name', $fieldName)
-                ->first();
+            $existing = self::where('form_id', $formId)->where('field_name', $fieldName)->first();
             if (!$existing) {
                 $data = [
                     'form_id'     => $formId,
@@ -165,9 +291,6 @@ class FormField extends Model
         return $created;
     }
 
-    /**
-     * Get available field types for form builder.
-     */
     public static function fieldTypes(): array
     {
         return [
@@ -186,9 +309,6 @@ class FormField extends Model
         ];
     }
 
-    /**
-     * Get available column widths.
-     */
     public static function widthOptions(): array
     {
         return [

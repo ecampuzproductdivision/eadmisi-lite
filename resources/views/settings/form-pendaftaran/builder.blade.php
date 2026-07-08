@@ -136,9 +136,21 @@
 
           <!-- Canvas -->
           <div id="formCanvas" class="{{ $fields->isEmpty() ? 'd-none' : '' }}">
+            @php
+              $pddiktiNames = \App\Models\FormField::pddiktiFieldNames();
+              $coreNames = \App\Models\FormField::coreFieldNames();
+              // Fields that exist in BOTH core AND PDDIKTI (double-badge candidates)
+              $intersectNames = array_intersect($coreNames, $pddiktiNames);
+            @endphp
             <div class="sortable-fields" id="masterSortable">
               @forelse($fields as $sectionName => $sectionFields)
                 @foreach($sectionFields as $field)
+                @php
+                  $isPddikti = in_array($field->field_name, $pddiktiNames);
+                  $isCore = in_array($field->field_name, $coreNames);
+                  $isSystemLocked = $field->is_system;
+                  $isDualBadge = $isSystemLocked && $isPddikti;
+                @endphp
                 <div class="field-item card border-1 shadow-sm mb-2" data-field-id="{{ $field->id }}" data-sort="{{ $field->sort_order }}" style="border-radius: 8px; {{ !$field->is_active ? 'opacity: 0.5;' : '' }}">
                   <div class="card-body py-3 px-4">
                     <div class="d-flex align-items-center gap-3">
@@ -152,13 +164,15 @@
                             {{ $field->field_label }}
                             @if($field->is_required)<span class="text-danger">*</span>@endif
                           </span>
-                          @if($field->is_system)
+                          @if($isDualBadge)
                             <span class="badge bg-primary-subtle text-primary px-2" style="font-size: 0.6rem;"><i class="ti ti-shield-check me-1"></i>Sistem</span>
+                            <span class="badge" style="font-size: 0.6rem; background: #fce4ec; color: #c62828; border: 1px solid #ef9a9a;"><i class="ti ti-file-text me-1"></i>PDDIKTI</span>
+                          @elseif($isSystemLocked && !$isPddikti)
+                            <span class="badge bg-primary-subtle text-primary px-2" style="font-size: 0.6rem;"><i class="ti ti-shield-check me-1"></i>Sistem</span>
+                          @elseif(!$isSystemLocked && $isPddikti)
+                            <span class="badge" style="font-size: 0.6rem; background: #fff3e0; color: #e65100; border: 1px solid #ffcc80;"><i class="ti ti-gift me-1"></i>PDDIKTI</span>
                           @endif
                           @if(!$field->is_active)<span class="badge bg-warning-subtle text-warning" style="font-size: 0.6rem;">Disabled</span>@endif
-                          @if(in_array($field->field_name, \App\Models\FormField::pddiktiFieldNames()))
-                            <span class="badge bg-danger-subtle text-danger px-2" style="font-size: 0.6rem;"><i class="ti ti-gift me-1"></i>PDDIKTI</span>
-                          @endif
                         </div>
                         <div class="d-flex align-items-center gap-2 mt-1 ms-4">
                           <code class="small text-muted" style="font-size: 0.65rem;">{{ $field->field_name }}</code>
@@ -169,8 +183,11 @@
                         </div>
                       </div>
                       <div class="d-flex gap-1 flex-shrink-0">
-                        @if($field->is_system)
+                        @if($isSystemLocked)
                           <span class="badge bg-primary-subtle text-primary px-3 py-2" title="Field sistem tidak dapat diubah"><i class="ti ti-lock me-1"></i>System</span>
+                        @elseif($isPddikti && !$isSystemLocked)
+                          {{-- PDDIKTI non-locked: only trash button --}}
+                          <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Hapus" onclick="deleteField({{ $field->id }})"><i class="ti ti-trash"></i></button>
                         @else
                           <button type="button" class="btn btn-sm btn-outline-info border-0" title="Edit" onclick="openEditModal({{ $field->id }})"><i class="ti ti-edit"></i></button>
                           <button type="button" class="btn btn-sm btn-outline-success border-0" title="Duplikat" onclick="duplicateField({{ $field->id }})"><i class="ti ti-copy"></i></button>

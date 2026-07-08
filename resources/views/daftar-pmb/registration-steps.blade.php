@@ -499,11 +499,70 @@
                     <!-- 12. Kebutuhan Khusus -->
                     <div class="col-md-6">
                       <label class="form-label fw-semibold text-uppercase small text-muted">Kebutuhan Khusus? <span class="text-danger">*</span></label>
-                      <select class="form-select" name="kebutuhan_khusus" required>
+                      <select class="form-select" name="kebutuhan_khusus" id="kebutuhan-khusus-select" required>
                         <option value="" disabled selected>-- Pilih --</option>
                         <option value="Ya" {{ old('kebutuhan_khusus', $registration->kebutuhan_khusus) == 'Ya' ? 'selected' : '' }}>Ya</option>
                         <option value="Tidak" {{ old('kebutuhan_khusus', $registration->kebutuhan_khusus) == 'Tidak' ? 'selected' : '' }}>Tidak</option>
                       </select>
+                    </div>
+
+                    <!-- ═══ CONDITIONAL NEEDS CHECKBOX GRID (PDDIKTI) ═══ -->
+                    @php
+                      $needsList = [
+                        'A' => 'Tuna Netra', 'B' => 'Tuna Rungu', 'C' => 'Tuna Grahita Ringan', 'C1' => 'Tuna Grahita Sedang',
+                        'D' => 'Tuna Daksa Ringan', 'D1' => 'Tuna Daksa Sedang', 'E' => 'Tuna Laras', 'F' => 'Tuna Wicara',
+                        'H' => 'Hiperaktif', 'I' => 'Cerdas Istimewa', 'J' => 'Bakat Istimewa', 'K' => 'Kesulitan Belajar',
+                        'N' => 'Narkoba', 'O' => 'Indigo', 'P' => 'Down Syndrome', 'Q' => 'Autis',
+                      ];
+                      $oldMhs = old('kebutuhan_khusus_mhs', $registration->kebutuhan_khusus_mhs ?? []);
+                      $oldAyah = old('kebutuhan_khusus_ayah', $registration->kebutuhan_khusus_ayah ?? []);
+                      $oldIbu = old('kebutuhan_khusus_ibu', $registration->kebutuhan_khusus_ibu ?? []);
+                      if (is_string($oldMhs)) $oldMhs = json_decode($oldMhs, true) ?? [];
+                      if (is_string($oldAyah)) $oldAyah = json_decode($oldAyah, true) ?? [];
+                      if (is_string($oldIbu)) $oldIbu = json_decode($oldIbu, true) ?? [];
+                    @endphp
+                    <div class="col-12" id="kebutuhan-khusus-container" style="display: none;">
+                      <div class="card border-0 bg-light rounded-3 p-4 mt-2 mb-3">
+                        <h6 class="fw-bold mb-3 border-bottom pb-2"><i class="ti ti-clipboard-list me-1"></i>Detail Kebutuhan Khusus (PDDIKTI)</h6>
+                        <div class="row">
+                          <!-- MAHASISWA Column -->
+                          <div class="col-md-4">
+                            <div class="fw-semibold small text-uppercase text-muted mb-2 border-bottom pb-1">MAHASISWA</div>
+                            @foreach($needsList as $key => $label)
+                            <div class="custom-control custom-checkbox mb-2">
+                              <input type="checkbox" name="kebutuhan_khusus_mhs[]" value="{{ $key }}" class="custom-control-input" id="kebutuhan_mhs_{{ strtolower($key) }}" {{ in_array($key, $oldMhs) ? 'checked' : '' }}>
+                              <label class="custom-control-label small text-dark" for="kebutuhan_mhs_{{ strtolower($key) }}">
+                                <span class="badge bg-secondary me-1">{{ $key }}</span> {{ $label }}
+                              </label>
+                            </div>
+                            @endforeach
+                          </div>
+                          <!-- AYAH Column -->
+                          <div class="col-md-4">
+                            <div class="fw-semibold small text-uppercase text-muted mb-2 border-bottom pb-1">AYAH</div>
+                            @foreach($needsList as $key => $label)
+                            <div class="custom-control custom-checkbox mb-2">
+                              <input type="checkbox" name="kebutuhan_khusus_ayah[]" value="{{ $key }}" class="custom-control-input" id="kebutuhan_ayah_{{ strtolower($key) }}" {{ in_array($key, $oldAyah) ? 'checked' : '' }}>
+                              <label class="custom-control-label small text-dark" for="kebutuhan_ayah_{{ strtolower($key) }}">
+                                <span class="badge bg-secondary me-1">{{ $key }}</span> {{ $label }}
+                              </label>
+                            </div>
+                            @endforeach
+                          </div>
+                          <!-- IBU Column -->
+                          <div class="col-md-4">
+                            <div class="fw-semibold small text-uppercase text-muted mb-2 border-bottom pb-1">IBU</div>
+                            @foreach($needsList as $key => $label)
+                            <div class="custom-control custom-checkbox mb-2">
+                              <input type="checkbox" name="kebutuhan_khusus_ibu[]" value="{{ $key }}" class="custom-control-input" id="kebutuhan_ibu_{{ strtolower($key) }}" {{ in_array($key, $oldIbu) ? 'checked' : '' }}>
+                              <label class="custom-control-label small text-dark" for="kebutuhan_ibu_{{ strtolower($key) }}">
+                                <span class="badge bg-secondary me-1">{{ $key }}</span> {{ $label }}
+                              </label>
+                            </div>
+                            @endforeach
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     <!-- 13. Kewarganegaraan -->
@@ -522,7 +581,7 @@
                     <!-- 14. Kabupaten (server-side rendered options) -->
                     <div class="col-md-6">
                       <label class="form-label fw-semibold text-uppercase small text-muted">Kabupaten/Kota <span class="text-danger">*</span></label>
-                      <select class="form-select select2-location-search" name="regency_id" id="regency-select" required style="width: 100%;">
+                      <select class="form-select" name="regency_id" id="regency-select" required style="width: 100%;">
                         <option value="">-- Pilih Kabupaten/Kota --</option>
                         @php $selectedRegency = old('regency_id', $registration->regency_id ?? ''); @endphp
                         @if(isset($masterRegencies) && $masterRegencies->isNotEmpty())
@@ -530,13 +589,13 @@
                             <option value="{{ $kab->id }}" {{ $selectedRegency == $kab->id ? 'selected' : '' }}>{{ $kab->display }}</option>
                           @endforeach
                         @else
-                          <option value="Sleman">Kab. Sleman, D.I. Yogyakarta</option>
-                          <option value="Bantul">Kab. Bantul, D.I. Yogyakarta</option>
-                          <option value="Jakarta Selatan">Kota Jakarta Selatan, D.K.I. Jakarta</option>
-                          <option value="Bandung">Kota Bandung, Jawa Barat</option>
-                          <option value="Surabaya">Kota Surabaya, Jawa Timur</option>
-                          <option value="Medan">Kota Medan, Sumatera Utara</option>
-                          <option value="Palu">Kota Palu, Sulawesi Tengah</option>
+                          <option value="1">Kab. Sleman, D.I. Yogyakarta</option>
+                          <option value="3">Kab. Bantul, D.I. Yogyakarta</option>
+                          <option value="4">Kota Jakarta Selatan, D.K.I. Jakarta</option>
+                          <option value="5">Kota Bandung, Jawa Barat</option>
+                          <option value="6">Kota Surabaya, Jawa Timur</option>
+                          <option value="7">Kota Medan, Sumatera Utara</option>
+                          <option value="2">Kota Palu, Sulawesi Tengah</option>
                         @endif
                       </select>
                       <small class="text-muted">Ketik nama kabupaten/kota untuk mencari.</small>
@@ -545,16 +604,16 @@
                     <!-- 15. Kecamatan (API-powered live search) -->
                     <div class="col-md-6">
                       <label class="form-label fw-semibold text-uppercase small text-muted">Kecamatan <span class="text-danger">*</span></label>
-                      <select class="form-select" name="kecamatan_id" id="district-select" required style="width: 100%;" disabled>
-                        <option value="" disabled selected>-- Pilih Kecamatan --</option>
+                      <select class="form-select" name="kecamatan_id" id="district-select" required style="width: 100%;">
+                        <option value="">-- Pilih Kecamatan --</option>
                       </select>
                     </div>
 
                     <!-- 16. Kelurahan (API-powered live search) -->
                     <div class="col-md-6">
                       <label class="form-label fw-semibold text-uppercase small text-muted">Desa/Kelurahan <span class="text-danger">*</span></label>
-                      <select class="form-select" name="kelurahan_id" id="village-select" required style="width: 100%;" disabled>
-                        <option value="" disabled selected>-- Pilih Desa/Kelurahan --</option>
+                      <select class="form-select" name="kelurahan_id" id="village-select" required style="width: 100%;">
+                        <option value="">-- Pilih Desa/Kelurahan --</option>
                       </select>
                     </div>
                   </div>
@@ -796,105 +855,147 @@
 
 @push('scripts')
 <script>
-// ── REMOTE API-POWERED CASCADING REGION DROPDOWNS ──
-// Uses public API proxy endpoints for live search of Kabupaten, Kecamatan, Kelurahan
-// WARNING: This runs inside @stack('scripts') which is AFTER jQuery and Select2 are loaded!
-function initRegionalDropdowns() {
-    // Safety check: ensure jQuery and Select2 are available
-    if (typeof jQuery === 'undefined') {
-        setTimeout(initRegionalDropdowns, 100);
-        return;
-    }
-    var $ = jQuery;
-    if (typeof $.fn.select2 === 'undefined') {
-        setTimeout(initRegionalDropdowns, 100);
-        return;
-    }
-    
-    console.log('Regional dropdowns: jQuery/Select2 ready. Initializing...');
-    
-    var $regency = $('#regency-select');
-    var $district = $('#district-select');
-    var $village = $('#village-select');
-    
-    if (!$regency.length) return;
-    
-    // ── 1. Initialize Searchable Kabupaten via Live Remote API search ──
-    $regency.select2({
-        placeholder: "-- Ketik nama Kabupaten atau Kota --",
-        allowClear: true,
-        width: '100%',
-        minimumInputLength: 0,
-        ajax: {
-            url: '/api/regions/regencies',
-            dataType: 'json',
-            delay: 200,
-            data: function(params) {
-                return { q: params.term };
-            },
-            processResults: function(data) {
-                return { results: data };
-            },
-            cache: true
-        }
-    });
-    
-    // ── 2. Cascade Chain Handler for Kecamatan ──
-    $regency.on('change', function() {
-        var regencyId = $(this).val();
-        
-        $district.val(null).trigger('change').prop('disabled', !regencyId);
-        $village.val(null).trigger('change').prop('disabled', true);
-        
-        if (!regencyId) return;
-        
-        if ($district.hasClass('select2-hidden-accessible')) {
-            $district.select2('destroy');
-        }
-        
-        $district.select2({
-            placeholder: "-- Ketik nama Kecamatan --",
-            allowClear: true,
-            width: '100%',
-            ajax: {
-                url: '/api/regions/districts/' + regencyId,
-                dataType: 'json',
-                delay: 150,
-                data: function(params) { return { q: params.term }; },
-                processResults: function(data) { return { results: data }; }
-            }
-        });
-    });
-    
-    // ── 3. Cascade Chain Handler for Kelurahan ──
-    $district.on('change', function() {
-        var districtId = $(this).val();
-        
-        $village.val(null).trigger('change').prop('disabled', !districtId);
-        
-        if (!districtId) return;
-        
-        if ($village.hasClass('select2-hidden-accessible')) {
-            $village.select2('destroy');
-        }
-        
-        $village.select2({
-            placeholder: "-- Ketik nama Desa atau Kelurahan --",
-            allowClear: true,
-            width: '100%',
-            ajax: {
-                url: '/api/regions/villages/' + districtId,
-                dataType: 'json',
-                delay: 150,
-                data: function(params) { return { q: params.term }; },
-                processResults: function(data) { return { results: data }; }
-            }
-        });
-    });
-}
+$(document).ready(function() {
+    var r = $('#regency-select'), d = $('#district-select'), v = $('#village-select');
 
-// Start initialization with polling fallback for jQuery/Select2 loading
-initRegionalDropdowns();
+    console.log("Initializing Select2 fields...");
+
+    // Force reset: remove any select2 wrapper, re-init native select clean
+    r.next('.select2').remove(); r.removeAttr('data-select2-id'); r.find('option').remove();
+    d.next('.select2').remove(); d.removeAttr('data-select2-id'); d.find('option').remove();
+    v.next('.select2').remove(); v.removeAttr('data-select2-id'); v.find('option').remove();
+
+    r.append('<option value="">-- Pilih Kabupaten/Kota --</option>');
+    d.append('<option value="">-- Pilih Kecamatan --</option>');
+    v.append('<option value="">-- Pilih Desa/Kelurahan --</option>');
+
+    // Re-render pre-existing options in the HTML select element if any
+    @if(isset($masterRegencies) && $masterRegencies->isNotEmpty())
+        @foreach($masterRegencies as $kab)
+            r.append(new Option("{{ $kab->display }}", "{{ $kab->id }}", false, false));
+        @endforeach
+    @else
+        r.append(new Option("Kab. Sleman, D.I. Yogyakarta", "1", false, false));
+        r.append(new Option("Kab. Bantul, D.I. Yogyakarta", "3", false, false));
+        r.append(new Option("Kota Jakarta Selatan, D.K.I. Jakarta", "4", false, false));
+        r.append(new Option("Kota Bandung, Jawa Barat", "5", false, false));
+        r.append(new Option("Kota Surabaya, Jawa Timur", "6", false, false));
+        r.append(new Option("Kota Medan, Sumatera Utara", "7", false, false));
+        r.append(new Option("Kota Palu, Sulawesi Tengah", "2", false, false));
+    @endif
+
+    // Set selected value if exist from database/old input
+    var preselectedRegency = "{{ old('regency_id', $registration->regency_id ?? '') }}";
+    if (preselectedRegency) {
+        r.val(preselectedRegency);
+    }
+
+    r.select2({ 
+        placeholder: "-- Pilih Kabupaten/Kota --", 
+        allowClear: true, 
+        width: '100%' 
+    });
+    d.select2({ 
+        placeholder: "-- Pilih Kecamatan --", 
+        allowClear: true, 
+        width: '100%' 
+    });
+    v.select2({ 
+        placeholder: "-- Pilih Desa/Kelurahan --", 
+        allowClear: true, 
+        width: '100%' 
+    });
+
+    r.on('change', function() {
+        var regencyId = $(this).val();
+        console.log("Regency changed to:", regencyId);
+
+        // Reset district and village options
+        d.empty().append('<option value="">-- Pilih Kecamatan --</option>').val(null).trigger('change');
+        v.empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>').val(null).trigger('change');
+
+        if (!regencyId) return;
+
+        var url = '{{ url("/api/local/kecamatan") }}/' + encodeURIComponent(regencyId);
+        console.log("Fetching Kecamatan from:", url);
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                console.log("Kecamatan API returned:", data);
+                d.empty().append('<option value="">-- Pilih Kecamatan --</option>');
+                
+                $.each(data, function (index, item) {
+                    var displayText = item.text || item.nama_kecamatan;
+                    d.append(new Option(displayText, item.id, false, false));
+                });
+                
+                d.trigger('change');
+            },
+            error: function(xhr, status, error) {
+                console.error("Failed to load Kecamatan:", status, error, xhr.responseText);
+            }
+        });
+    });
+
+    d.on('change', function() {
+        var districtId = $(this).val();
+        console.log("District changed to:", districtId);
+
+        // Reset village options
+        v.empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>').val(null).trigger('change');
+
+        if (!districtId) return;
+
+        var url = '{{ url("/api/local/kelurahan") }}/' + encodeURIComponent(districtId);
+        console.log("Fetching Kelurahan from:", url);
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                console.log("Kelurahan API returned:", data);
+                v.empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
+                
+                $.each(data, function (index, item) {
+                    var displayText = item.text || item.nama_kelurahan;
+                    v.append(new Option(displayText, item.id, false, false));
+                });
+                
+                v.trigger('change');
+            },
+            error: function(xhr, status, error) {
+                console.error("Failed to load Kelurahan:", status, error, xhr.responseText);
+            }
+        });
+    });
+
+    // If there was a pre-selected regency, trigger change to load districts initially
+    if (r.val()) {
+        console.log("Triggering initial regency load for:", r.val());
+        r.trigger('change');
+    }
+
+    // ─── TOGGLE: Kebutuhan Khusus checkbox grid ───
+    var needsSelect = $('#kebutuhan-khusus-select');
+    var needsContainer = $('#kebutuhan-khusus-container');
+    
+    function toggleNeedsGrid() {
+        if (needsSelect.val() === 'Ya') {
+            needsContainer.slideDown(300);
+        } else {
+            needsContainer.slideUp(250);
+            needsContainer.find('input[type="checkbox"]').prop('checked', false);
+        }
+    }
+    
+    needsSelect.on('change', toggleNeedsGrid);
+    // Initial state check (for old() values after validation error)
+    toggleNeedsGrid();
+});
 </script>
 @endpush
 @endsection

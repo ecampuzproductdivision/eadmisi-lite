@@ -135,13 +135,33 @@ Route::get('/auth/google/simulation', [GoogleAuthController::class, 'showSimulat
 Route::post('/crm-leads/store', [CrmLeadController::class, 'storePublic'])->name('crm-leads.store-public');
 
 Route::get('/api/regencies/select2', [RegencyController::class, 'select2'])->name('api.regencies.select2');
+Route::get('/api/wilayah/kabupaten', [\App\Http\Controllers\Api\WilayahController::class, 'getKabupatens'])->name('api.wilayah.kabupaten');
 Route::get('/api/wilayah/kecamatan/{kabupaten_id}', [\App\Http\Controllers\Api\WilayahController::class, 'getKecamatans'])->name('api.wilayah.kecamatan');
 Route::get('/api/wilayah/kelurahan/{kecamatan_id}', [\App\Http\Controllers\Api\WilayahController::class, 'getKelurahans'])->name('api.wilayah.kelurahan');
 
-// Centralized regional API proxy (idn-public-api + emsifa fallback)
-Route::get('/api/regions/regencies', [\App\Http\Controllers\Api\RegionalApiController::class, 'getRegencies']);
-Route::get('/api/regions/districts/{regencyId}', [\App\Http\Controllers\Api\RegionalApiController::class, 'getDistricts']);
-Route::get('/api/regions/villages/{districtId}', [\App\Http\Controllers\Api\RegionalApiController::class, 'getVillages']);
+Route::get('/api/local/kecamatan/{kabupaten_id}', function($kabupaten_id) {
+    if (!is_numeric($kabupaten_id)) {
+        $kabupaten = \DB::table('kabupatens')
+            ->where('nama_kabupaten', 'like', '%' . $kabupaten_id . '%')
+            ->first();
+        $kabupaten_id = $kabupaten ? $kabupaten->id : 0;
+    }
+    
+    $data = \DB::table('kecamatans')
+                ->where('kabupaten_id', $kabupaten_id)
+                ->select('id', 'nama_kecamatan as text') // Explicitly map column names to 'text'
+                ->get();
+    return response()->json($data);
+});
+
+Route::get('/api/local/kelurahan/{kecamatan_id}', function($kecamatan_id) {
+    $data = \DB::table('kelurahans')
+                ->where('kecamatan_id', $kecamatan_id)
+                ->select('id', 'nama_kelurahan as text') // Explicitly map column names to 'text'
+                ->get();
+    return response()->json($data);
+});
+
 
 Route::middleware(['auth'])->group(function () {
     // Onboarding routes

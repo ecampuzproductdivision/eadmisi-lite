@@ -87,9 +87,9 @@ class Registration extends Model
         return $this->hasMany(ExamResult::class);
     }
 
-    public function regency()
+    public function kabupaten()
     {
-        return $this->belongsTo(Regency::class, 'regency_id');
+        return $this->belongsTo(Kabupaten::class, 'regency_id');
     }
 
     public function kecamatan()

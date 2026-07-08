@@ -8,15 +8,15 @@ class Kecamatan extends Model
 {
     protected $table = 'kecamatans';
 
-    protected $fillable = ['regency_id', 'name', 'is_active'];
+    protected $fillable = ['kabupaten_id', 'nama_kecamatan', 'is_active'];
 
     protected $casts = [
         'is_active' => 'boolean',
     ];
 
-    public function regency()
+    public function kabupaten()
     {
-        return $this->belongsTo(Regency::class);
+        return $this->belongsTo(Kabupaten::class);
     }
 
     public function kelurahans()

@@ -8,7 +8,7 @@ class Kelurahan extends Model
 {
     protected $table = 'kelurahans';
 
-    protected $fillable = ['kecamatan_id', 'name', 'is_active'];
+    protected $fillable = ['kecamatan_id', 'nama_kelurahan', 'is_active'];
 
     protected $casts = [
         'is_active' => 'boolean',

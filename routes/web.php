@@ -65,6 +65,7 @@ Route::get('/api/registration-paths', [RegistrationPathController::class, 'apiLi
         Route::get('/pendaftaran/{id}', [PendaftaranController::class, 'show'])->name('pendaftaran.show');
         Route::post('/payment/{paymentId}/verify', [PaymentController::class, 'manualVerify'])->name('payment.manual-verify');
         Route::post('/pendaftaran/{id}/verify-re-registration', [PendaftaranController::class, 'verifyReRegistration'])->name('pendaftaran.verify-re-registration');
+        Route::post('/pendaftaran/bulk-kelulusan', [PendaftaranController::class, 'bulkKelulusan'])->name('pendaftaran.bulk-kelulusan');
     });
 
 // Halaman "Daftar PMB" untuk calon mahasiswa (login required)
@@ -79,6 +80,7 @@ Route::get('/api/registration-paths', [RegistrationPathController::class, 'apiLi
         Route::post('/daftar-pmb/registrasi/{pathCode?}/upload', [RegistrationPathController::class, 'documentStore'])->name('daftar-pmb.document.store');
         Route::get('/daftar-pmb/registrasi/{pathCode?}/review', [RegistrationPathController::class, 'review'])->name('daftar-pmb.review');
         Route::post('/daftar-pmb/registrasi/{pathCode?}/re-registration', [RegistrationPathController::class, 'reRegistrationStore'])->name('daftar-pmb.re-registration.store');
+        Route::get('/daftar-pmb/pembayaran-registrasi/{registrationId}', [RegistrationPathController::class, 'pembayaranRegistrasi'])->name('daftar-pmb.pembayaran-registrasi');
 
         // Dynamic re-registration route
         Route::get('/mahasiswa/registrasi-ulang', function() {

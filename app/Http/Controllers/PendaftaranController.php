@@ -99,4 +99,51 @@ class PendaftaranController extends Controller
         return redirect()->route('pendaftaran.show', $id)
             ->with('success', 'Registrasi ulang berhasil disetujui dan NIM ' . $request->nim . ' berhasil digenerate.');
     }
+
+    /**
+     * Bulk update kelulusan (Lulus / Gagal) for selected registrations.
+     * Only students with payment verified can be processed.
+     */
+    public function bulkKelulusan(Request $request)
+    {
+        $request->validate([
+            'selected_ids' => 'required|array',
+            'selected_ids.*' => 'exists:registrations,id',
+            'action' => 'required|in:Lulus,Gagal',
+        ], [
+            'selected_ids.required' => 'Pilih minimal satu pendaftar.',
+            'action.in' => 'Aksi harus Lulus atau Gagal.',
+        ]);
+
+        $ids = $request->selected_ids;
+        $action = $request->action;
+        $count = 0;
+
+        foreach ($ids as $id) {
+            $registration = Registration::find($id);
+            if (!$registration) continue;
+
+            // Safety: only allow if payment is verified
+            $paidInvoice = $registration->payments->firstWhere('transaction_status', 'success');
+            if (!$paidInvoice) continue;
+
+            // Skip if already in terminal state
+            if (in_array($registration->status, ['Lulus', 'Gagal', 'rejected'])) continue;
+
+            $registration->update([
+                'status' => $action,
+                'status_kelulusan' => $action === 'Lulus' ? 'Lulus' : 'Tidak Lulus',
+                'status_pendaftaran' => $action === 'Lulus' ? 'Lulus' : 'Gagal',
+            ]);
+
+            \App\Helpers\ActivityLogger::log('update', 'registration', 'Admin set status ' . $action . ' for registration #' . $id);
+            $count++;
+        }
+
+        $msg = $count > 0
+            ? $count . ' pendaftar berhasil diupdate menjadi "' . $action . '".'
+            : 'Tidak ada pendaftar yang dapat diproses.';
+
+        return redirect()->route('pendaftaran.index')->with('success', $msg);
+    }
 }

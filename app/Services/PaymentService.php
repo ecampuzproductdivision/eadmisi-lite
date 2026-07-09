@@ -42,11 +42,13 @@ class PaymentService
                 ],
             ]);
 
-            // Update registration status
-            $registration->update([
-                'status'           => 'payment_pending',
-                'payment_deadline' => $expiredAt,
-            ]);
+            // Update registration status (only for pendaftaran type, not registrasi_ulang)
+            if ($paymentType !== 'registrasi_ulang') {
+                $registration->update([
+                    'status'           => 'payment_pending',
+                    'payment_deadline' => $expiredAt,
+                ]);
+            }
 
             return $payment;
         });
@@ -99,7 +101,8 @@ class PaymentService
                     'paid_at'            => now(),
                 ]);
 
-                // Update registration
+                // Update registration — payment_verified for both types
+                // registrasi_ulang: admin must manually approve (generate NIM) to set 'registered'
                 $payment->registration->update([
                     'status' => 'payment_verified',
                     'paid_at' => now(),

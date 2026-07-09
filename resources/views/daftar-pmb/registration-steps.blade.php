@@ -6,7 +6,9 @@
     $registration = $registration ?? null;
     $currentStep = $currentStep ?? 1;
     $hasExam = $path && $path->is_ujian_online;
-    $totalSteps = $hasExam ? 5 : 4;
+    $hasManualVerification = $path && $path->metode_pengumuman === 'penilaian_manual';
+    $totalSteps = $hasExam ? 5 : ($hasManualVerification ? 5 : 4);
+    $hasStep4Content = $hasExam || $hasManualVerification;
     $berkasList = $path && $path->templateBerkas && $path->templateBerkas->syaratDokumens
         ? $path->templateBerkas->syaratDokumens : collect();
 
@@ -220,8 +222,8 @@
           </div>
         </div>
 
-        @if($hasExam)
-        <!-- Step 4: Ujian Online (CBT) - ONLY if is_ujian_online = true -->
+        @if($hasStep4Content)
+        <!-- Step 4: Ujian Online (CBT) or Proses Verifikasi Manual -->
         <div class="step-item {{ $currentStep > 4 ? 'completed' : ($currentStep == 4 ? 'active' : 'locked') }}" id="step4">
           <div class="step-indicator">
             <div class="step-circle {{ $currentStep > 4 ? 'bg-success' : ($currentStep == 4 ? 'bg-primary' : 'bg-light') }}">
@@ -246,13 +248,58 @@
                 <span class="badge bg-secondary-subtle text-secondary px-3 py-2"><i class="ti ti-lock me-1"></i> Terkunci</span>
               @endif
             </div>
-            <h5 class="fw-bold mt-3">Ujian Online (CBT)</h5>
-            <p class="text-muted mb-3">Silakan ikuti tes online sesuai jadwal yang ditentukan melalui menu Tes Online.</p>
-            
-            @if($currentStep == 4)
-              <a href="{{ route('tes-online.start', $registration?->id) }}" class="btn btn-primary">
-                <i class="ti ti-edit"></i> Ikuti Tes Online <i class="ti ti-arrow-right"></i>
-              </a>
+            @if($hasManualVerification)
+              <h5 class="fw-bold mt-3">Proses Verifikasi / Penilaian</h5>
+              <p class="text-muted mb-3">Dokumen dan data Anda sedang dalam proses verifikasi oleh tim seleksi. Silakan menunggu pengumuman hasil kelulusan.</p>
+              
+              @if($currentStep == 4)
+                <div class="alert alert-info border-0 shadow-sm mb-0 d-flex gap-3 mt-2">
+                  <div class="bg-info-subtle text-info rounded-circle p-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 50px; height: 50px;">
+                    <i class="ti ti-hourglass fs-3"></i>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-1">Menunggu Verifikasi</h6>
+                    <p class="small mb-0">Berkas dan data Anda sedang direview oleh tim seleksi. Hasil kelulusan akan diumumkan melalui halaman ini secara otomatis setelah admin melakukan penilaian.</p>
+                  </div>
+                </div>
+              @elseif($currentStep > 4)
+                @if($registration->status === 'Lulus' || $registration->status === 'accepted')
+                  <div class="alert alert-success border-0 shadow-sm mb-0 d-flex gap-3 mt-2">
+                    <div class="bg-success-subtle text-success rounded-circle p-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 50px; height: 50px;">
+                      <i class="ti ti-circle-check fs-3"></i>
+                    </div>
+                    <div>
+                      <h6 class="fw-bold mb-1">Dinyatakan Lulus Seleksi</h6>
+                      <p class="small mb-0">Selamat! Anda dinyatakan <strong>Lulus</strong> seleksi berdasarkan penilaian manual oleh tim seleksi. Silakan lanjut ke tahap Registrasi Ulang.</p>
+                      <a href="{{ route('daftar-pmb.steps', ['pathCode' => $path?->code, 're_registration' => 1]) }}" class="btn btn-success btn-sm mt-2 px-3">
+                        <i class="ti ti-id-badge me-1"></i> Mulai Registrasi Ulang
+                      </a>
+                    </div>
+                  </div>
+                @elseif($registration->status === 'Gagal')
+                  <div class="alert alert-danger border-0 shadow-sm mb-0 d-flex gap-3 mt-2">
+                    <div class="bg-danger-subtle text-danger rounded-circle p-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 50px; height: 50px;">
+                      <i class="ti ti-alert-triangle fs-3"></i>
+                    </div>
+                    <div>
+                      <h6 class="fw-bold mb-1">Dinyatakan Tidak Lulus</h6>
+                      <p class="small mb-0">Mohon maaf, berdasarkan hasil penilaian oleh tim seleksi, Anda dinyatakan <strong>Tidak Lulus</strong>. Terima kasih atas partisipasi Anda.</p>
+                    </div>
+                  </div>
+                @endif
+              @else
+                <div class="step-status text-muted">
+                  <i class="ti ti-lock me-1"></i> Selesaikan tahap sebelumnya untuk membuka
+                </div>
+              @endif
+            @else
+              <h5 class="fw-bold mt-3">Ujian Online (CBT)</h5>
+              <p class="text-muted mb-3">Silakan ikuti tes online sesuai jadwal yang ditentukan melalui menu Tes Online.</p>
+              
+              @if($currentStep == 4)
+                <a href="{{ route('tes-online.start', $registration?->id) }}" class="btn btn-primary">
+                  <i class="ti ti-edit"></i> Ikuti Tes Online <i class="ti ti-arrow-right"></i>
+                </a>
             @elseif($currentStep > 4)
               @if($path && in_array($path->metode_pengumuman, ['langsung', 'Langsung (One Day Service)']) && $examResult)
                 <div class="card border-0 bg-light rounded-3 p-4 mt-3">
@@ -310,10 +357,7 @@
                   <i class="ti ti-circle-check me-1"></i> Tahap ini telah diselesaikan
                 </div>
               @endif
-            @else
-              <div class="step-status text-muted">
-                <i class="ti ti-lock me-1"></i> Selesaikan tahap sebelumnya untuk membuka
-              </div>
+              @endif
             @endif
           </div>
         </div>
@@ -324,9 +368,11 @@
           $finalStep = $totalSteps;
           $finalStepStatus = 'locked';
           if ($registration && !in_array($registration->status, ['rejected', 'Gagal']) && $registration->status_kelulusan !== 'Tidak Lulus') {
-              if (in_array($registration->status, ['Menunggu Verifikasi Registrasi Ulang', 'registered'])) {
+              if (in_array($registration->status, ['registered'])) {
+                  // Fully registered - show completed recap
                   $finalStepStatus = 'completed';
-              } elseif ($currentStep == $totalSteps) {
+              } elseif (in_array($registration->status, ['Menunggu Verifikasi Registrasi Ulang']) || $currentStep == $totalSteps) {
+                  // Menunggu Verifikasi or current step is final - show active with payment info
                   $finalStepStatus = 'active';
               }
           }
@@ -363,7 +409,72 @@
             </div>
 
             @if($finalStepStatus === 'active')
-              @if($registration && ($registration->status === 'accepted' || $registration->status === 'Lulus' || $registration->status_kelulusan === 'Lulus'))
+              @if($registration && in_array($registration->status, ['Menunggu Verifikasi Registrasi Ulang']))
+                <h5 class="fw-bold mt-3 text-primary"><i class="ti ti-receipt me-2"></i>Menunggu Pembayaran Registrasi Ulang</h5>
+                <p class="text-muted mb-4">Registrasi ulang Anda telah kami terima. Silakan selesaikan pembayaran biaya registrasi ulang di bawah ini.</p>
+
+                @if($ulangPayment && $ulangPayment->invoice_number)
+                <div class="alert alert-info border-0 shadow-sm mb-3 d-flex align-items-center gap-3">
+                  <i class="ti ti-file-text fs-3 text-info"></i>
+                  <div>
+                    <strong>No. Invoice: {{ $ulangPayment->invoice_number }}</strong>
+                    @if($ulangPayment->expired_at)
+                      <br><small>Batas Pembayaran: <span class="text-danger">{{ $ulangPayment->expired_at->format('d/m/Y H:i') }}</span></small>
+                    @endif
+                  </div>
+                </div>
+                @else
+                <div class="alert alert-warning border-0 shadow-sm mb-3 d-flex align-items-center gap-3">
+                  <i class="ti ti-clock fs-3 text-warning"></i>
+                  <div>
+                    <strong>Invoice sedang diproses</strong>
+                    <br><small>Silakan klik tombol "Bayar Sekarang" untuk membuat invoice.</small>
+                  </div>
+                </div>
+                @endif
+
+                <div class="card bg-light border-0 rounded-3 mt-3">
+                  <div class="card-body p-4">
+                    <table class="table table-borderless mb-0">
+                      <thead>
+                        <tr>
+                          <th class="fw-semibold ps-0">Komponen Biaya</th>
+                          <th class="fw-semibold text-end pe-0">Nominal (Rp)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @forelse($ulangBiayaList as $b)
+                        <tr>
+                          <td class="ps-0">{{ $b->komponenBiaya?->nama_komponen ?? '-' }}</td>
+                          <td class="text-end pe-0">Rp {{ number_format($b->nominal, 0, ',', '.') }}</td>
+                        </tr>
+                        @empty
+                        <tr><td class="ps-0" colspan="2">Belum ada komponen biaya yang ditetapkan untuk jalur ini.</td></tr>
+                        @endforelse
+                      </tbody>
+                      <tfoot class="border-top">
+                        <tr>
+                          <td class="fw-bold fs-5 ps-0 pt-3">Total Tagihan</td>
+                          <td class="fw-bold fs-5 text-primary text-end pe-0 pt-3">Rp {{ number_format($ulangTotalBiaya, 0, ',', '.') }}</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                  <form action="{{ route('payment.invoice', $registration->id) }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="payment_type" value="registrasi_ulang">
+                    <button type="submit" class="btn btn-success px-4">
+                      <i class="ti ti-credit-card me-2"></i> Bayar Sekarang
+                    </button>
+                  </form>
+                  <a href="{{ route('tagihan.index') }}" class="btn btn-outline-secondary">
+                    <i class="ti ti-receipt"></i> Lihat Semua Tagihan
+                  </a>
+                </div>
+              @elseif($registration && ($registration->status === 'accepted' || $registration->status === 'Lulus' || $registration->status_kelulusan === 'Lulus'))
                 
                 @if(!$isReRegistrationActive)
                   <!-- Automated Re-registration Entry Trigger -->
@@ -626,25 +737,8 @@
                   </form>
                 @endif
               @else
-                <h5 class="fw-bold mt-3">Selesai</h5>
-                <p class="text-muted mb-3">
-                  @if($hasExam)
-                    Pendaftaran selesai. Silakan tunggu hasil pengumuman kelulusan.
-                  @else
-                    Pendaftaran selesai. Silakan lanjut ke menu Tagihan untuk penyelesaian administrasi.
-                  @endif
-                </p>
-                
-                <div class="d-flex flex-wrap gap-2">
-                  <a href="{{ route('daftar-pmb.review', $path?->code) }}" class="btn btn-success">
-                    <i class="ti ti-eye"></i> Lihat Ringkasan
-                  </a>
-                  <a href="{{ route('tagihan.index') }}" class="btn btn-warning">
-                    <i class="ti ti-receipt"></i> Lihat Tagihan
-                  </a>
-                </div>
               @endif
-            @elseif($finalStepStatus === 'completed')
+            @elseif($finalStepStatus === 'completed' && $registration && $registration->status === 'registered')
               <h5 class="fw-bold mt-3 text-success"><i class="ti ti-circle-check me-2"></i>Registrasi Ulang Selesai</h5>
               
               @if($registration->status === 'Menunggu Verifikasi Registrasi Ulang')

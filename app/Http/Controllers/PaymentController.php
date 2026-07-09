@@ -18,18 +18,28 @@ class PaymentController extends Controller
 
     /**
      * Create invoice and redirect to payment gateway.
+     * Accepts optional payment_type from request (pendaftaran / registrasi_ulang).
      */
-    public function createInvoice($registrationId)
+    public function createInvoice(Request $request, $registrationId)
     {
         $registration = Registration::where('user_id', auth()->id())
             ->findOrFail($registrationId);
 
-        $payment = $this->paymentService->getOrCreateInvoice($registration);
+        $paymentType = $request->input('payment_type', 'pendaftaran');
+        $amount = null;
 
-        // TODO: Integrasi dengan Midtrans/Finnet
-        // Midtrans: dapatkan Snap Token / redirect URL
-        // $snapToken = \Midtrans\Snap::getSnapToken($params);
-        // return redirect()->away('https://app.midtrans.com/payment/...');
+        // For registrasi_ulang, calculate total from komponen biaya
+        if ($paymentType === 'registrasi_ulang' && $registration->registrationPath) {
+            $biayaTotal = \App\Models\JalurPendaftaranBiaya::where('registration_path_id', $registration->registrationPath->id)
+                ->sum('nominal');
+            if ($biayaTotal > 0) {
+                $amount = $biayaTotal;
+            }
+        }
+
+        $payment = $this->paymentService->getOrCreateInvoice($registration, $paymentType, $amount);
+
+        session()->flash('active_tab', 'ulang');
 
         return redirect()->route('tagihan.index')
             ->with('success', 'Invoice berhasil dibuat. Invoice: ' . $payment->invoice_number);

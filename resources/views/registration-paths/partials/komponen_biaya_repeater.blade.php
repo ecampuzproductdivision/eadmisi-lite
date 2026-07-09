@@ -5,17 +5,25 @@
     </h6>
 
     <div id="komponen-biaya-wrapper">
-        <table class="table table-bordered" id="komponen-biaya-table">
+        <table class="table table-bordered" id="komponen-biaya-table" style="width:100%;">
             <thead class="table-light">
                 <tr>
-                    <th width="40%">Komponen Biaya</th>
-                    <th width="40%">Nominal (Rp)</th>
-                    <th width="20%" class="text-center">Aksi</th>
+                    <th width="60%">Komponen Biaya</th>
+                    <th width="30%">Nominal (Rp)</th>
+                    <th width="10%" class="text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody id="komponen-biaya-rows">
-                @if(isset($registrationPath) && $registrationPath->relationLoaded('komponenBiayas'))
-                    @foreach($registrationPath->komponenBiayas as $kb)
+                @php
+                    // Check if we're in edit mode - $registrationPath exists and has komponenBiayas loaded
+                    $existingBiayas = collect();
+                    if (isset($registrationPath) && $registrationPath->relationLoaded('komponenBiayas') && $registrationPath->komponenBiayas->count() > 0) {
+                        $existingBiayas = $registrationPath->komponenBiayas;
+                    }
+                @endphp
+
+                @if($existingBiayas->count() > 0)
+                    @foreach($existingBiayas as $kb)
                         <tr class="komponen-row">
                             <td>
                                 <select name="komponen_id[]" class="form-select form-select-sm komponen-select">
@@ -35,6 +43,26 @@
                             </td>
                         </tr>
                     @endforeach
+                @else
+                    {{-- One empty row for Create mode --}}
+                    <tr class="komponen-row">
+                        <td>
+                            <select name="komponen_id[]" class="form-select form-select-sm komponen-select">
+                                <option value="">Pilih komponen...</option>
+                                @foreach($listMasterKomponen as $mk)
+                                    <option value="{{ $mk->id }}">{{ $mk->kode_komponen }} - {{ $mk->nama_komponen }}</option>
+                                @endforeach
+                            </select>
+                        </td>
+                        <td>
+                            <input type="number" name="komponen_nominal[]" class="form-control form-control-sm komponen-nominal" value="0" min="0" placeholder="0">
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-komponen-row" title="Hapus">
+                                <i class="ti ti-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
                 @endif
             </tbody>
         </table>
@@ -53,8 +81,6 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    let rowIndex = 1000;
-
     function updateTotal() {
         let total = 0;
         document.querySelectorAll('.komponen-nominal').forEach(function(input) {
@@ -65,32 +91,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function addKomponenRow(selectedId, nominal) {
-        rowIndex++;
-        const selectHtml = `{!! str_replace("'", "\\'", '<select name="komponen_id[]" class="form-select form-select-sm komponen-select"><option value="">Pilih komponen...</option>') !!}`;
-        
-        let options = '';
-        @foreach($listMasterKomponen as $mk)
-            options += `<option value="{{ $mk->id }}" ${selectedId == {{ $mk->id }} ? 'selected' : ''}>{{ $mk->kode_komponen }} - {{ $mk->nama_komponen }}</option>`;
-        @endforeach
-
         const tr = document.createElement('tr');
         tr.className = 'komponen-row';
+        
+        let optionsHtml = '<option value="">Pilih komponen...</option>';
+        @foreach($listMasterKomponen as $mk)
+            optionsHtml += `<option value="{{ $mk->id }}" ${selectedId == {{ $mk->id }} ? 'selected' : ''}>{{ $mk->kode_komponen }} - {{ $mk->nama_komponen }}</option>`;
+        @endforeach
+
         tr.innerHTML = `
             <td>
-                <select name="komponen_id[]" class="form-select form-select-sm komponen-select">
-                    <option value="">Pilih komponen...</option>
-                    ${options}
-                </select>
+                <select name="komponen_id[]" class="form-select form-select-sm komponen-select">${optionsHtml}</select>
             </td>
             <td>
                 <input type="number" name="komponen_nominal[]" class="form-control form-control-sm komponen-nominal" value="${nominal || 0}" min="0" placeholder="0">
             </td>
             <td class="text-center">
-                <button type="button" class="btn btn-sm btn-outline-danger remove-komponen-row" title="Hapus">
-                    <i class="ti ti-trash"></i>
-                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger remove-komponen-row" title="Hapus"><i class="ti ti-trash"></i></button>
             </td>
         `;
+
         document.getElementById('komponen-biaya-rows').appendChild(tr);
 
         tr.querySelector('.remove-komponen-row').addEventListener('click', function() {
@@ -119,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function() {
         input.addEventListener('input', updateTotal);
     });
 
+    // Initial total calculation
     updateTotal();
 });
 </script>

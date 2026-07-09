@@ -37,6 +37,8 @@
                 <option value="reviewed" {{ request('status') == 'reviewed' ? 'selected' : '' }}>Direview</option>
                 <option value="accepted" {{ request('status') == 'accepted' ? 'selected' : '' }}>Diterima</option>
                 <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                <option value="Lulus" {{ request('status') == 'Lulus' ? 'selected' : '' }}>Lulus</option>
+                <option value="Gagal" {{ request('status') == 'Gagal' ? 'selected' : '' }}>Gagal</option>
             </select>
         </div>
         <div class="col-md-3 col-12 d-flex gap-2">
@@ -51,12 +53,21 @@
         <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.print()">
             <i class="ti ti-printer"></i> Print
         </a>
+        <button id="btn-bulk-kelulusan" class="btn btn-primary ml-2 d-inline-flex align-items-center gap-1">
+            <i class="ti ti-checklist"></i> Proses Kelulusan Massal
+        </button>
     @endslot
     @slot('table')
+        <form id="bulk-kelulusan-form" action="{{ route('pendaftaran.bulk-kelulusan') }}" method="POST">
+            @csrf
+            <input type="hidden" name="action" value="" id="bulk-action-input">
         <table class="table table-hover align-middle mb-0 no-sticky-global table-ead">
             <thead class="bg-light">
                 <tr>
-                    <th class="ps-4 py-3 fw-semibold" style="width:50px;">#</th>
+                    <th class="ps-4 py-3" style="width:40px;">
+                        <input type="checkbox" id="check-all" class="form-check-input">
+                    </th>
+                    <th class="ps-2 py-3 fw-semibold" style="width:50px;">#</th>
                     <th class="py-3 fw-semibold">Nama Lengkap</th>
                     <th class="py-3 fw-semibold">Jalur</th>
                     <th class="py-3 fw-semibold">No. HP</th>
@@ -67,8 +78,84 @@
             </thead>
             <tbody>
                 @forelse($registrations as $registration)
+                @php
+                    // ═══ RESET ALL STATE VARIABLES PER ITERATION ═══
+                    $pathObj = null;
+                    $totalRequiredDocs = 0;
+                    $totalUploadedDocs = 0;
+                    $hasExamBeenTaken = false;
+                    $isPaymentLocked = true;
+                    $statusLabel = null;
+                    $badgeBg = 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle';
+                    $badgeText = '';
+                    $subBadge = '';
+
+                    $pathObj = $registration->registrationPath;
+
+                    $paidInvoice = $registration->payments->firstWhere('transaction_status', 'success');
+                    if ($paidInvoice) $isPaymentLocked = false;
+
+                    if ($pathObj && $pathObj->templateBerkas) {
+                        $totalRequiredDocs = $pathObj->templateBerkas->syaratDokumens()
+                            ->where('status_wajib', true)
+                            ->count();
+                    }
+                    $totalUploadedDocs = $registration->documents->count();
+
+                    if ($pathObj && $pathObj->is_ujian_online) {
+                        $hasExamBeenTaken = $registration->examResults
+                            ->where('status', 'completed')
+                            ->isNotEmpty();
+                    }
+
+                    $isStep3Completed = ($totalRequiredDocs == 0) || ($totalUploadedDocs >= $totalRequiredDocs);
+
+                    if ($registration->status === 'rejected') {
+                        $badgeBg = 'bg-danger-subtle text-danger-emphasis border border-danger-subtle'; $badgeText = ''; $statusLabel = 'Ditolak'; $subBadge = '';
+                    } elseif ($registration->status === 'accepted') {
+                        $badgeBg = 'bg-success-subtle text-success-emphasis border border-success-subtle'; $badgeText = ''; $statusLabel = 'Diterima'; $subBadge = '';
+                    } elseif ($registration->status === 'Lulus') {
+                        $badgeBg = 'bg-success-subtle text-success-emphasis border border-success-subtle'; $badgeText = ''; $statusLabel = 'Lulus'; $subBadge = '';
+                    } elseif ($registration->status === 'Gagal') {
+                        $badgeBg = 'bg-danger-subtle text-danger-emphasis border border-danger-subtle'; $badgeText = ''; $statusLabel = 'Gagal'; $subBadge = '';
+                    } elseif ($registration->status === 'Menunggu Verifikasi Registrasi Ulang') {
+                        $badgeBg = 'bg-info-subtle text-info-emphasis border border-info-subtle'; $badgeText = ''; $statusLabel = 'Menunggu Pembayaran Registrasi Ulang'; $subBadge = '';
+                    } elseif ($registration->status === 'registered') {
+                        $nimDisplay = $registration->nim ? ' (NIM: ' . $registration->nim . ')' : '';
+                        $badgeBg = 'bg-success-subtle text-success-emphasis border border-success-subtle'; $badgeText = ''; $statusLabel = 'Terdaftar' . $nimDisplay; $subBadge = '';
+                    } elseif ($registration->status === 'reviewed') {
+                        $badgeBg = 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle'; $badgeText = ''; $statusLabel = 'Direview'; $subBadge = '';
+                    } elseif ($registration->status === 'exam_completed') {
+                        $badgeBg = 'bg-primary-subtle text-primary-emphasis border border-primary-subtle'; $badgeText = ''; $statusLabel = 'Ujian Selesai'; $subBadge = '';
+                    } elseif ($registration->status === 'payment_pending') {
+                        $isPaymentLocked = true;
+                    }
+
+                    if (!isset($statusLabel)) {
+                        if ($isPaymentLocked) {
+                            $badgeBg = 'bg-danger-subtle text-danger-emphasis border border-danger-subtle'; $badgeText = ''; $statusLabel = 'Menunggu Pembayaran'; $subBadge = '';
+                        } else {
+                            $subBadge = '<span class="badge bg-success-subtle text-success-emphasis border border-success-subtle mt-1 d-inline-block" style="font-size:0.65rem;">Pembayaran Terverifikasi</span>';
+                            if ($totalRequiredDocs > 0 && !$isStep3Completed) {
+                                $badgeBg = 'bg-warning-subtle text-warning-emphasis'; $badgeText = ''; $statusLabel = 'Belum Unggah Berkas';
+                            } elseif ($pathObj && $pathObj->is_ujian_online && !$hasExamBeenTaken) {
+                                $badgeBg = 'bg-info-subtle text-info-emphasis border border-info-subtle'; $badgeText = ''; $statusLabel = 'Menunggu Ujian';
+                            } else {
+                                $badgeBg = 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle'; $badgeText = ''; $statusLabel = 'Menunggu Verifikasi Berkas';
+                            }
+                        }
+                    }
+
+                    $paymentVerified = !$isPaymentLocked;
+                    $canProcessKelulusan = $paymentVerified && !in_array($registration->status, ['Lulus', 'Gagal', 'rejected', 'accepted', 'Menunggu Verifikasi Registrasi Ulang', 'registered']);
+                @endphp
                 <tr>
-                    <td class="ps-4 py-3 text-muted">{{ $loop->iteration + ($registrations->currentPage() - 1) * $registrations->perPage() }}</td>
+                    <td class="ps-4 py-3">
+                        @if($canProcessKelulusan)
+                            <input type="checkbox" name="selected_ids[]" value="{{ $registration->id }}" class="form-check-input row-checkbox">
+                        @endif
+                    </td>
+                    <td class="ps-2 py-3 text-muted">{{ $loop->iteration + ($registrations->currentPage() - 1) * $registrations->perPage() }}</td>
                     <td class="py-3">
                         <div class="d-flex align-items-center gap-2">
                             <div class="avatar avatar-sm bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
@@ -84,88 +171,30 @@
                     <td class="py-3">{{ $registration->no_hp ?? '-' }}</td>
                     <td class="py-3">{{ $registration->created_at->format('d/m/Y H:i') }}</td>
                     <td class="py-3">
-                        @php
-                            // ═══ RESET ALL STATE VARIABLES PER ITERATION ═══
-                            // CRITICAL: prevents domino effect where one row's status leaks to the next row
-                            $pathObj = null;
-                            $totalRequiredDocs = 0;
-                            $totalUploadedDocs = 0;
-                            $hasExamBeenTaken = false;
-                            $isPaymentLocked = true;
-                            $statusLabel = null;
-                            $badgeBg = 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle';
-                            $badgeText = '';
-                            $subBadge = '';
-
-                            // ── UNIFIED STATUS PIPELINE (identical to applicant portal) ──
-                            $pathObj = $registration->registrationPath;
-
-                            // Payment check — uses THIS registration's own payments (not Auth::user!)
-                            $paidInvoice = $registration->payments->firstWhere('transaction_status', 'success');
-                            if ($paidInvoice) $isPaymentLocked = false;
-
-                            // Document check — uses THIS registration's own documents
-                            if ($pathObj && $pathObj->templateBerkas) {
-                                $totalRequiredDocs = $pathObj->templateBerkas->syaratDokumens()
-                                    ->where('status_wajib', true)
-                                    ->count();
-                            }
-                            $totalUploadedDocs = $registration->documents->count();
-
-                            // Exam check — uses THIS registration's own exam results
-                            if ($pathObj && $pathObj->is_ujian_online) {
-                                $hasExamBeenTaken = $registration->examResults
-                                    ->where('status', 'completed')
-                                    ->isNotEmpty();
-                            }
-
-                            $isStep3Completed = ($totalRequiredDocs == 0) || ($totalUploadedDocs >= $totalRequiredDocs);
-
-                            // Terminal states (payment_verified is NOT terminal — cascade handles it)
-                            if ($registration->status === 'rejected') {
-                                $badgeBg = 'bg-danger-subtle text-danger-emphasis border border-danger-subtle'; $badgeText = ''; $statusLabel = 'Ditolak'; $subBadge = '';
-                            } elseif ($registration->status === 'accepted') {
-                                $badgeBg = 'bg-success-subtle text-success-emphasis border border-success-subtle'; $badgeText = ''; $statusLabel = 'Diterima'; $subBadge = '';
-                            } elseif ($registration->status === 'reviewed') {
-                                $badgeBg = 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle'; $badgeText = ''; $statusLabel = 'Direview'; $subBadge = '';
-                            } elseif ($registration->status === 'exam_completed') {
-                                $badgeBg = 'bg-primary-subtle text-primary-emphasis border border-primary-subtle'; $badgeText = ''; $statusLabel = 'Ujian Selesai'; $subBadge = '';
-                            } elseif ($registration->status === 'payment_pending') {
-                                $isPaymentLocked = true;
-                            }
-
-                            // Cascade for unresolved statuses
-                            if (!isset($statusLabel)) {
-                                if ($isPaymentLocked) {
-                                    $badgeBg = 'bg-danger-subtle text-danger-emphasis border border-danger-subtle'; $badgeText = ''; $statusLabel = 'Menunggu Pembayaran'; $subBadge = '';
-                                } else {
-                                    $subBadge = '<span class="badge bg-success-subtle text-success-emphasis border border-success-subtle mt-1 d-inline-block" style="font-size:0.65rem;">Pembayaran Terverifikasi</span>';
-                                    if ($totalRequiredDocs > 0 && !$isStep3Completed) {
-                                        $badgeBg = 'bg-warning-subtle text-warning-emphasis'; $badgeText = ''; $statusLabel = 'Belum Unggah Berkas';
-                                    } elseif ($pathObj && $pathObj->is_ujian_online && !$hasExamBeenTaken) {
-                                        $badgeBg = 'bg-info-subtle text-info-emphasis border border-info-subtle'; $badgeText = ''; $statusLabel = 'Menunggu Ujian';
-                                    } else {
-                                        $badgeBg = 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle'; $badgeText = ''; $statusLabel = 'Menunggu Verifikasi Berkas';
-                                    }
-                                }
-                            }
-                        @endphp
                         <span class="badge {{ $badgeBg }} rounded-pill px-3 py-1 fw-semibold">{{ $statusLabel }}</span>
                         @if(!empty($subBadge))
                             {!! $subBadge !!}
                         @endif
                     </td>
                     <td class="text-end">
-                        @include('components.actions-dropdown', ['items' => [
-                            ['url' => route('pendaftaran.show', $registration->id), 'icon' => 'ti ti-eye', 'label' => 'Detail', 'title' => 'Lihat Detail Pendaftaran'],
-                        ]])
+                        @php
+                            $dropdownItems = [
+                                ['url' => route('pendaftaran.show', $registration->id), 'icon' => 'ti ti-eye', 'label' => 'Detail', 'title' => 'Lihat Detail Pendaftaran'],
+                            ];
+                            if ($canProcessKelulusan) {
+                                $dropdownItems[] = ['onclick' => "processSingle('{$registration->id}', 'Lulus')", 'icon' => 'ti ti-circle-check', 'label' => 'Set Lulus Seleksi', 'class' => 'text-success'];
+                                $dropdownItems[] = ['onclick' => "processSingle('{$registration->id}', 'Gagal')", 'icon' => 'ti ti-circle-x', 'label' => 'Set Gagal Seleksi', 'class' => 'text-danger'];
+                            }
+                        @endphp
+                        @include('components.actions-dropdown', ['items' => $dropdownItems])
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="7" class="text-center py-5">@include('components.empty-state', ['icon' => 'ti-inbox', 'title' => 'Belum ada data pendaftaran', 'subtitle' => 'Belum ada calon mahasiswa yang melakukan submit pendaftaran.'])</td></tr>
+                <tr><td colspan="8" class="text-center py-5">@include('components.empty-state', ['icon' => 'ti-inbox', 'title' => 'Belum ada data pendaftaran', 'subtitle' => 'Belum ada calon mahasiswa yang melakukan submit pendaftaran.'])</td></tr>
                 @endforelse
             </tbody>
         </table>
+        </form>
         @if($registrations->hasPages())
             <div class="card-footer bg-light border-top d-flex justify-content-center py-3">{{ $registrations->appends(request()->query())->links() }}</div>
         @endif
@@ -173,4 +202,56 @@
 @endcomponent
 @endsection
 
+@push('scripts')
+<script>
+function processSingle(id, action) {
+    if (!confirm('Yakin ingin mengubah status pendaftar ini menjadi ' + action + '?')) return;
+    
+    const form = document.getElementById('bulk-kelulusan-form');
+    const input = document.getElementById('bulk-action-input');
+    
+    // Uncheck all checkboxes
+    document.querySelectorAll('input[name="selected_ids[]"]').forEach(cb => cb.checked = false);
+    
+    // Check only the target one
+    const targetCb = document.querySelector('input.row-checkbox[value="' + id + '"]');
+    if (targetCb) targetCb.checked = true;
+    
+    input.value = action;
+    form.submit();
+}
 
+document.addEventListener('DOMContentLoaded', function() {
+    const checkAll = document.getElementById('check-all');
+    const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+
+    if (checkAll) {
+        checkAll.addEventListener('change', function() {
+            rowCheckboxes.forEach(cb => cb.checked = this.checked);
+        });
+    }
+
+    const btnBulk = document.getElementById('btn-bulk-kelulusan');
+    const bulkForm = document.getElementById('bulk-kelulusan-form');
+    const bulkActionInput = document.getElementById('bulk-action-input');
+
+    if (btnBulk && bulkForm) {
+        btnBulk.addEventListener('click', function(e) {
+            e.preventDefault();
+            const checked = document.querySelectorAll('.row-checkbox:checked');
+            if (checked.length === 0) {
+                alert('Silakan pilih minimal satu pendaftar terlebih dahulu.');
+                return;
+            }
+            const doLulus = confirm(checked.length + ' pendaftar dipilih. Klik OK untuk Luluskan, Batal untuk Gagalkan.');
+            if (doLulus) {
+                bulkActionInput.value = 'Lulus';
+            } else {
+                bulkActionInput.value = 'Gagal';
+            }
+            bulkForm.submit();
+        });
+    }
+});
+</script>
+@endpush

@@ -254,6 +254,7 @@
                         <select name="metode_pengumuman" id="metode_pengumuman" class="form-select @error('metode_pengumuman') is-invalid @enderror">
                             <option value="langsung" {{ old('metode_pengumuman', $registrationPath->metode_pengumuman) == 'langsung' ? 'selected' : '' }}>Langsung (One Day Service)</option>
                             <option value="ditahan" {{ old('metode_pengumuman', $registrationPath->metode_pengumuman) == 'ditahan' ? 'selected' : '' }}>Ditahan (Menunggu Verifikasi/Wawancara)</option>
+                            <option value="penilaian_manual" {{ old('metode_pengumuman', $registrationPath->metode_pengumuman) == 'penilaian_manual' ? 'selected' : '' }}>Penilaian Manual / Verifikasi Langsung</option>
                         </select>
                         <div class="form-text">Pilih apakah hasil ujian diumumkan langsung atau ditahan.</div>
                         @error('metode_pengumuman') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -440,6 +441,22 @@ document.addEventListener('DOMContentLoaded', function() {
   
   toggle.addEventListener('change', toggleBerkasSection);
   toggleBerkasSection();
+});
+
+// Auto-select "Penilaian Manual / Verifikasi Langsung" when both ujian & wawancara are OFF
+document.addEventListener('DOMContentLoaded', function() {
+  const toggleUjian = document.getElementById('gunakan_ujian');
+  const toggleWawancara = document.getElementById('gunakan_wawancara');
+  const metodePengumuman = document.getElementById('metode_pengumuman');
+
+  function autoSelectMetode() {
+    if (!toggleUjian.checked && !toggleWawancara.checked) {
+      metodePengumuman.value = 'penilaian_manual';
+    }
+  }
+
+  toggleUjian.addEventListener('change', autoSelectMetode);
+  toggleWawancara.addEventListener('change', autoSelectMetode);
 });
 </script>
 @endpush

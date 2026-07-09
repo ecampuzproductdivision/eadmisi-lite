@@ -106,12 +106,12 @@ class HomeController extends Controller
                 $actionLabel = 'Registrasi Ulang';
                 $actionUrl = route('daftar-pmb.steps', $pathObj?->code);
             } elseif ($reg->status === 'Menunggu Verifikasi Registrasi Ulang') {
-                $statusLabel = 'Menunggu Verifikasi Registrasi Ulang';
-                $badgeBg = 'bg-warning';
+                $statusLabel = 'Menunggu Pembayaran Registrasi Ulang';
+                $badgeBg = 'bg-info';
                 $badgeText = 'text-dark';
                 $subBadge = '';
-                $actionLabel = 'Lihat Detail';
-                $actionUrl = route('daftar-pmb.steps', $pathObj?->code);
+                $actionLabel = 'Bayar Sekarang';
+                $actionUrl = route('tagihan.index');
             } elseif ($reg->status === 'registered') {
                 $statusLabel = 'Terregistrasi (Aktif)';
                 $badgeBg = 'bg-success';

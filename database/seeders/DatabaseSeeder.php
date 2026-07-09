@@ -37,6 +37,10 @@ class DatabaseSeeder extends Seeder
             MenuProgramStudiSeeder::class,
             PeriodeMenuSeeder::class,
 
+            // ── Komponen Biaya Menu & Data ──
+            KomponenBiayaMenuSeeder::class,
+            KomponenBiayaSeeder::class,
+
             // ── Core Business Data (prerequisites for JalurPendaftaran) ──
             PeriodeSeeder::class,
             WawancaraMenuSeeder::class,

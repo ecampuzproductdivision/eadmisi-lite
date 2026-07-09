@@ -282,6 +282,8 @@
             </div>
           </div>
 
+           @include('registration-paths.partials.komponen_biaya_repeater')
+
            <!-- Metode Pengumuman Hasil Ujian (below interview/wawancara block) -->
           <div class="col-12">
             <label for="metode_pengumuman" class="form-label fw-semibold">Metode Pengumuman Hasil Ujian <span class="text-danger">*</span></label>

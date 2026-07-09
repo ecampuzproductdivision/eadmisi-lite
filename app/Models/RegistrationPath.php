@@ -151,6 +151,24 @@ class RegistrationPath extends Model
     }
 
     /**
+     * A RegistrationPath has many biaya components (via pivot).
+     */
+    public function komponenBiayas()
+    {
+        return $this->belongsToMany(KomponenBiaya::class, 'jalur_pendaftaran_biayas', 'registration_path_id', 'komponen_biaya_id')
+            ->withPivot('nominal', 'id')
+            ->withTimestamps();
+    }
+
+    /**
+     * A RegistrationPath has many biaya pivot records directly.
+     */
+    public function biayaPivots()
+    {
+        return $this->hasMany(\App\Models\JalurPendaftaranBiaya::class, 'registration_path_id');
+    }
+
+    /**
      * A RegistrationPath has many Registrations (pendaftaran).
      */
     public function registrations()

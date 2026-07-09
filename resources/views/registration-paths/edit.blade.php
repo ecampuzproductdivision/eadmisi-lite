@@ -247,6 +247,8 @@
                         </div>
                     </div>
 
+                    @include('registration-paths.partials.komponen_biaya_repeater')
+
                     <div class="col-12">
                         <label for="metode_pengumuman" class="form-label fw-semibold">Metode Pengumuman Hasil Ujian <span class="text-danger">*</span></label>
                         <select name="metode_pengumuman" id="metode_pengumuman" class="form-select @error('metode_pengumuman') is-invalid @enderror">

@@ -13,16 +13,17 @@ class PaymentService
      * Create a new payment/invoice for a registration.
      * Siap diintegrasikan dengan payment aggregator seperti Midtrans/Finnet.
      */
-    public function createInvoice(Registration $registration): Payment
+    public function createInvoice(Registration $registration, string $paymentType = 'pendaftaran', ?int $customAmount = null): Payment
     {
-        return DB::transaction(function () use ($registration) {
-            $amount = $registration->registrationPath?->fee ?? 0;
+        return DB::transaction(function () use ($registration, $paymentType, $customAmount) {
+            $amount = $customAmount ?? ($registration->registrationPath?->fee ?? 0);
             
             // Set deadline 24 jam dari sekarang
             $expiredAt = now()->addHours(24);
 
             $payment = Payment::create([
                 'registration_id'    => $registration->id,
+                'payment_type'       => $paymentType,
                 'user_id'            => $registration->user_id,
                 'invoice_number'     => Payment::generateInvoiceNumber(),
                 'amount'             => $amount,
@@ -236,10 +237,11 @@ class PaymentService
     /**
      * Get or create pending payment for a registration.
      */
-    public function getOrCreateInvoice(Registration $registration): Payment
+    public function getOrCreateInvoice(Registration $registration, string $paymentType = 'pendaftaran', ?int $customAmount = null): Payment
     {
-        // Cek apakah sudah ada payment pending
+        // Cek apakah sudah ada payment pending untuk tipe ini
         $existingPayment = Payment::where('registration_id', $registration->id)
+            ->where('payment_type', $paymentType)
             ->where('transaction_status', 'pending')
             ->first();
 
@@ -247,6 +249,6 @@ class PaymentService
             return $existingPayment;
         }
 
-        return $this->createInvoice($registration);
+        return $this->createInvoice($registration, $paymentType, $customAmount);
     }
 }

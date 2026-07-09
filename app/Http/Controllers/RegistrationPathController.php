@@ -51,7 +51,8 @@ class RegistrationPathController extends Controller
         $paketSoals = PaketSoal::active()->orderBy('nama_paket')->get();
         $templateBerkas = TemplateBerkas::active()->orderBy('nama_template')->get();
         $forms = Form::active()->orderBy('nama')->get();
-        return view('registration-paths.create', compact('kategoris', 'programStudis', 'paketSoals', 'templateBerkas', 'forms'));
+        $listMasterKomponen = \App\Models\KomponenBiaya::active()->orderBy('kode_komponen')->get();
+        return view('registration-paths.create', compact('kategoris', 'programStudis', 'paketSoals', 'templateBerkas', 'forms', 'listMasterKomponen'));
     }
 
     /**
@@ -130,6 +131,20 @@ class RegistrationPathController extends Controller
             $path->programStudis()->sync($request->program_studi_ids);
         }
 
+        // Sync komponen biaya
+        if ($request->has('komponen_id') && is_array($request->komponen_id)) {
+            $biayaData = [];
+            foreach ($request->komponen_id as $i => $komponenId) {
+                if (empty($komponenId)) continue;
+                $biayaData[$komponenId] = [
+                    'nominal' => $request->komponen_nominal[$i] ?? 0,
+                ];
+            }
+            $path->komponenBiayas()->sync($biayaData);
+        } else {
+            $path->komponenBiayas()->sync([]);
+        }
+
         ActivityLogger::log('create', 'registration_path', 'Created registration path: ' . $request->code);
 
         return redirect()->route('registration-paths.index')
@@ -155,9 +170,10 @@ class RegistrationPathController extends Controller
         $paketSoals = PaketSoal::active()->orderBy('nama_paket')->get();
         $templateBerkas = TemplateBerkas::active()->orderBy('nama_template')->get();
         $forms = Form::active()->orderBy('nama')->get();
+        $listMasterKomponen = \App\Models\KomponenBiaya::active()->orderBy('kode_komponen')->get();
         // Load pivot relationships for pre-selection
-        $registrationPath->load('programStudis', 'formPendaftaran');
-        return view('registration-paths.edit', compact('registrationPath', 'kategoris', 'programStudis', 'paketSoals', 'templateBerkas', 'forms'));
+        $registrationPath->load('programStudis', 'formPendaftaran', 'komponenBiayas');
+        return view('registration-paths.edit', compact('registrationPath', 'kategoris', 'programStudis', 'paketSoals', 'templateBerkas', 'forms', 'listMasterKomponen'));
     }
 
     /**
@@ -228,6 +244,20 @@ class RegistrationPathController extends Controller
         // Sync pivot tabel jalur_prodi
         if ($request->has('program_studi_ids')) {
             $registrationPath->programStudis()->sync($request->program_studi_ids);
+        }
+
+        // Sync komponen biaya
+        if ($request->has('komponen_id') && is_array($request->komponen_id)) {
+            $biayaData = [];
+            foreach ($request->komponen_id as $i => $komponenId) {
+                if (empty($komponenId)) continue;
+                $biayaData[$komponenId] = [
+                    'nominal' => $request->komponen_nominal[$i] ?? 0,
+                ];
+            }
+            $registrationPath->komponenBiayas()->sync($biayaData);
+        } else {
+            $registrationPath->komponenBiayas()->sync([]);
         }
 
         ActivityLogger::log('update', 'registration_path', 'Updated registration path: ' . $registrationPath->code);
@@ -1087,6 +1117,48 @@ class RegistrationPathController extends Controller
             'status' => 'Menunggu Verifikasi Registrasi Ulang',
             're_registration_submitted_at' => now(),
         ]);
+
+        // ── Generate itemized Re-registration Invoice ──
+        // Only create invoice after successful submission, using komponen biaya from jalur
+        if ($path) {
+            $biayaKomponens = \App\Models\JalurPendaftaranBiaya::with('komponenBiaya')
+                ->where('registration_path_id', $path->id)
+                ->get();
+
+            if ($biayaKomponens->isNotEmpty()) {
+                $totalBiaya = $biayaKomponens->sum('nominal');
+                
+                // Build itemized metadata for ePembayaran
+                $itemizedDetails = [];
+                foreach ($biayaKomponens as $bk) {
+                    $itemizedDetails[] = [
+                        'kode_komponen' => $bk->komponenBiaya?->kode_komponen,
+                        'nama_komponen' => $bk->komponenBiaya?->nama_komponen,
+                        'nominal'       => (int) $bk->nominal,
+                    ];
+                }
+
+                $metadata = [
+                    'payment_type'       => 'registrasi_ulang',
+                    'itemized_breakdown' => $itemizedDetails,
+                    'total_biaya'        => $totalBiaya,
+                    'jalur'              => $path->name,
+                    'kode_jalur'         => $path->code,
+                    'generated_at'       => now()->toDateTimeString(),
+                ];
+
+                // Create the invoice via PaymentService
+                $paymentService = app(\App\Services\PaymentService::class);
+                $payment = $paymentService->createInvoice($registration, 'registrasi_ulang', $totalBiaya);
+                
+                // Update metadata with itemized breakdown
+                $payment->update(['metadata' => $metadata]);
+
+                \App\Helpers\ActivityLogger::log('create', 'payment', 
+                    'Re-registration invoice generated: ' . $payment->invoice_number . 
+                    ' for ' . ($path?->name ?? '') . ' total: ' . $totalBiaya);
+            }
+        }
 
         \App\Helpers\ActivityLogger::log('update', 'registration', 'Applicant completed re-registration for path: ' . ($path?->name ?? ''));
 

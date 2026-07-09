@@ -241,6 +241,13 @@ Route::middleware(['auth'])->group(function () {
         Route::post('settings/wawancara/schedule', [WawancaraController::class, 'storeSchedule'])->name('wawancara.schedule');
         Route::post('settings/wawancara/hasil', [WawancaraController::class, 'storeHasil'])->name('wawancara.hasil');
 
+        // Komponen Biaya (Settings > Komponen Biaya)
+        Route::get('settings/komponen-biaya', [\App\Http\Controllers\KomponenBiayaController::class, 'index'])->name('komponen-biaya.index');
+        Route::post('settings/komponen-biaya', [\App\Http\Controllers\KomponenBiayaController::class, 'store'])->name('komponen-biaya.store');
+        Route::put('settings/komponen-biaya/{komponenBiaya}', [\App\Http\Controllers\KomponenBiayaController::class, 'update'])->name('komponen-biaya.update');
+        Route::post('settings/komponen-biaya/{komponenBiaya}/toggle-status', [\App\Http\Controllers\KomponenBiayaController::class, 'toggleStatus'])->name('komponen-biaya.toggle-status');
+        Route::delete('settings/komponen-biaya/{komponenBiaya}', [\App\Http\Controllers\KomponenBiayaController::class, 'destroy'])->name('komponen-biaya.destroy');
+
         // CRM Leads
         Route::get('settings/crm-leads', [CrmLeadController::class, 'index'])->name('crm-leads.index');
         Route::post('crm-leads/{crmLead}/status', [CrmLeadController::class, 'updateStatus'])->name('crm-leads.status');

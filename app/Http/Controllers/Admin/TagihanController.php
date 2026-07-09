@@ -9,11 +9,14 @@ use Illuminate\Http\Request;
 class TagihanController extends Controller
 {
     /**
-     * Display list of all payments for admin review.
+     * Display list of all payments for admin review with tab filtering.
      */
     public function index(Request $request)
     {
-        $query = Payment::with(['registration.registrationPath', 'registration', 'user']);
+        $tab = $request->get('tab', 'pendaftaran');
+
+        $query = Payment::with(['registration.registrationPath', 'registration', 'user'])
+            ->where('payment_type', $tab);
 
         if ($request->filled('status')) {
             $query->where('transaction_status', $request->status);
@@ -36,13 +39,13 @@ class TagihanController extends Controller
 
         if ($request->ajax()) {
             return response()->json([
-                'html' => view('settings.tagihan.partials.payment_rows', compact('payments'))->render(),
+                'html' => view('settings.tagihan.partials.payment_rows', compact('payments', 'tab'))->render(),
                 'next_page' => $payments->nextPageUrl(),
                 'has_more' => $payments->hasMorePages(),
             ]);
         }
 
-        return view('settings.tagihan.index', compact('payments'));
+        return view('settings.tagihan.index', compact('payments', 'tab'));
     }
 
     /**

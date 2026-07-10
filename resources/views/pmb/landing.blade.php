@@ -87,8 +87,8 @@
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
         }
-        .nav-pmb .navbar-brand .logo-dark { display: none; }
-        .nav-pmb .navbar-brand .logo-light { display: inline-block; }
+        .nav-pmb .navbar-brand .logo-light { display: none; }
+        .nav-pmb .navbar-brand .logo-dark { display: inline-block; }
         .nav-pmb .nav-link { color: rgba(255,255,255,0.7) !important; transition: color 0.3s ease; }
         .nav-pmb .nav-link:hover { color: #ffffff !important; }
         .nav-pmb .navbar-brand .fw-bold { color: #ffffff !important; }
@@ -99,16 +99,25 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.06);
             border-bottom: 1px solid rgba(0,0,0,0.06);
         }
-        .nav-pmb.navbar-scrolled .navbar-brand .logo-dark { display: inline-block; }
-        .nav-pmb.navbar-scrolled .navbar-brand .logo-light { display: none; }
+        .nav-pmb.navbar-scrolled .navbar-brand .logo-dark { display: none; }
+        .nav-pmb.navbar-scrolled .navbar-brand .logo-light { display: inline-block; }
         .nav-pmb.navbar-scrolled .nav-link { color: #495057 !important; }
         .nav-pmb.navbar-scrolled .nav-link:hover { color: #1c252e !important; }
         .nav-pmb.navbar-scrolled .navbar-brand .fw-bold { color: #1c252e !important; }
-        .nav-pmb.navbar-scrolled .btn-outline-dark {
-            border-color: #dee2e6; color: #495057;
+        .nav-pmb .btn-daftar.btn-outline-light {
+            border-color: rgba(255,255,255,0.7);
+            color: #fff;
         }
-        .nav-pmb.navbar-scrolled .btn-outline-dark:hover {
-            background: #f8f9fa; color: #1c252e;
+        .nav-pmb .btn-daftar.btn-outline-light:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .nav-pmb.navbar-scrolled .btn-daftar.btn-outline-dark {
+            border-color: #dee2e6;
+            color: #495057;
+        }
+        .nav-pmb.navbar-scrolled .btn-daftar.btn-outline-dark:hover {
+            background: #f8f9fa;
+            color: #1c252e;
         }
         .step-number {
             width: 48px; height: 48px;
@@ -144,7 +153,19 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.04);
         }
         [data-bs-theme="light"] .stats-card .text-white-50 { color: #6c757d !important; }
-        [data-bs-theme="light"] .stats-card .text-danger { color: #dc3545 !important; }
+
+        /* ── Stats icon wrapper ── */
+        .stats-icon-wrapper {
+            width: 48px;
+            height: 48px;
+        }
+        .stats-icon {
+            font-size: 1.25rem;
+        }
+        [data-bs-theme="light"] .stats-icon-wrapper.bg-danger { background-color: rgba(220, 53, 69, 0.1) !important; }
+        [data-bs-theme="light"] .stats-icon-wrapper.bg-warning { background-color: rgba(255, 193, 7, 0.1) !important; }
+        [data-bs-theme="light"] .stats-icon-wrapper.bg-info { background-color: rgba(13, 202, 240, 0.1) !important; }
+        [data-bs-theme="light"] .stats-icon-wrapper.bg-success { background-color: rgba(25, 135, 84, 0.1) !important; }
 
         /* ── Subtle section divider ── */
         .section-divider {
@@ -162,9 +183,7 @@
             background: linear-gradient(90deg, transparent, var(--ds-primary, #f63a4c), transparent);
             opacity: 0.3;
         }
-        [data-bs-theme="light"] .section-divider::before {
-            opacity: 0.5;
-        }
+        [data-bs-theme="light"] .section-divider::before { opacity: 0.5; }
 
         /* ── Card subtle improvements ── */
         [data-bs-theme="light"] .path-card,
@@ -183,8 +202,8 @@
     <nav id="pmbNavbar" class="navbar navbar-expand-lg nav-pmb fixed-top py-3">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-                <img src="{{ asset('assets/images/brand/logo/logo-light.png') }}" class="logo-light" width="32" alt="">
                 <img src="{{ asset('assets/images/brand/logo/logo-dark.png') }}" class="logo-dark" width="32" alt="">
+                <img src="{{ asset('assets/images/brand/logo/logo-light.png') }}" class="logo-light" width="32" alt="">
                 <span class="fw-bold">eAdmisi</span>
             </a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarPMB">
@@ -198,7 +217,7 @@
                     <li class="nav-item"><a class="nav-link" href="#tanya-dulu">Tanya Dulu</a></li>
                     <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
                     <li class="nav-item">
-                        <a href="{{ route('register-account') }}" class="btn btn-outline-dark d-flex align-items-center gap-2">
+                        <a id="daftarBtn" href="{{ route('register-account') }}" class="btn btn-daftar btn-outline-light d-flex align-items-center gap-2">
                             <i class="ti ti-user-plus fs-5"></i> Daftar
                         </a>
                     </li>
@@ -266,26 +285,38 @@
             <div class="row g-4">
                 <div class="col-md-3 col-6">
                     <div class="stats-card rounded-4 p-4 text-center">
-                        <div class="text-danger fs-1 fw-bold mb-1">12K+</div>
-                        <div class="text-white-50 ">Mahasiswa</div>
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 stats-icon-wrapper bg-danger bg-opacity-10">
+                            <i class="ti ti-users text-danger stats-icon"></i>
+                        </div>
+                        <div class="text-white-50 fs-1 fw-bold mb-1"><span class="counter" data-target="12" data-suffix="K+">0</span></div>
+                        <div class="text-white-50">Mahasiswa</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="stats-card rounded-4 p-4 text-center">
-                        <div class="text-danger fs-1 fw-bold mb-1">150+</div>
-                        <div class="text-white-50 ">Program Studi</div>
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 stats-icon-wrapper bg-warning bg-opacity-10">
+                            <i class="ti ti-books text-warning stats-icon"></i>
+                        </div>
+                        <div class="text-white-50 fs-1 fw-bold mb-1"><span class="counter" data-target="150" data-suffix="+">0</span></div>
+                        <div class="text-white-50">Program Studi</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="stats-card rounded-4 p-4 text-center">
-                        <div class="text-danger fs-1 fw-bold mb-1">500+</div>
-                        <div class="text-white-50 ">Dosen Ahli</div>
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 stats-icon-wrapper bg-info bg-opacity-10">
+                            <i class="ti ti-user-star text-info stats-icon"></i>
+                        </div>
+                        <div class="text-white-50 fs-1 fw-bold mb-1"><span class="counter" data-target="500" data-suffix="+">0</span></div>
+                        <div class="text-white-50">Dosen Ahli</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="stats-card rounded-4 p-4 text-center">
-                        <div class="text-danger fs-1 fw-bold mb-1">50+</div>
-                        <div class="text-white-50 ">Tahun Pengabdian</div>
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 stats-icon-wrapper bg-success bg-opacity-10">
+                            <i class="ti ti-calendar-stats text-success stats-icon"></i>
+                        </div>
+                        <div class="text-white-50 fs-1 fw-bold mb-1"><span class="counter" data-target="50" data-suffix="+">0</span></div>
+                        <div class="text-white-50">Tahun Pengabdian</div>
                     </div>
                 </div>
             </div>
@@ -326,14 +357,12 @@
                 <h2 class="fw-bold display-6 mb-3">Pilih Jalur Pendaftaran</h2>
                 <p class="text-secondary mx-auto" style="max-width: 540px;">Tersedia berbagai jalur pendaftaran yang dapat dipilih sesuai dengan kriteria Anda</p>
             </div>
-
             @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show shadow-sm border-0" role="alert">
                 <i class="ti ti-circle-check fs-4 me-2"></i>{{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             @endif
-
             <div class="row g-4">
                 @forelse($activePaths as $path)
                 @php
@@ -347,30 +376,21 @@
                         <div class="card-body p-5 d-flex flex-column">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
-                                    <span class="badge bg-{{ $path->color ?? 'secondary' }}-subtle text-{{ $path->color ?? 'secondary' }} px-3 py-2 fs-6 mb-2">
-                                        {{ $path->kategori->nama ?? 'Jalur' }}
-                                    </span>
+                                    <span class="badge bg-{{ $path->color ?? 'secondary' }}-subtle text-{{ $path->color ?? 'secondary' }} px-3 py-2 fs-6 mb-2">{{ $path->kategori->nama ?? 'Jalur' }}</span>
                                     <h5 class="fw-bold mb-1 mt-2">{{ $path->name }}</h5>
                                 </div>
                                 @if($isOpen)
-                                    <span class="badge bg-success-subtle text-success px-3 py-2 fs-6">
-                                        <i class="ti ti-circle-check me-1"></i>Buka
-                                    </span>
+                                    <span class="badge bg-success-subtle text-success px-3 py-2 fs-6"><i class="ti ti-circle-check me-1"></i>Buka</span>
                                 @else
-                                    <span class="badge bg-secondary-subtle text-secondary px-3 py-2 fs-6">
-                                        <i class="ti ti-clock me-1"></i>Tutup
-                                    </span>
+                                    <span class="badge bg-secondary-subtle text-secondary px-3 py-2 fs-6"><i class="ti ti-clock me-1"></i>Tutup</span>
                                 @endif
                             </div>
-
                             @if($path->description)
                             <p class="text-secondary  mb-4">{{ Str::limit($path->description, 100) }}</p>
                             @endif
-
                             <div class="mt-auto">
-                                <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-3 ">
-                                    <span class="text-secondary">
-                                        <i class="ti ti-calendar me-1"></i>
+                                <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-3">
+                                    <span class="text-secondary"><i class="ti ti-calendar me-1"></i>
                                         @if($path->registration_start && $path->registration_end)
                                             {{ $path->registration_start->format('d/m/Y') }} - {{ $path->registration_end->format('d/m/Y') }}
                                         @else
@@ -380,18 +400,12 @@
                                     <span class="fw-bold text-danger fs-5">Rp {{ number_format($path->fee, 0, ',', '.') }}</span>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <p class="text-secondary">
-                                        <i class="ti ti-users me-1"></i>
-                                        @if($sisaKuota !== null && $sisaKuota > 0)
-                                            Sisa <strong>{{ $sisaKuota }}</strong> kursi
-                                        @elseif($sisaKuota !== null && $sisaKuota <= 0)
-                                            <span class="text-danger">Penuh</span>
-                                        @else
-                                            Kuota tak terbatas
-                                        @endif
-                                    </>
+                                    <p class="text-secondary"><i class="ti ti-users me-1"></i>
+                                        @if($sisaKuota !== null && $sisaKuota > 0) Sisa <strong>{{ $sisaKuota }}</strong> kursi
+                                        @elseif($sisaKuota !== null && $sisaKuota <= 0) <span class="text-danger">Penuh</span>
+                                        @else Kuota tak terbatas @endif</p>
                                     @if($path->jumlah_pilihan_prodi)
-                                    <p class="text-secondary"><i class="ti ti-checks me-1"></i>{{ $path->jumlah_pilihan_prodi }} pilihan</>
+                                    <p class="text-secondary"><i class="ti ti-checks me-1"></i>{{ $path->jumlah_pilihan_prodi }} pilihan</p>
                                     @endif
                                 </div>
                                 <a href="{{ route('register', $path->id) }}" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2">
@@ -415,7 +429,7 @@
     <section id="program" class="py-16 section-white">
         <div class="container">
             <div class="text-center mb-8">
-                <span class="badge bg-primary-subtle text-primary  px-3 py-2 mb-3">Program Studi</span>
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 mb-3">Program Studi</span>
                 <h2 class="fw-bold display-6 mb-3">Pilihan Program Studi</h2>
                 <p class="text-secondary mx-auto" style="max-width: 540px;">Tersedia berbagai program studi yang dapat disesuaikan dengan minat dan bakat Anda</p>
             </div>
@@ -439,7 +453,7 @@
                             <p class="text-secondary  mb-4">{{ $lp->deskripsi_singkat ?: ($prodi->deskripsi_singkat ?? 'Program studi unggulan dengan kurikulum berbasis kompetensi.') }}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="badge bg-success-subtle text-success">Akreditasi {{ $lp->akreditasi ?? ($prodi->akreditasi ?? 'A') }}</span>
-                                <p class="text-secondary"><i class="ti ti-clock me-1"></i> {{ $lp->jumlah_semester ?? ($jenjang == 'D3' ? '6' : '8') }} Semester</>
+                                <p class="text-secondary"><i class="ti ti-clock me-1"></i> {{ $lp->jumlah_semester ?? ($jenjang == 'D3' ? '6' : '8') }} Semester</p>
                             </div>
                         </div>
                     </div>
@@ -494,7 +508,7 @@
     <section class="py-16 section-soft-primary">
         <div class="container">
             <div class="text-center mb-8">
-                <span class="badge bg-primary-subtle text-primary  px-3 py-2 mb-3">Fasilitas</span>
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 mb-3">Fasilitas</span>
                 <h2 class="fw-bold display-6 mb-3">{!! $settings['landing_facility_title']->value ?? 'Fasilitas Unggulan' !!}</h2>
                 <p class="text-secondary mx-auto" style="max-width: 540px;">{{ $settings['landing_facility_description']->value ?? 'Nikmati berbagai fasilitas modern untuk mendukung perkuliahan Anda' }}</p>
             </div>
@@ -505,7 +519,7 @@
                         <div class="card-body text-center p-5">
                             <i class="ti {{ $f->kode_icon }} fs-1 text-danger mb-3 d-block"></i>
                             <h6 class="fw-bold">{{ $f->nama_fasilitas }}</h6>
-                            <p class="text-secondary  mb-0">{{ $f->deskripsi_fasilitas }}</p>
+                            <p class="text-secondary mb-0">{{ $f->deskripsi_fasilitas }}</p>
                         </div>
                     </div>
                 </div>
@@ -519,7 +533,7 @@
         </div>
     </section>
 
-    <!-- ═══ TANYA DULU (CRM LEADS FORM) ═══ -->
+    <!-- ═══ TANYA DULU ═══ -->
     <section id="tanya-dulu" class="py-16 section-soft-light">
         <div class="container">
             <div class="row justify-content-center">
@@ -531,28 +545,27 @@
                                     <i class="ti ti-message-dots fs-1"></i>
                                 </div>
                                 <h3 class="fw-bold mb-2">Tanya Dulu, Daftar Kemudian</h3>
-                                <p class="text-secondary mb-0" style="max-width: 480px; margin: 0 auto;">Masih ragu? Tim kami siap menjawab pertanyaan Anda seputar pendaftaran, program studi, beasiswa, dan biaya kuliah.</p>
+                                <p class="text-secondary mb-0" style="max-width: 480px; margin: 0 auto;">Masih ragu? Tim kami siap menjawab pertanyaan Anda.</p>
                             </div>
-
                             <form action="{{ route('crm-leads.store-public') }}" method="POST" class="row g-4 justify-content-center">
                                 @csrf
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
-                                    <input type="text" name="nama" class="form-control " placeholder="Masukkan nama Anda" required maxlength="200">
+                                    <input type="text" name="nama" class="form-control" placeholder="Masukkan nama Anda" required maxlength="200">
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">Nomor WhatsApp <span class="text-danger">*</span></label>
-                                    <input type="tel" name="whatsapp" class="form-control " placeholder="08xxxxxxxxxx" required maxlength="50">
+                                    <input type="tel" name="whatsapp" class="form-control" placeholder="08xxxxxxxxxx" required maxlength="50">
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label fw-semibold">Pertanyaan <span class="text-danger">*</span></label>
-                                    <textarea name="pertanyaan" class="form-control " rows="4" placeholder="Tulis pertanyaan Anda di sini..." required></textarea>
+                                    <textarea name="pertanyaan" class="form-control" rows="4" placeholder="Tulis pertanyaan Anda di sini..." required></textarea>
                                 </div>
                                 <div class="col-12 text-center mt-4">
-                                    <button type="submit" class="btn btn-primary  px-6 d-inline-flex align-items-center gap-2">
+                                    <button type="submit" class="btn btn-primary px-6 d-inline-flex align-items-center gap-2">
                                         <i class="ti ti-brand-whatsapp fs-4"></i> Kirim Pertanyaan
                                     </button>
-                                    <p class="text-secondary  mt-3 mb-0"><i class="ti ti-shield-check me-1"></i> Tim kami akan merespon via WhatsApp dalam 1x24 jam</p>
+                                    <p class="text-secondary mt-3 mb-0"><i class="ti ti-shield-check me-1"></i> Tim kami akan merespon via WhatsApp dalam 1x24 jam</p>
                                 </div>
                             </form>
                         </div>
@@ -603,8 +616,8 @@
             <h2 class="fw-bold display-6 text-white mb-4">Siap Memulai Perjalanan?</h2>
             <p class="text-white-50 mb-6 mx-auto" style="max-width: 540px;">Daftarkan diri Anda sekarang dan jadilah bagian dari keluarga besar kampus kami.</p>
             <div class="d-flex justify-content-center gap-3">
-                <a href="{{ route('register-account') }}" class="btn btn-primary  px-5 d-flex align-items-center gap-2"><i class="ti ti-user-plus fs-4"></i> Daftar Sekarang</a>
-                <a href="{{ route('login') }}" class="btn btn-outline-light  px-5 d-flex align-items-center gap-2"><i class="ti ti-login fs-4"></i> Login</a>
+                <a href="{{ route('register-account') }}" class="btn btn-primary px-5 d-flex align-items-center gap-2"><i class="ti ti-user-plus fs-4"></i> Daftar Sekarang</a>
+                <a href="{{ route('login') }}" class="btn btn-outline-light px-5 d-flex align-items-center gap-2"><i class="ti ti-login fs-4"></i> Login</a>
             </div>
         </div>
     </section>
@@ -618,11 +631,11 @@
                         <img src="{{ asset('assets/images/brand/logo/logo-light.png') }}" width="32" alt="">
                         <span class="fw-bold text-white">eAdmisi</span>
                     </div>
-                    <p class="text-white-50 ">Platform Sistem Informasi Manajemen Akademik terintegrasi untuk mendukung proses belajar mengajar yang efektif dan efisien.</p>
+                    <p class="text-white-50">Platform Sistem Informasi Manajemen Akademik terintegrasi untuk mendukung proses belajar mengajar yang efektif dan efisien.</p>
                 </div>
                 <div class="col-lg-2 col-md-4">
                     <h5 class="fw-bold text-white mb-3">Tautan</h5>
-                    <ul class="list-unstyled ">
+                    <ul class="list-unstyled">
                         <li class="mb-2"><a href="#tentang" class="text-white-50 text-decoration-none">Tentang</a></li>
                         <li class="mb-2"><a href="#jalur" class="text-white-50 text-decoration-none">Jalur</a></li>
                         <li class="mb-2"><a href="#alur" class="text-white-50 text-decoration-none">Alur PMB</a></li>
@@ -631,7 +644,7 @@
                 </div>
                 <div class="col-lg-3 col-md-4">
                     <h5 class="fw-bold text-white mb-3">Kontak</h5>
-                    <ul class="list-unstyled  text-white-50">
+                    <ul class="list-unstyled text-white-50">
                         <li class="mb-2"><i class="ti ti-map-pin me-2"></i>Jl. Pendidikan No. 123, Jakarta</li>
                         <li class="mb-2"><i class="ti ti-phone me-2"></i>(021) 1234-5678</li>
                         <li class="mb-2"><i class="ti ti-mail me-2"></i>info@eadmisi.ac.id</li>
@@ -648,7 +661,7 @@
             </div>
             <hr class="my-4 border-white-10">
             <div class="text-center">
-                <p class="text-white-50  mb-0">&copy; {{ date('Y') }} eAdmisi. All rights reserved.</p>
+                <p class="text-white-50 mb-0">&copy; {{ date('Y') }} eAdmisi. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -672,11 +685,16 @@
     <script>
         // ── Navbar scroll effect ──
         const navbar = document.getElementById('pmbNavbar');
+        const daftarBtn = document.getElementById('daftarBtn');
         function updateNavbar() {
             if (window.scrollY > 50) {
                 navbar.classList.add('navbar-scrolled');
+                daftarBtn.classList.remove('btn-outline-light');
+                daftarBtn.classList.add('btn-outline-dark');
             } else {
                 navbar.classList.remove('navbar-scrolled');
+                daftarBtn.classList.remove('btn-outline-dark');
+                daftarBtn.classList.add('btn-outline-light');
             }
         }
         window.addEventListener('scroll', updateNavbar, { passive: true });
@@ -690,6 +708,28 @@
                 if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
         });
+
+        // ── Animated counter for stats ──
+        function animateCounters() {
+            document.querySelectorAll('.counter').forEach(el => {
+                const target = parseInt(el.getAttribute('data-target'));
+                const suffix = el.getAttribute('data-suffix') || '';
+                const duration = 2000;
+                const step = Math.max(1, Math.ceil(target / (duration / 16)));
+                let current = 0;
+                function update() {
+                    current += step;
+                    if (current >= target) {
+                        el.textContent = target + suffix;
+                        return;
+                    }
+                    el.textContent = current + suffix;
+                    requestAnimationFrame(update);
+                }
+                update();
+            });
+        }
+        setTimeout(animateCounters, 500);
     </script>
 </body>
 </html>

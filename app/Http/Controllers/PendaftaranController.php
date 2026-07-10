@@ -130,11 +130,18 @@ class PendaftaranController extends Controller
             // Skip if already in terminal state
             if (in_array($registration->status, ['Lulus', 'Gagal', 'rejected'])) continue;
 
-            $registration->update([
+            $updateData = [
                 'status' => $action,
                 'status_kelulusan' => $action === 'Lulus' ? 'Lulus' : 'Tidak Lulus',
                 'status_pendaftaran' => $action === 'Lulus' ? 'Lulus' : 'Gagal',
-            ]);
+            ];
+
+            // TRIGGER 1: When candidate passes selection, set re-registration status
+            if ($action === 'Lulus') {
+                $updateData['status_registrasi_ulang'] = 'belum_registrasi';
+            }
+
+            $registration->update($updateData);
 
             \App\Helpers\ActivityLogger::log('update', 'registration', 'Admin set status ' . $action . ' for registration #' . $id);
             $count++;

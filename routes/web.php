@@ -66,6 +66,11 @@ Route::get('/api/registration-paths', [RegistrationPathController::class, 'apiLi
         Route::post('/payment/{paymentId}/verify', [PaymentController::class, 'manualVerify'])->name('payment.manual-verify');
         Route::post('/pendaftaran/{id}/verify-re-registration', [PendaftaranController::class, 'verifyReRegistration'])->name('pendaftaran.verify-re-registration');
         Route::post('/pendaftaran/bulk-kelulusan', [PendaftaranController::class, 'bulkKelulusan'])->name('pendaftaran.bulk-kelulusan');
+        
+        // ═══ REGISTRASI ULANG MENU ═══
+        Route::get('/registrasi-ulang', [\App\Http\Controllers\RegistrasiUlangController::class, 'index'])->name('registrasi-ulang.index');
+        Route::get('/registrasi-ulang/{id}', [\App\Http\Controllers\RegistrasiUlangController::class, 'show'])->name('registrasi-ulang.show');
+        Route::post('/registrasi-ulang/{id}/approve', [\App\Http\Controllers\RegistrasiUlangController::class, 'approve'])->name('registrasi-ulang.approve');
     });
 
 // Halaman "Daftar PMB" untuk calon mahasiswa (login required)

@@ -27,6 +27,7 @@ class Registration extends Model
         'status',
         'status_kelulusan',
         'status_pendaftaran',
+        'status_registrasi_ulang',
         'nisn',
         'nama_ibu_kandung',
         'penerima_kps',
@@ -40,6 +41,38 @@ class Registration extends Model
     ];
 
     protected $table = 'registrations';
+
+    /**
+     * Status registrasi ulang labels for display.
+     */
+    const STATUS_REGISTRASI_ULANG_LABELS = [
+        'belum_registrasi'             => 'Belum Registrasi Ulang',
+        'menunggu_pembayaran'          => 'Menunggu Pembayaran Registrasi Ulang',
+        'sudah_registrasi_no_tagihan'  => 'Sudah Registrasi Ulang',
+        'sudah_registrasi_lunas'       => 'Sudah Melakukan Registrasi Ulang',
+    ];
+
+    /**
+     * Get human-readable label for status_registrasi_ulang.
+     */
+    public function getStatusRegistrasiUlangLabelAttribute(): string
+    {
+        return self::STATUS_REGISTRASI_ULANG_LABELS[$this->status_registrasi_ulang] ?? '-';
+    }
+
+    /**
+     * Get badge class for status_registrasi_ulang.
+     */
+    public function getStatusRegistrasiUlangBadgeAttribute(): string
+    {
+        return match ($this->status_registrasi_ulang) {
+            'belum_registrasi'            => 'bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle',
+            'menunggu_pembayaran'         => 'bg-warning-subtle text-warning-emphasis border border-warning-subtle',
+            'sudah_registrasi_no_tagihan' => 'bg-info-subtle text-info-emphasis border border-info-subtle',
+            'sudah_registrasi_lunas'      => 'bg-success-subtle text-success-emphasis border border-success-subtle',
+            default                       => 'bg-light text-muted',
+        };
+    }
 
     public function user()
     {

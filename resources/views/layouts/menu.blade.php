@@ -11,7 +11,7 @@
     $isCalonMahasiswa = $user && $user->roles->contains('role_code', 'CALON_MAHASISWA');
     
     // Admin-only URL prefixes that should be hidden from calon_mahasiswa
-    $adminPrefixes = ['settings/', 'pendaftaran'];
+    $adminPrefixes = ['settings/', 'pendaftaran', 'registrasi-ulang'];
   @endphp
   <ul class="navbar-nav flex-column">
     @if(isset($sideMenus))

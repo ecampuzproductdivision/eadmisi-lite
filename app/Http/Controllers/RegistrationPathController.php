@@ -727,12 +727,15 @@ class RegistrationPathController extends Controller
             'kelurahan_id' => $request->kelurahan_id,
             'status' => 'Menunggu Verifikasi Registrasi Ulang',
             're_registration_submitted_at' => now(),
+            'status_registrasi_ulang' => 'menunggu_pembayaran',
         ]);
 
         if ($path) {
             $biayaKomponens = JalurPendaftaranBiaya::with('komponenBiaya')->where('registration_path_id', $path->id)->get();
-            if ($biayaKomponens->isNotEmpty()) {
-                $totalBiaya = $biayaKomponens->sum('nominal');
+            $totalBiaya = $biayaKomponens->sum('nominal');
+
+            if ($totalBiaya > 0) {
+                // TRIGGER 2A: Has billing fees → generate invoice, set 'menunggu_pembayaran'
                 $itemizedDetails = [];
                 foreach ($biayaKomponens as $bk) {
                     $itemizedDetails[] = ['kode_komponen' => $bk->komponenBiaya?->kode_komponen, 'nama_komponen' => $bk->komponenBiaya?->nama_komponen, 'nominal' => (int) $bk->nominal];
@@ -741,8 +744,19 @@ class RegistrationPathController extends Controller
                 $paymentService = app(\App\Services\PaymentService::class);
                 $payment = $paymentService->createInvoice($registration, 'registrasi_ulang', $totalBiaya);
                 $payment->update(['metadata' => $metadata]);
+
+                $registration->update(['status_registrasi_ulang' => 'menunggu_pembayaran']);
+
                 ActivityLogger::log('create', 'payment', 'Re-registration invoice generated: ' . $payment->invoice_number . ' for ' . ($path?->name ?? '') . ' total: ' . $totalBiaya);
+            } else {
+                // TRIGGER 2B: No billing fees (KIP Kuliah pathway) → bypass billing, set langsung
+                $registration->update(['status_registrasi_ulang' => 'sudah_registrasi_no_tagihan']);
+
+                ActivityLogger::log('update', 'registration', 'Re-registration completed without billing (Rp 0) for #' . $registration->id);
             }
+        } else {
+            // No path available → assume no billing
+            $registration->update(['status_registrasi_ulang' => 'sudah_registrasi_no_tagihan']);
         }
 
         ActivityLogger::log('update', 'registration', 'Applicant completed re-registration for path: ' . ($path?->name ?? ''));

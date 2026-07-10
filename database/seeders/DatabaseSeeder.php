@@ -58,6 +58,9 @@ class DatabaseSeeder extends Seeder
 
             // ── Jalur Pendaftaran (depends on all above) ──
             JalurPendaftaranSeeder::class,
+
+            // ── Registrasi Ulang Menu (after PendaftaranSeeder) ──
+            RegistrasiUlangMenuSeeder::class,
         ]);
     }
 }

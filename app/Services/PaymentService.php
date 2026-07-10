@@ -101,12 +101,22 @@ class PaymentService
                     'paid_at'            => now(),
                 ]);
 
-                // Update registration — payment_verified for both types
-                // registrasi_ulang: admin must manually approve (generate NIM) to set 'registered'
-                $payment->registration->update([
-                    'status' => 'payment_verified',
-                    'paid_at' => now(),
-                ]);
+                $registration = $payment->registration;
+
+                if ($payment->payment_type === 'registrasi_ulang') {
+                    // TRIGGER 3: Payment fulfilled for registrasi_ulang → set status to lunas
+                    // Keeps status as 'Menunggu Verifikasi Registrasi Ulang' so admin can approve & give NIM
+                    $registration->update([
+                        'paid_at' => now(),
+                        'status_registrasi_ulang' => 'sudah_registrasi_lunas',
+                    ]);
+                } else {
+                    // Update registration — payment_verified for pendaftaran type
+                    $registration->update([
+                        'status' => 'payment_verified',
+                        'paid_at' => now(),
+                    ]);
+                }
 
                 $event = 'payment_success';
             } elseif ($transactionStatus === 'failed' || $transactionStatus === 'expired') {
@@ -219,10 +229,20 @@ class PaymentService
                 'payment_channel'    => 'admin_verification',
             ]);
 
-            $payment->registration->update([
-                'status' => 'payment_verified',
-                'paid_at' => now(),
-            ]);
+            $registration = $payment->registration;
+
+            if ($payment->payment_type === 'registrasi_ulang') {
+                // TRIGGER 3 (manual): Payment fulfilled for registrasi_ulang → set status to lunas
+                $registration->update([
+                    'paid_at' => now(),
+                    'status_registrasi_ulang' => 'sudah_registrasi_lunas',
+                ]);
+            } else {
+                $registration->update([
+                    'status' => 'payment_verified',
+                    'paid_at' => now(),
+                ]);
+            }
 
             PaymentLog::create([
                 'payment_id' => $payment->id,

@@ -264,22 +264,32 @@
                       <p class="small mb-0">Terima kasih, pembayaran registrasi ulang Anda telah lunas.</p>
                     </div>
                   </div>
-                @elseif($paymentStatus === 'Menunggu Pembayaran')
-                  <div class="alert alert-info border-0 shadow-sm mb-0 d-flex align-items-center gap-3">
-                    <i class="ti ti-clock fs-3"></i>
-                    <div>
-                      <h6 class="fw-bold mb-1">Menunggu Pembayaran</h6>
-                      <p class="small mb-0">Invoice telah diterbitkan. Silakan lakukan pembayaran.</p>
+                @elseif($payment)
+                  {{-- Invoice already exists → HIDE Bayar Sekarang --}}
+                  @php $payStatus = $payment->transaction_status; @endphp
+                  @if($payStatus === 'pending')
+                    <div class="alert alert-info border-0 shadow-sm mb-0 d-flex align-items-center gap-3">
+                      <i class="ti ti-clock fs-3"></i>
+                      <div>
+                        <h6 class="fw-bold mb-1">Tagihan Aktif — {{ $payment->invoice_number }}</h6>
+                        <p class="small mb-0">Invoice telah diterbitkan. Silakan lakukan pembayaran menggunakan metode yang tersedia. Tombol "Bayar Sekarang" disembunyikan karena invoice sudah aktif.</p>
+                      </div>
                     </div>
-                  </div>
-                  <form action="{{ route('payment.invoice', $registration->id) }}" method="POST" class="mt-3">
-                    @csrf
-                    <input type="hidden" name="payment_type" value="registrasi_ulang">
-                    <button type="submit" class="btn btn-lg btn-success w-100">
-                      <i class="ti ti-credit-card me-2"></i> Bayar Sekarang
-                    </button>
-                  </form>
+                  @elseif($payStatus === 'success')
+                    <div class="alert alert-success border-0 shadow-sm mb-0 d-flex align-items-center gap-3">
+                      <i class="ti ti-circle-check fs-3"></i>
+                      <div>
+                        <h6 class="fw-bold mb-1">Pembayaran Lunas</h6>
+                        <p class="small mb-0">Invoice {{ $payment->invoice_number }} — Terima kasih, pembayaran sudah diverifikasi.</p>
+                      </div>
+                    </div>
+                  @else
+                    <div class="alert alert-secondary border-0 shadow-sm mb-0">
+                      <i class="ti ti-receipt me-2"></i> Invoice {{ $payment->invoice_number }} — Status: {{ $payment->transaction_status }}
+                    </div>
+                  @endif
                 @else
+                  {{-- No invoice yet → show Bayar Sekarang --}}
                   <form action="{{ route('payment.invoice', $registration->id) }}" method="POST">
                     @csrf
                     <input type="hidden" name="payment_type" value="registrasi_ulang">

@@ -95,104 +95,26 @@
       </div>
 
       @if($registration->status === 'Menunggu Verifikasi Registrasi Ulang' || $registration->status === 'registered' || $registration->re_registration_submitted_at)
-      <!-- Card Registrasi Ulang -->
+      <!-- Card Registrasi Ulang (deprecated here — redirect to dedicated module) -->
       <div class="card shadow-sm border-0 rounded-3 mb-4">
-        <div class="card-header bg-warning-subtle border-bottom d-flex align-items-center gap-2 py-3">
-          <i class="ti ti-id-badge text-warning fs-4"></i>
-          <h6 class="fw-bold mb-0 text-warning-emphasis">Data Registrasi Ulang (PDDikti & EMIS Sync)</h6>
+        <div class="card-header bg-info-subtle border-bottom d-flex align-items-center gap-2 py-3">
+          <i class="ti ti-id-badge text-info fs-4"></i>
+          <h6 class="fw-bold mb-0 text-info-emphasis">Registrasi Ulang</h6>
         </div>
         <div class="card-body">
-          @if($registration->status === 'Menunggu Verifikasi Registrasi Ulang')
-            <div class="alert alert-warning border-0 shadow-none mb-4 d-flex gap-3">
-              <i class="ti ti-alert-triangle fs-3 mt-1"></i>
-              <div>
-                <h6 class="fw-bold mb-1">Persetujuan Registrasi Ulang Diperlukan</h6>
-                <p class="small mb-3">Calon mahasiswa telah mengirimkan data registrasi ulang. Masukkan NIM untuk menyetujui dan mengaktifkan status mahasiswa.</p>
-                <form action="{{ route('pendaftaran.verify-re-registration', $registration->id) }}" method="POST" class="row g-2 align-items-center">
-                  @csrf
-                  <div class="col-sm-6 col-md-5">
-                    <input type="text" name="nim" class="form-control form-control-sm" placeholder="Nomor Induk Mahasiswa (NIM)" required>
-                  </div>
-                  <div class="col-sm-6">
-                    <button type="submit" class="btn btn-success btn-sm w-100 w-sm-auto">
-                      <i class="ti ti-check-double me-1"></i> Setujui & Generate NIM
-                    </button>
-                  </div>
-                </form>
-              </div>
+          <div class="alert alert-info border-0 shadow-none mb-0 d-flex align-items-center gap-3">
+            <i class="ti ti-arrow-right fs-3"></i>
+            <div>
+              <h6 class="fw-bold mb-1">Data Registrasi Ulang Dipindahkan</h6>
+              <p class="small mb-0">
+                Data registrasi ulang (PDDIKTI 16-field profile, status state machine, dan approve NIM) 
+                telah dipindahkan ke menu terpisah 
+                <a href="{{ route('registrasi-ulang.show', $registration->id) }}" class="fw-bold text-decoration-none">
+                  <i class="ti ti-external-link me-1"></i>Registrasi Ulang
+                </a>
+                untuk pengelolaan yang lebih terfokus.
+              </p>
             </div>
-          @elseif($registration->status === 'registered')
-            <div class="alert alert-success border-0 shadow-none mb-4 d-flex align-items-center gap-3">
-              <i class="ti ti-circle-check fs-3"></i>
-              <div>
-                <h6 class="fw-bold mb-0">Registrasi Ulang Terverifikasi</h6>
-                <p class="small mb-0">Mahasiswa telah terregistrasi secara resmi dengan NIM: <strong class="fs-5">{{ $registration->nim }}</strong></p>
-              </div>
-            </div>
-          @endif
-
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="small text-muted mb-1">Nama Lengkap</label>
-              <p class="fw-semibold mb-0">{{ $registration->nama_lengkap }}</p>
-            </div>
-            <div class="col-md-6">
-              <label class="small text-muted mb-1">Jenis Kelamin</label>
-              <p class="fw-semibold mb-0">{{ $registration->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}</p>
-            </div>
-            <div class="col-md-6">
-              <label class="small text-muted mb-1">Tempat & Tanggal Lahir</label>
-              <p class="fw-semibold mb-0">{{ $registration->tempat_lahir }}, {{ $registration->tanggal_lahir ? \Carbon\Carbon::parse($registration->tanggal_lahir)->format('d/m/Y') : '-' }}</p>
-            </div>
-            <div class="col-md-6">
-              <label class="small text-muted mb-1">Agama</label>
-              <p class="fw-semibold mb-0">{{ $registration->agama }}</p>
-            </div>
-            <div class="col-md-6">
-              <label class="small text-muted mb-1">NIK (16 Digit)</label>
-              <p class="fw-semibold mb-0">{{ $registration->nik }}</p>
-            </div>
-            <div class="col-md-6">
-              <label class="small text-muted mb-1">NISN (10 Digit)</label>
-              <p class="fw-semibold mb-0">{{ $registration->nisn ?? '-' }}</p>
-            </div>
-            <div class="col-md-6">
-              <label class="small text-muted mb-1">Nama Ibu Kandung</label>
-              <p class="fw-semibold mb-0">{{ $registration->nama_ibu_kandung ?? '-' }}</p>
-            </div>
-            <div class="col-md-6">
-              <label class="small text-muted mb-1">Kewarganegaraan</label>
-              <p class="fw-semibold mb-0">{{ $registration->kewarganegaraan ?? '-' }}</p>
-            </div>
-            <div class="col-md-6">
-              <label class="small text-muted mb-1">Penerima KPS / Kebutuhan Khusus</label>
-              <p class="fw-semibold mb-0">KPS: {{ $registration->penerima_kps ?? '-' }} / Kebutuhan Khusus: {{ $registration->kebutuhan_khusus ?? '-' }}</p>
-            </div>
-            <div class="col-md-6">
-              <label class="small text-muted mb-1">Kabupaten</label>
-              <p class="fw-semibold mb-0">{{ $registration->regency ? ($registration->regency->type . ' ' . $registration->regency->name) : '-' }}</p>
-            </div>
-            <div class="col-md-6">
-              <label class="small text-muted mb-1">Kecamatan</label>
-              <p class="fw-semibold mb-0">{{ $registration->kecamatan?->name ?? '-' }}</p>
-            </div>
-            <div class="col-md-6">
-              <label class="small text-muted mb-1">Kelurahan</label>
-              <p class="fw-semibold mb-0">{{ $registration->kelurahan?->name ?? '-' }}</p>
-            </div>
-            <div class="col-md-6">
-              <label class="small text-muted mb-1">No. Handphone</label>
-              <p class="fw-semibold mb-0">{{ $registration->no_hp }}</p>
-            </div>
-            <div class="col-md-6">
-              <label class="small text-muted mb-1">Alamat Email</label>
-              <p class="fw-semibold mb-0">{{ $registration->email }}</p>
-            </div>
-            @if($registration->re_registration_submitted_at)
-              <div class="col-12 mt-2">
-                <small class="text-muted">Data disubmit pada: {{ \Carbon\Carbon::parse($registration->re_registration_submitted_at)->format('d/m/Y H:i') }}</small>
-              </div>
-            @endif
           </div>
         </div>
       </div>

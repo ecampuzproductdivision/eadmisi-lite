@@ -267,8 +267,10 @@ class RegistrationPathController extends Controller
 
         $hasExam = $path && $path->is_ujian_online;
         $hasManualVerification = $path && $path->metode_pengumuman === 'penilaian_manual';
-        $totalSteps = $hasExam ? 5 : ($hasManualVerification ? 5 : 4);
-        $hasStep4Content = $hasExam || $hasManualVerification;
+        $hasWawancara = $path && $path->gunakan_wawancara;
+        // Step count: if wawancara is enabled, inject interview step between exam and re-registration
+        $totalSteps = $hasWawancara ? 6 : ($hasExam ? 5 : ($hasManualVerification ? 5 : 4));
+        $hasStep4Content = $hasExam || $hasManualVerification || $hasWawancara;
 
         $isStep3Completed = false;
         $documentCount = 0;
@@ -389,7 +391,8 @@ class RegistrationPathController extends Controller
             'path', 'registration', 'currentStep', 'hasExam', 'totalSteps',
             'isStep3Completed', 'documentCount', 'isPaymentLocked',
             'hasPaidInvoice', 'examResult', 'masterRegencies',
-            'ulangPayment', 'ulangBiayaList', 'ulangTotalBiaya'
+            'ulangPayment', 'ulangBiayaList', 'ulangTotalBiaya',
+            'hasWawancara'
         ));
     }
 

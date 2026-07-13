@@ -7,8 +7,9 @@
     $currentStep = $currentStep ?? 1;
     $hasExam = $path && $path->is_ujian_online;
     $hasManualVerification = $path && $path->metode_pengumuman === 'penilaian_manual';
-    $totalSteps = $hasExam ? 5 : ($hasManualVerification ? 5 : 4);
-    $hasStep4Content = $hasExam || $hasManualVerification;
+    $hasWawancara = $hasWawancara ?? ($path && $path->gunakan_wawancara);
+    $totalSteps = $hasWawancara ? 6 : ($hasExam ? 5 : ($hasManualVerification ? 5 : 4));
+    $hasStep4Content = $hasExam || $hasManualVerification || $hasWawancara;
     $berkasList = $path && $path->templateBerkas && $path->templateBerkas->syaratDokumens
         ? $path->templateBerkas->syaratDokumens : collect();
 
@@ -370,6 +371,106 @@
                 </div>
               @endif
               @endif
+            @endif
+          </div>
+        </div>
+        @endif
+
+        @if($hasWawancara)
+        {{-- Step 5: Tahapan Wawancara (injected when wawancara is enabled) --}}
+        @php
+          $wawancaraStep = 5;
+          $wawancaraData = $registration ? $registration->wawancara : null;
+          // Determine interview step status
+          $wawancaraStepStatus = 'locked';
+          if ($registration && !in_array($registration->status, ['rejected', 'Gagal'])) {
+              if ($registration->status_wawancara === 'menunggu_penjadwalan_wawancara' || $registration->status_wawancara === 'menunggu_wawancara') {
+                  $wawancaraStepStatus = 'active';
+              } elseif ($currentStep > 5) {
+                  $wawancaraStepStatus = 'completed';
+              } elseif ($currentStep == $totalSteps) {
+                  $wawancaraStepStatus = 'active';
+              }
+          }
+        @endphp
+        <div class="step-item {{ $wawancaraStepStatus }}" id="stepWawancara">
+          <div class="step-indicator">
+            <div class="step-circle {{ $wawancaraStepStatus === 'completed' ? 'bg-success' : ($wawancaraStepStatus === 'active' ? 'bg-primary' : 'bg-light') }}">
+              @if($wawancaraStepStatus === 'completed')
+                <i class="ti ti-check text-white"></i>
+              @elseif($wawancaraStepStatus === 'active')
+                <i class="ti ti-message-dots text-white"></i>
+              @else
+                <i class="ti ti-lock text-muted"></i>
+              @endif
+            </div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-header">
+              <span class="badge {{ $wawancaraStepStatus === 'completed' ? 'bg-success-subtle text-success' : ($wawancaraStepStatus === 'active' ? 'bg-primary-subtle text-primary' : 'bg-secondary-subtle text-secondary') }} px-3 py-2 fw-semibold">Langkah {{ $wawancaraStep }}</span>
+              @if($wawancaraStepStatus === 'completed')
+                <span class="badge bg-success-subtle text-success px-3 py-2"><i class="ti ti-check me-1"></i> Selesai</span>
+              @elseif($wawancaraStepStatus === 'active')
+                <span class="badge bg-primary-subtle text-primary px-3 py-2"><i class="ti ti-loader me-1"></i> Sedang Aktif</span>
+              @else
+                <span class="badge bg-secondary-subtle text-secondary px-3 py-2"><i class="ti ti-lock me-1"></i> Terkunci</span>
+              @endif
+            </div>
+            <h5 class="fw-bold mt-3"><i class="ti ti-message-dots text-primary me-2"></i>Tahapan Wawancara</h5>
+            
+            @if($wawancaraStepStatus === 'active')
+              @if($registration->status_wawancara === 'menunggu_penjadwalan_wawancara')
+                <div class="alert alert-warning border-0 shadow-sm mb-0 d-flex gap-3 mt-3">
+                  <div class="bg-warning-subtle text-warning rounded-circle p-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 50px; height: 50px;">
+                    <i class="ti ti-clock fs-3"></i>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-1">Menunggu Penjadwalan Wawancara</h6>
+                    <p class="small mb-0">Jadwal wawancara Anda sedang dipersiapkan oleh panitia. Informasi lebih lanjut mengenai hari, tanggal, jam, dan tempat/link wawancara akan muncul di sini setelah dijadwalkan oleh admin. Silakan cek halaman ini secara berkala.</p>
+                  </div>
+                </div>
+              @elseif($registration->status_wawancara === 'menunggu_wawancara' && $wawancaraData)
+                <div class="alert alert-info border-0 shadow-sm mb-0 d-flex gap-3 mt-3">
+                  <div class="bg-info-subtle text-info rounded-circle p-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 50px; height: 50px;">
+                    <i class="ti ti-calendar-event fs-3"></i>
+                  </div>
+                  <div>
+                    <h6 class="fw-bold mb-1">Jadwal Wawancara Anda</h6>
+                    <table class="table table-sm table-borderless mt-2 mb-0 small">
+                      @if($wawancaraData->tanggal_wawancara)
+                      <tr><td class="ps-0 text-muted" style="width:140px;">Hari/Tanggal</td><td class="fw-semibold">{{ $wawancaraData->tanggal_wawancara->format('l, d/m/Y') }}</td></tr>
+                      @endif
+                      @if($wawancaraData->jam_wawancara)
+                      <tr><td class="ps-0 text-muted">Jam</td><td class="fw-semibold">{{ $wawancaraData->jam_wawancara }}</td></tr>
+                      @endif
+                      @if($wawancaraData->lokasi_wawancara)
+                      <tr><td class="ps-0 text-muted">Tempat/Link</td><td class="fw-semibold">{{ $wawancaraData->lokasi_wawancara }}</td></tr>
+                      @endif
+                      @if($wawancaraData->nama_pewawancara)
+                      <tr><td class="ps-0 text-muted">Pewawancara</td><td class="fw-semibold">{{ $wawancaraData->nama_pewawancara }}</td></tr>
+                      @endif
+                    </table>
+                    <p class="small text-muted mt-2 mb-0">Silakan hadir sesuai jadwal yang telah ditentukan.</p>
+                  </div>
+                </div>
+              @else
+                <div class="alert alert-info border-0 shadow-sm mb-0 d-flex gap-3 mt-3">
+                  <i class="ti ti-hourglass fs-3 mt-1"></i>
+                  <div>
+                    <h6 class="fw-bold mb-1">Menunggu Proses Wawancara</h6>
+                    <p class="small mb-0">Status wawancara Anda akan muncul di sini setelah proses seleksi berjalan.</p>
+                  </div>
+                </div>
+              @endif
+            @elseif($wawancaraStepStatus === 'completed')
+              <div class="step-status text-success">
+                <i class="ti ti-circle-check me-1"></i> Tahap wawancara telah selesai.
+              </div>
+            @else
+              <div class="step-status text-muted">
+                <i class="ti ti-lock me-1"></i> Selesaikan tahap sebelumnya untuk membuka.
+              </div>
             @endif
           </div>
         </div>

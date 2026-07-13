@@ -1,191 +1,829 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta content="Codescandy" name="author">
-    <title>eAdmisi | Platform Sistem Penerimaan Mahasiswa</title>
-    <!-- Favicon icon-->
-    <link rel="icon" href="/assets/images/favicon/favicon.ico" />
-
-    <meta name="msapplication-TileColor" content="#ffffff" />
-    <meta name="msapplication-TileImage" content="http://127.0.0.1:8001/assets/images/favicon/ms-icon-144x144.png" />
+    <meta name="csrf-token" content="23Ta0W1NwqtSNffxkH5OQ51dFfRZ2hwSLK04x6sq">
+    <title>PMB | Penerimaan Mahasiswa Baru - eAdmisi</title>
+    <link rel="icon" href="http://localhost:8000/assets/images/favicon/favicon.ico" />
     <meta name="theme-color" content="#ffffff" />
-    <!-- Color modes -->
-    <script src="http://127.0.0.1:8001/assets/js/vendors/color-modes.js"></script>
-    <script>
-      if (localStorage.getItem('sidebarExpanded') === 'false') {
-        document.documentElement.classList.add('collapsed');
-        document.documentElement.classList.remove('expanded');
-      } else {
-        document.documentElement.classList.remove('collapsed');
-        document.documentElement.classList.add('expanded');
-      }
-
-      function updateBrandLogo() {
-        const htmlEl = document.documentElement;
-        let theme = htmlEl.getAttribute('data-bs-theme');
-        if (!theme || theme === 'auto') {
-          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
-        
-        const logoImgs = document.querySelectorAll('.brand-logo-img');
-        logoImgs.forEach(img => {
-          if (theme === 'dark') {
-            img.src = "http://127.0.0.1:8001/assets/images/brand/logo/logo-dark.png";
-          } else {
-            img.src = "http://127.0.0.1:8001/assets/images/brand/logo/logo-light.png";
-          }
-        });
-      }
-
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'data-bs-theme') {
-            updateBrandLogo();
-          }
-        });
-      });
-      observer.observe(document.documentElement, { attributes: true });
-
-      document.addEventListener('DOMContentLoaded', updateBrandLogo);
-    </script>
-    <!-- Libs CSS -->
+    <script src="http://localhost:8000/assets/js/vendors/color-modes.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap" />
-    <link rel="stylesheet" href="http://127.0.0.1:8001/assets/libs/simplebar/dist/simplebar.min.css" />
-    <link rel="stylesheet" href="http://127.0.0.1:8001/assets/libs/@tabler/icons-webfont/tabler-icons.min.css" />
-
-    <!-- Theme CSS -->
-    <link rel="stylesheet" href="http://127.0.0.1:8001/assets/css/theme.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="http://localhost:8000/assets/libs/simplebar/dist/simplebar.min.css" />
+    <link rel="stylesheet" href="http://localhost:8000/assets/libs/@tabler/icons-webfont/tabler-icons.min.css" />
+    <link rel="stylesheet" href="http://localhost:8000/assets/css/theme.min.css">
     <style>
-      .btn-primary {
-        --ds-btn-hover-bg: #d82939;
-        --ds-btn-hover-border-color: #d82939;
-        --ds-btn-active-bg: #c82635;
-        --ds-btn-active-border-color: #c82635;
-      }
-      .site-logo-text {
-        color: #1c252e !important;
-      }
-      [data-bs-theme="dark"] .site-logo-text {
-        color: #cfd1d2 !important;
-      }
+        .btn-primary {
+            --ds-btn-hover-bg: #d82939;
+            --ds-btn-hover-border-color: #d82939;
+            --ds-btn-active-bg: #c82635;
+            --ds-btn-active-border-color: #c82635;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #1c252e 0%, #2d3748 50%, #1a365d 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: rgba(246, 58, 76, 0.08);
+        }
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: rgba(246, 58, 76, 0.05);
+        }
+        .floating-card { animation: float 6s ease-in-out infinite; }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+        .stats-card {
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+        .stats-card:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-5px);
+        }
+        .path-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .path-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .feature-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        /* ── Navbar: initial (transparent on hero) ── */
+        .nav-pmb {
+            background: transparent;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .nav-pmb .navbar-brand .logo-dark { display: none; }
+        .nav-pmb .navbar-brand .logo-light { display: inline-block; }
+        .nav-pmb .nav-link { color: rgba(255,255,255,0.7) !important; transition: color 0.3s ease; }
+        .nav-pmb .nav-link:hover { color: #ffffff !important; }
+        .nav-pmb .navbar-brand .fw-bold { color: #ffffff !important; }
+
+        /* ── Navbar: scrolled state ── */
+        .nav-pmb.navbar-scrolled {
+            background: rgba(255,255,255,0.98) !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .nav-pmb.navbar-scrolled .navbar-brand .logo-dark { display: inline-block; }
+        .nav-pmb.navbar-scrolled .navbar-brand .logo-light { display: none; }
+        .nav-pmb.navbar-scrolled .nav-link { color: #495057 !important; }
+        .nav-pmb.navbar-scrolled .nav-link:hover { color: #1c252e !important; }
+        .nav-pmb.navbar-scrolled .navbar-brand .fw-bold { color: #1c252e !important; }
+        .nav-pmb.navbar-scrolled .btn-outline-dark {
+            border-color: #dee2e6; color: #495057;
+        }
+        .nav-pmb.navbar-scrolled .btn-outline-dark:hover {
+            background: #f8f9fa; color: #1c252e;
+        }
+        .step-number {
+            width: 48px; height: 48px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; font-weight: 700; font-size: 1.2rem;
+        }
+        [data-bs-theme="dark"] .feature-card,
+        [data-bs-theme="dark"] .path-card { border-color: rgba(255,255,255,0.05); }
+
+        /* ── Light Mode Tweak ── */
+        [data-bs-theme="light"] .hero-section {
+            background: linear-gradient(135deg, #1c252e 0%, #2d3748 50%, #1a365d 100%) !important;
+        }
+        [data-bs-theme="light"] .hero-section::before,
+        [data-bs-theme="light"] .hero-section::after { display: block; }
+
+        /* ── Section background alternation ── */
+        [data-bs-theme="light"] .section-soft-light {
+            background-color: #f8f9fa !important;
+        }
+        [data-bs-theme="light"] .section-soft-primary {
+            background: linear-gradient(180deg, #f0f7ff 0%, #e8f4fd 100%) !important;
+        }
+        [data-bs-theme="light"] .section-white {
+            background-color: #ffffff !important;
+        }
+
+        /* ── Stats card for light mode ── */
+        [data-bs-theme="light"] .stats-card {
+            background: rgba(255,255,255,0.9) !important;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0,0,0,0.06) !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        }
+        [data-bs-theme="light"] .stats-card .text-white-50 { color: #6c757d !important; }
+        [data-bs-theme="light"] .stats-card .text-danger { color: #dc3545 !important; }
+
+        /* ── Subtle section divider ── */
+        .section-divider {
+            position: relative;
+        }
+        .section-divider::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, transparent, var(--ds-primary, #f63a4c), transparent);
+            opacity: 0.3;
+        }
+        [data-bs-theme="light"] .section-divider::before {
+            opacity: 0.5;
+        }
+
+        /* ── Card subtle improvements ── */
+        [data-bs-theme="light"] .path-card,
+        [data-bs-theme="light"] .feature-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(4px);
+        }
+
+        /* ── Smooth section transitions ── */
+        section {
+            transition: background-color 0.4s ease;
+        }
     </style>
-  </head>
-
-  <body>
-    <main class="d-flex flex-column justify-content-center vh-100">
-      <!--Sign up start-->
-      <section>
+</head>
+<body>
+    <nav id="pmbNavbar" class="navbar navbar-expand-lg nav-pmb fixed-top py-3">
         <div class="container">
-          <div class="row mb-8">
-            <div class="col-xl-4 offset-xl-4 col-md-12 col-12">
-              <div class="text-center">
-                <a href="/" class="fs-2 fw-bold d-flex align-items-center gap-2 justify-content-center mb-6 text-decoration-none">
-                  <img src="http://127.0.0.1:8001/assets/images/brand/logo/logo-light.png" class="brand-logo-img" alt="" />
-                  <span class="site-logo-text">Admisi</span>
-                </a>
-                <h1 class="mb-1">Welcome Back</h1>
-                <p class="mb-0">
-                  Don’t have an account yet?
-                  <a href="http://127.0.0.1:8001/register" class="text-primary">Register here</a>
-                </p>
-              </div>
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                <img src="http://localhost:8000/assets/images/brand/logo/logo-light.png" class="logo-light" width="32" alt="">
+                <img src="http://localhost:8000/assets/images/brand/logo/logo-dark.png" class="logo-dark" width="32" alt="">
+                <span class="fw-bold">eAdmisi</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarPMB">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarPMB">
+                <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
+                    <li class="nav-item"><a class="nav-link" href="#tentang">Tentang</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#jalur">Jalur</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#alur">Alur PMB</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#tanya-dulu">Tanya Dulu</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
+                    <li class="nav-item">
+                        <a href="http://localhost:8000/register-account" class="btn btn-outline-dark d-flex align-items-center gap-2">
+                            <i class="ti ti-user-plus fs-5"></i> Daftar
+                        </a>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <a href="http://localhost:8000/login" class="btn btn-primary d-flex align-items-center gap-2">
+                            <i class="ti ti-login fs-5"></i> Login
+                        </a>
+                    </li>
+                </ul>
             </div>
-          </div>
-          <div class="row justify-content-center">
-            <div class="col-xl-5 col-lg-6 col-md-8 col-12">
-              <div class="card card-lg mb-6">
-                <div class="card-body p-6">
-                  <form action="http://127.0.0.1:8001/login" method="POST" class="needs-validation mb-6" novalidate>
-                    <input type="hidden" name="_token" value="k7ZFqNKpf40VRkYdnKvQtMguU8xZD3D3nHDsAXrv" autocomplete="off">
-                    
-                    <div class="mb-3">
-                      <label for="signinEmailInput" class="form-label">
-                        Email
-                        <span class="text-danger">*</span>
-                      </label>
-                      <input type="email" class="form-control" id="signinEmailInput" name="email" value="" required />
-                      <div class="invalid-feedback">Please enter email.</div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="formSignUpPassword" class="form-label">Password</label>
-                      <div class="password-field position-relative">
-                        <input type="password" class="form-control fakePassword" id="formSignUpPassword" name="password" required />
-                        <span><i class="ti ti-eye-off passwordToggler"></i></span>
-                        <div class="invalid-feedback">Please enter password.</div>
-                      </div>
-                    </div>
+        </div>
+    </nav>
 
-                    <div class="mb-4 d-flex align-items-center justify-content-between">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="rememberMeCheckbox" name="remember" />
-                        <label class="form-check-label" for="rememberMeCheckbox">Remember me</label>
-                      </div>
-
-                      <div><a href="#" class="text-primary">Forgot Password</a></div>
+    <!-- ═══ HERO SECTION ═══ -->
+    <section class="hero-section d-flex align-items-center">
+        <div class="container position-relative" style="z-index: 1;">
+            <div class="row align-items-center min-vh-100 py-8">
+                <div class="col-lg-7 py-8">
+                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 fs-6 px-3 py-2 mb-4">
+                        <i class="ti ti-sparkles me-1"></i> Penerimaan Mahasiswa Baru TA 2026/2027
+                    </span>
+                    <h1 class="display-4 fw-bold text-white mb-4">
+                        Mulai Perjalanan<br>
+                        <span class="text-danger">Akademik</span> Anda
+                    </h1>
+                    <p class="h5 font-weight-normal text-white-50 mb-6">
+                        Bergabunglah dengan ribuan mahasiswa lainnya. Proses pendaftaran mudah, cepat, dan transparan. Raih masa depanmu bersama kami.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="http://localhost:8000/register-account" class="btn btn-primary  d-flex align-items-center gap-2 px-5">
+                            <i class="ti ti-user-plus fs-4"></i> Daftar Sekarang
+                        </a>
+                        <a href="#tentang" class="btn btn-outline-light  d-flex align-items-center gap-2 px-5">
+                            <i class="ti ti-login fs-4"></i> Pelajari
+                        </a>
                     </div>
-
-                    <div class="d-grid">
-                      <button class="btn btn-primary" type="submit">Sign In</button>
-                    </div>
-                  </form>
-
-                  <center class="text-secondary small mt-4">Or sign in with your social network.</center>
-                  <div class="mt-3 d-flex gap-2 justify-content-between">
-                    <a href="http://127.0.0.1:8001/auth/google/login" class="btn btn-white w-100 d-flex align-items-center justify-content-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z"/>
-                      </svg>
-                      Continue with Google
-                    </a>
-                  </div>
                 </div>
-              </div>
+                <div class="col-lg-5 d-none d-lg-flex justify-content-center">
+                    <div class="floating-card">
+                        <div class="card shadow-lg border-0" style="width: 320px; border-radius: 20px;">
+                            <div class="card-body p-5 text-center">
+                                <div class="icon-shape icon-xl bg-primary-subtle text-danger rounded-circle mx-auto mb-4" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="ti ti-school fs-1"></i>
+                                </div>
+                                <h4 class="fw-bold">Telah Bergabung</h4>
+                                <div class="display-4 fw-bold text-danger mb-2">12,450+</div>
+                                <p class="text-secondary mb-0">Mahasiswa Aktif</p>
+                                <hr class="my-4">
+                                <div class="d-flex justify-content-between text-start ">
+                                    <div><div class="fw-bold text-dark">98%</div><div class="text-secondary">Kelulusan</div></div>
+                                    <div><div class="fw-bold text-dark">150+</div><div class="text-secondary">Program Studi</div></div>
+                                    <div><div class="fw-bold text-dark">4.8</div><div class="text-secondary">Rating</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </section>
-      <!--Sign up end-->
-      <div class="position-absolute end-0 bottom-0 m-4">
+    </section>
+
+    <!-- ═══ STATS BAR ═══ -->
+    <section class="position-relative" style="margin-top: -80px;">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-3 col-6">
+                    <div class="stats-card rounded-4 p-4 text-center">
+                        <div class="text-danger fs-1 fw-bold mb-1">12K+</div>
+                        <div class="text-white-50 ">Mahasiswa</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-card rounded-4 p-4 text-center">
+                        <div class="text-danger fs-1 fw-bold mb-1">150+</div>
+                        <div class="text-white-50 ">Program Studi</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-card rounded-4 p-4 text-center">
+                        <div class="text-danger fs-1 fw-bold mb-1">500+</div>
+                        <div class="text-white-50 ">Dosen Ahli</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-card rounded-4 p-4 text-center">
+                        <div class="text-danger fs-1 fw-bold mb-1">50+</div>
+                        <div class="text-white-50 ">Tahun Pengabdian</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ TENTANG ═══ -->
+    <section id="tentang" class="py-16">
+        <div class="container">
+            <div class="row align-items-center g-6">
+                <div class="col-lg-6">
+                    <span class="badge bg-primary-subtle text-danger px-3 py-2 mb-3">Tentang Kami</span>
+                    <h2 class="fw-bold display-6 mb-4">Mengapa Memilih<br>Kampus Kami?</h2>
+                    <p class="text-secondary mb-6" style="max-width: 480px;">Kami berkomitmen untuk memberikan pendidikan berkualitas dengan kurikulum yang relevan terhadap kebutuhan industri dan perkembangan teknologi terkini. Dengan tenaga pengajar profesional dan fasilitas lengkap, kami siap mencetak generasi penerus bangsa yang unggul dan berdaya saing global.</p>
+                    <div class="d-flex flex-column gap-4">
+                                                <div class="d-flex gap-3">
+                            <div class="icon-shape icon-md bg-danger-subtle text-danger rounded-3 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;"><i class="ti ti-certificate fs-4"></i></div>
+                            <div><h5 class="fw-bold mb-1">Terakreditasi Unggul</h5><p class="text-secondary  mb-0">Terakreditasi A oleh BAN-PT dengan nilai unggul dalam pelaksanaan pendidikan tinggi.</p></div>
+                        </div>
+                                                <div class="d-flex gap-3">
+                            <div class="icon-shape icon-md bg-success-subtle text-success rounded-3 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;"><i class="ti ti-affiliate fs-4"></i></div>
+                            <div><h5 class="fw-bold mb-1">Jaringan Luas</h5><p class="text-secondary  mb-0">Kerjasama dengan 200+ perusahaan dan institusi pendidikan nasional maupun internasional.</p></div>
+                        </div>
+                                                <div class="d-flex gap-3">
+                            <div class="icon-shape icon-md bg-info-subtle text-info rounded-3 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;"><i class="ti ti-device-laptop fs-4"></i></div>
+                            <div><h5 class="fw-bold mb-1">Pembelajaran Modern</h5><p class="text-secondary  mb-0">Sistem informasi akademik terintegrasi, LMS, dan laboratorium virtual yang mudah diakses 24/7.</p></div>
+                        </div>
+                                                <div class="d-flex gap-3">
+                            <div class="icon-shape icon-md bg-warning-subtle text-warning rounded-3 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;"><i class="ti ti-users fs-4"></i></div>
+                            <div><h5 class="fw-bold mb-1">Tenaga Pengajar Ahli</h5><p class="text-secondary  mb-0">Dosen berkualifikasi S3 dan praktisi industri yang berpengalaman di bidangnya masing-masing.</p></div>
+                        </div>
+                                            </div>
+                </div>
+                <div class="col-lg-6">
+                    <img src="https://placehold.co/600x500/f0f0f0/333?text=Kampus+Kami" alt="Kampus" class="img-fluid rounded-4 shadow">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ JALUR PENDAFTARAN (DYNAMIC) ═══ -->
+    <section id="jalur" class="py-16 section-soft-primary">
+        <div class="container">
+            <div class="text-center mb-8">
+                <span class="badge bg-primary-subtle text-danger px-3 py-2 mb-3">Jalur Pendaftaran</span>
+                <h2 class="fw-bold display-6 mb-3">Pilih Jalur Pendaftaran</h2>
+                <p class="text-secondary mx-auto" style="max-width: 540px;">Tersedia berbagai jalur pendaftaran yang dapat dipilih sesuai dengan kriteria Anda</p>
+            </div>
+
+            
+            <div class="row g-4">
+                                                <div class="col-lg-4 col-md-6">
+                    <div class="card path-card h-100 border-0 shadow-sm">
+                        <div class="card-body p-5 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <span class="badge bg-danger-subtle text-danger px-3 py-2 fs-6 mb-2">
+                                        Seleksi Kerjasama
+                                    </span>
+                                    <h5 class="fw-bold mb-1 mt-2">Jalur KIP Kuliah</h5>
+                                </div>
+                                                                    <span class="badge bg-success-subtle text-success px-3 py-2 fs-6">
+                                        <i class="ti ti-circle-check me-1"></i>Buka
+                                    </span>
+                                                            </div>
+
+                                                        <p class="text-secondary  mb-4">Jalur pendaftaran khusus bagi penerima Kartu Indonesia Pintar (KIP) Kuliah. Biaya ringan dengan kuot...</p>
+                            
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-3 ">
+                                    <span class="text-secondary">
+                                        <i class="ti ti-calendar me-1"></i>
+                                                                                    01/02/2026 - 31/08/2026
+                                                                            </span>
+                                    <span class="fw-bold text-danger fs-5">Rp 100.000</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <p class="text-secondary">
+                                        <i class="ti ti-users me-1"></i>
+                                                                                    Sisa <strong>500</strong> kursi
+                                                                            </>
+                                                                        <p class="text-secondary"><i class="ti ti-checks me-1"></i>2 pilihan</>
+                                                                    </div>
+                                <a href="http://localhost:8000/register/2" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2">
+                                    <i class="ti ti-arrow-right fs-5"></i> Daftar Sekarang
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                                <div class="col-lg-4 col-md-6">
+                    <div class="card path-card h-100 border-0 shadow-sm">
+                        <div class="card-body p-5 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <span class="badge bg-warning-subtle text-warning px-3 py-2 fs-6 mb-2">
+                                        Seleksi Mandiri
+                                    </span>
+                                    <h5 class="fw-bold mb-1 mt-2">Jalur Mandiri Reguler</h5>
+                                </div>
+                                                                    <span class="badge bg-success-subtle text-success px-3 py-2 fs-6">
+                                        <i class="ti ti-circle-check me-1"></i>Buka
+                                    </span>
+                                                            </div>
+
+                                                        <p class="text-secondary  mb-4">Jalur pendaftaran mandiri reguler dengan tes ujian online. Cocok bagi calon mahasiswa yang ingin men...</p>
+                            
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-3 ">
+                                    <span class="text-secondary">
+                                        <i class="ti ti-calendar me-1"></i>
+                                                                                    01/05/2026 - 31/07/2026
+                                                                            </span>
+                                    <span class="fw-bold text-danger fs-5">Rp 500.000</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <p class="text-secondary">
+                                        <i class="ti ti-users me-1"></i>
+                                                                                    Sisa <strong>299</strong> kursi
+                                                                            </>
+                                                                        <p class="text-secondary"><i class="ti ti-checks me-1"></i>2 pilihan</>
+                                                                    </div>
+                                <a href="http://localhost:8000/register/3" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2">
+                                    <i class="ti ti-arrow-right fs-5"></i> Daftar Sekarang
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                                <div class="col-lg-4 col-md-6">
+                    <div class="card path-card h-100 border-0 shadow-sm">
+                        <div class="card-body p-5 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <span class="badge bg-info-subtle text-info px-3 py-2 fs-6 mb-2">
+                                        Seleksi Prestasi
+                                    </span>
+                                    <h5 class="fw-bold mb-1 mt-2">Jalur Prestasi Akademik</h5>
+                                </div>
+                                                                    <span class="badge bg-secondary-subtle text-secondary px-3 py-2 fs-6">
+                                        <i class="ti ti-clock me-1"></i>Tutup
+                                    </span>
+                                                            </div>
+
+                                                        <p class="text-secondary  mb-4">Jalur pendaftaran bagi calon mahasiswa dengan prestasi akademik unggul, tanpa tes ujian namun melalu...</p>
+                            
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-3 ">
+                                    <span class="text-secondary">
+                                        <i class="ti ti-calendar me-1"></i>
+                                                                                    15/01/2026 - 30/06/2026
+                                                                            </span>
+                                    <span class="fw-bold text-danger fs-5">Rp 200.000</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <p class="text-secondary">
+                                        <i class="ti ti-users me-1"></i>
+                                                                                    Sisa <strong>200</strong> kursi
+                                                                            </>
+                                                                        <p class="text-secondary"><i class="ti ti-checks me-1"></i>1 pilihan</>
+                                                                    </div>
+                                <a href="http://localhost:8000/register/4" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2">
+                                    <i class="ti ti-arrow-right fs-5"></i> Daftar Sekarang
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                            </div>
+        </div>
+    </section>
+
+    <!-- ═══ PROGRAM STUDI ═══ -->
+    <section id="program" class="py-16 section-white">
+        <div class="container">
+            <div class="text-center mb-8">
+                <span class="badge bg-primary-subtle text-primary  px-3 py-2 mb-3">Program Studi</span>
+                <h2 class="fw-bold display-6 mb-3">Pilihan Program Studi</h2>
+                <p class="text-secondary mx-auto" style="max-width: 540px;">Tersedia berbagai program studi yang dapat disesuaikan dengan minat dan bakat Anda</p>
+            </div>
+            <div class="row g-4">
+                                                                                <div class="col-lg-4 col-md-6">
+                    <div class="card feature-card h-100 border-0 shadow-sm">
+                        <div class="card-body p-5">
+                            <div class="icon-shape icon-lg bg-primary-subtle text-primary rounded-3 mb-4 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;"><i class="ti ti-device-analytics fs-2"></i></div>
+                            <h5 class="fw-bold mb-2">Teknik Informatika</h5>
+                            <p class="text-secondary  mb-3">S1</p>
+                            <p class="text-secondary  mb-4">Program studi unggulan di bidang teknologi informasi dengan fokus pada pengembangan perangkat lunak dan AI.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-success-subtle text-success">Akreditasi Unggul</span>
+                                <p class="text-secondary"><i class="ti ti-clock me-1"></i> 8 Semester</>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                                                                                <div class="col-lg-4 col-md-6">
+                    <div class="card feature-card h-100 border-0 shadow-sm">
+                        <div class="card-body p-5">
+                            <div class="icon-shape icon-lg bg-danger-subtle text-danger rounded-3 mb-4 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;"><i class="ti ti-building-bank fs-2"></i></div>
+                            <h5 class="fw-bold mb-2">Manajemen</h5>
+                            <p class="text-secondary  mb-3">S1</p>
+                            <p class="text-secondary  mb-4">Program studi manajemen terbaik dengan kurikulum berbasis kebutuhan industri dan kewirausahaan.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-success-subtle text-success">Akreditasi A</span>
+                                <p class="text-secondary"><i class="ti ti-clock me-1"></i> 8 Semester</>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                                                                                <div class="col-lg-4 col-md-6">
+                    <div class="card feature-card h-100 border-0 shadow-sm">
+                        <div class="card-body p-5">
+                            <div class="icon-shape icon-lg bg-success-subtle text-success rounded-3 mb-4 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;"><i class="ti ti-report-money fs-2"></i></div>
+                            <h5 class="fw-bold mb-2">Akuntansi</h5>
+                            <p class="text-secondary  mb-3">S1</p>
+                            <p class="text-secondary  mb-4">Program studi akuntansi yang menghasilkan lulusan kompeten di bidang akuntansi keuangan dan auditing.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-success-subtle text-success">Akreditasi A</span>
+                                <p class="text-secondary"><i class="ti ti-clock me-1"></i> 8 Semester</>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                                                                                <div class="col-lg-4 col-md-6">
+                    <div class="card feature-card h-100 border-0 shadow-sm">
+                        <div class="card-body p-5">
+                            <div class="icon-shape icon-lg bg-warning-subtle text-warning rounded-3 mb-4 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;"><i class="ti ti-heart fs-2"></i></div>
+                            <h5 class="fw-bold mb-2">Ilmu Hukum</h5>
+                            <p class="text-secondary  mb-3">S1</p>
+                            <p class="text-secondary  mb-4">Program studi ilmu hukum yang mencetak profesional hukum berintegritas dan berwawasan global.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-success-subtle text-success">Akreditasi A</span>
+                                <p class="text-secondary"><i class="ti ti-clock me-1"></i> 8 Semester</>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                            </div>
+        </div>
+    </section>
+
+    <!-- ═══ ALUR PMB ═══ -->
+    <section id="alur" class="py-16 section-soft-light">
+        <div class="container">
+            <div class="text-center mb-8">
+                <span class="badge bg-primary-subtle text-danger px-3 py-2 mb-3">Alur Pendaftaran</span>
+                <h2 class="fw-bold display-6 mb-3">Langkah Mudah Mendaftar</h2>
+                <p class="text-secondary mx-auto" style="max-width: 540px;">Ikuti langkah-langkah berikut untuk memulai perjalanan akademik Anda</p>
+            </div>
+            <div class="row g-4">
+                                                <div class="col-lg-3 col-md-6">
+                    <div class="text-center">
+                        <div class="step-number bg-danger-subtle text-danger mx-auto mb-3">1</div>
+                        <h6 class="fw-bold mb-2">Buat Akun</h6>
+                        <p class="text-secondary  mb-0">Daftar dan buat akun PMB Anda dengan mengisi data diri</p>
+                    </div>
+                </div>
+                                <div class="col-lg-3 col-md-6">
+                    <div class="text-center">
+                        <div class="step-number bg-warning-subtle text-warning mx-auto mb-3">2</div>
+                        <h6 class="fw-bold mb-2">Isi Data Pendaftaran</h6>
+                        <p class="text-secondary  mb-0">Lengkapi formulir pendaftaran dan pilih program studi</p>
+                    </div>
+                </div>
+                                <div class="col-lg-3 col-md-6">
+                    <div class="text-center">
+                        <div class="step-number bg-info-subtle text-info mx-auto mb-3">3</div>
+                        <h6 class="fw-bold mb-2">Upload Dokumen</h6>
+                        <p class="text-secondary  mb-0">Unggah dokumen persyaratan yang diperlukan</p>
+                    </div>
+                </div>
+                                <div class="col-lg-3 col-md-6">
+                    <div class="text-center">
+                        <div class="step-number bg-success-subtle text-success mx-auto mb-3">4</div>
+                        <h6 class="fw-bold mb-2">Konfirmasi &amp; Seleksi</h6>
+                        <p class="text-secondary  mb-0">Tunggu hasil seleksi dan lakukan pembayaran jika diterima</p>
+                    </div>
+                </div>
+                            </div>
+            <div class="text-center mt-8">
+                <a href="http://localhost:8000/register-account" class="btn btn-primary  d-inline-flex align-items-center gap-2 px-5">
+                    <i class="ti ti-arrow-right fs-4"></i> Mulai Pendaftaran
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ FASILITAS ═══ -->
+    <section class="py-16 section-soft-primary">
+        <div class="container">
+            <div class="text-center mb-8">
+                <span class="badge bg-primary-subtle text-primary  px-3 py-2 mb-3">Fasilitas</span>
+                <h2 class="fw-bold display-6 mb-3">Fasilitas Lengkap<br>Untuk Mendukung Belajar</h2>
+                <p class="text-secondary mx-auto" style="max-width: 540px;">Kami menyediakan berbagai fasilitas modern untuk menunjang kegiatan belajar mengajar dan pengembangan diri mahasiswa.</p>
+            </div>
+            <div class="row g-4">
+                                <div class="col-lg-3 col-md-6">
+                    <div class="card border-1 shadow-sm h-100">
+                        <div class="card-body text-center p-5">
+                            <i class="ti ti-wifi fs-1 text-danger mb-3 d-block"></i>
+                            <h6 class="fw-bold">WiFi 24 Jam</h6>
+                            <p class="text-secondary  mb-0">Akses internet berkecepatan tinggi yang tersedia di seluruh area kampus selama 24 jam non-stop.</p>
+                        </div>
+                    </div>
+                </div>
+                                <div class="col-lg-3 col-md-6">
+                    <div class="card border-1 shadow-sm h-100">
+                        <div class="card-body text-center p-5">
+                            <i class="ti ti-books fs-1 text-danger mb-3 d-block"></i>
+                            <h6 class="fw-bold">Perpustakaan Digital</h6>
+                            <p class="text-secondary  mb-0">Perpustakaan modern dengan koleksi buku fisik dan digital, jurnal internasional, serta ruang baca yang nyaman.</p>
+                        </div>
+                    </div>
+                </div>
+                                <div class="col-lg-3 col-md-6">
+                    <div class="card border-1 shadow-sm h-100">
+                        <div class="card-body text-center p-5">
+                            <i class="ti ti-microscope fs-1 text-danger mb-3 d-block"></i>
+                            <h6 class="fw-bold">Laboratorium Modern</h6>
+                            <p class="text-secondary  mb-0">Laboratorium komputer, sains, dan bahasa yang dilengkapi peralatan terkini untuk praktikum dan penelitian.</p>
+                        </div>
+                    </div>
+                </div>
+                                <div class="col-lg-3 col-md-6">
+                    <div class="card border-1 shadow-sm h-100">
+                        <div class="card-body text-center p-5">
+                            <i class="ti ti-building-stadium fs-1 text-danger mb-3 d-block"></i>
+                            <h6 class="fw-bold">Gedung Olahraga</h6>
+                            <p class="text-secondary  mb-0">Fasilitas olahraga lengkap termasuk lapangan basket, futsal, bulu tangkis, dan pusat kebugaran.</p>
+                        </div>
+                    </div>
+                </div>
+                                <div class="col-lg-3 col-md-6">
+                    <div class="card border-1 shadow-sm h-100">
+                        <div class="card-body text-center p-5">
+                            <i class="ti ti-school fs-1 text-danger mb-3 d-block"></i>
+                            <h6 class="fw-bold">Ruang Kelas Smart</h6>
+                            <p class="text-secondary  mb-0">Ruang kelas modern dengan smart board, sistem audio visual, dan tata udara yang nyaman untuk belajar.</p>
+                        </div>
+                    </div>
+                </div>
+                                <div class="col-lg-3 col-md-6">
+                    <div class="card border-1 shadow-sm h-100">
+                        <div class="card-body text-center p-5">
+                            <i class="ti ti-users fs-1 text-danger mb-3 d-block"></i>
+                            <h6 class="fw-bold">Ruang Kolaborasi</h6>
+                            <p class="text-secondary  mb-0">Ruang diskusi dan kolaborasi mahasiswa yang nyaman untuk mengerjakan proyek dan tugas kelompok.</p>
+                        </div>
+                    </div>
+                </div>
+                            </div>
+        </div>
+    </section>
+
+    <!-- ═══ TANYA DULU (CRM LEADS FORM) ═══ -->
+    <section id="tanya-dulu" class="py-16 section-soft-light">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-6">
+                            <div class="text-center mb-5">
+                                <div class="icon-shape icon-xl bg-primary-subtle text-danger rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 72px; height: 72px;">
+                                    <i class="ti ti-message-dots fs-1"></i>
+                                </div>
+                                <h3 class="fw-bold mb-2">Tanya Dulu, Daftar Kemudian</h3>
+                                <p class="text-secondary mb-0" style="max-width: 480px; margin: 0 auto;">Masih ragu? Tim kami siap menjawab pertanyaan Anda seputar pendaftaran, program studi, beasiswa, dan biaya kuliah.</p>
+                            </div>
+
+                            <form action="http://localhost:8000/crm-leads/store" method="POST" class="row g-4 justify-content-center">
+                                <input type="hidden" name="_token" value="23Ta0W1NwqtSNffxkH5OQ51dFfRZ2hwSLK04x6sq" autocomplete="off">                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
+                                    <input type="text" name="nama" class="form-control " placeholder="Masukkan nama Anda" required maxlength="200">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Nomor WhatsApp <span class="text-danger">*</span></label>
+                                    <input type="tel" name="whatsapp" class="form-control " placeholder="08xxxxxxxxxx" required maxlength="50">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-semibold">Pertanyaan <span class="text-danger">*</span></label>
+                                    <textarea name="pertanyaan" class="form-control " rows="4" placeholder="Tulis pertanyaan Anda di sini..." required></textarea>
+                                </div>
+                                <div class="col-12 text-center mt-4">
+                                    <button type="submit" class="btn btn-primary  px-6 d-inline-flex align-items-center gap-2">
+                                        <i class="ti ti-brand-whatsapp fs-4"></i> Kirim Pertanyaan
+                                    </button>
+                                    <p class="text-secondary  mt-3 mb-0"><i class="ti ti-shield-check me-1"></i> Tim kami akan merespon via WhatsApp dalam 1x24 jam</p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ FAQ ═══ -->
+    <section id="faq" class="py-16 section-white">
+        <div class="container">
+            <div class="text-center mb-8">
+                <span class="badge bg-primary-subtle text-danger px-3 py-2 mb-3">FAQ</span>
+                <h2 class="fw-bold display-6 mb-3">Pertanyaan Umum</h2>
+                <p class="text-secondary mx-auto" style="max-width: 540px;">Temukan jawaban untuk pertanyaan yang sering diajukan</p>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="accordion" id="faqAccordion">
+                                                                        <div class="accordion-item border-0 mb-3 shadow-sm">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">Bagaimana cara mendaftar sebagai mahasiswa baru?</button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-secondary">Anda dapat mendaftar secara online melalui portal PMB kami. Buat akun, lengkapi data diri, pilih program studi, upload dokumen persyaratan, dan submit pendaftaran Anda.</div>
+                            </div>
+                        </div>
+                                                <div class="accordion-item border-0 mb-3 shadow-sm">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">Apa saja persyaratan pendaftaran?</button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-secondary">Persyaratan umum meliputi: Ijazah SMA/SMK/MA sederajat, rapor, kartu identitas, pas foto terbaru, dan dokumen pendukung lainnya sesuai program studi yang dipilih.</div>
+                            </div>
+                        </div>
+                                                <div class="accordion-item border-0 mb-3 shadow-sm">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">Apakah ada beasiswa yang tersedia?</button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-secondary">Ya, kami menyediakan berbagai program beasiswa seperti Beasiswa Prestasi Akademik, Beasiswa Atlet, Beasiswa Kurang Mampu (KIP Kuliah), dan beasiswa kerjasama dengan perusahaan mitra.</div>
+                            </div>
+                        </div>
+                                                <div class="accordion-item border-0 mb-3 shadow-sm">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">Kapan batas waktu pendaftaran?</button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-secondary">Pendaftaran dibuka dalam beberapa gelombang. Gelombang I: Januari - Maret, Gelombang II: April - Juni, Gelombang III: Juli - Agustus. Informasi detail dapat dilihat di portal PMB.</div>
+                            </div>
+                        </div>
+                                            </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ CTA ═══ -->
+    <section class="py-16" style="background: linear-gradient(135deg, #1c252e 0%, #2d3748 100%);">
+        <div class="container text-center">
+            <h2 class="fw-bold display-6 text-white mb-4">Siap Memulai Perjalanan?</h2>
+            <p class="text-white-50 mb-6 mx-auto" style="max-width: 540px;">Daftarkan diri Anda sekarang dan jadilah bagian dari keluarga besar kampus kami.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="http://localhost:8000/register-account" class="btn btn-primary  px-5 d-flex align-items-center gap-2"><i class="ti ti-user-plus fs-4"></i> Daftar Sekarang</a>
+                <a href="http://localhost:8000/login" class="btn btn-outline-light  px-5 d-flex align-items-center gap-2"><i class="ti ti-login fs-4"></i> Login</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="pt-16 pb-8" style="background: #0f172a;">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <img src="http://localhost:8000/assets/images/brand/logo/logo-light.png" width="32" alt="">
+                        <span class="fw-bold text-white">eAdmisi</span>
+                    </div>
+                    <p class="text-white-50 ">Platform Sistem Informasi Manajemen Akademik terintegrasi untuk mendukung proses belajar mengajar yang efektif dan efisien.</p>
+                </div>
+                <div class="col-lg-2 col-md-4">
+                    <h5 class="fw-bold text-white mb-3">Tautan</h5>
+                    <ul class="list-unstyled ">
+                        <li class="mb-2"><a href="#tentang" class="text-white-50 text-decoration-none">Tentang</a></li>
+                        <li class="mb-2"><a href="#jalur" class="text-white-50 text-decoration-none">Jalur</a></li>
+                        <li class="mb-2"><a href="#alur" class="text-white-50 text-decoration-none">Alur PMB</a></li>
+                        <li class="mb-2"><a href="#faq" class="text-white-50 text-decoration-none">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-4">
+                    <h5 class="fw-bold text-white mb-3">Kontak</h5>
+                    <ul class="list-unstyled  text-white-50">
+                        <li class="mb-2"><i class="ti ti-map-pin me-2"></i>Jl. Pendidikan No. 123, Jakarta</li>
+                        <li class="mb-2"><i class="ti ti-phone me-2"></i>(021) 1234-5678</li>
+                        <li class="mb-2"><i class="ti ti-mail me-2"></i>info@eadmisi.ac.id</li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-4">
+                    <h5 class="fw-bold text-white mb-3">Ikuti Kami</h5>
+                    <div class="d-flex gap-2">
+                        <a href="#" class="btn btn-light btn-icon rounded-circle" style="width: 40px; height: 40px;"><i class="ti ti-brand-facebook"></i></a>
+                        <a href="#" class="btn btn-light btn-icon rounded-circle" style="width: 40px; height: 40px;"><i class="ti ti-brand-instagram"></i></a>
+                        <a href="#" class="btn btn-light btn-icon rounded-circle" style="width: 40px; height: 40px;"><i class="ti ti-brand-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4 border-white-10">
+            <div class="text-center">
+                <p class="text-white-50  mb-0">&copy; 2026 eAdmisi. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="position-fixed bottom-0 end-0 m-4" style="z-index: 999;">
         <div class="dropdown">
-          <button class="btn btn-light btn-icon rounded-circle d-flex align-items-center" type="button" aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)">
-            <i class="bi theme-icon-active lh-1"><i class="bi theme-icon bi-sun-fill"></i></i>
-            <span class="visually-hidden bs-theme-text">Toggle theme</span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end shadow">
-            <li>
-              <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="light" aria-pressed="true">
-                <i class="ti theme-icon ti ti-sun"></i>
-                <span class="ms-2">Light</span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
-                <i class="ti theme-icon ti-moon-stars"></i>
-                <span class="ms-2">Dark</span>
-              </button>
-            </li>
-            <li>
-              <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="false">
-                <i class="ti theme-icon ti-circle-half-2"></i>
-                <span class="ms-2">Auto</span>
-              </button>
-            </li>
-          </ul>
+            <button class="btn btn-light btn-icon rounded-circle d-flex align-items-center shadow" type="button" data-bs-toggle="dropdown">
+                <i class="ti theme-icon-active lh-1"><i class="ti theme-icon ti-sun"></i></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+                <li><button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="light"><i class="ti theme-icon ti ti-sun"></i><span class="ms-2">Light</span></button></li>
+                <li><button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark"><i class="ti theme-icon ti-moon-stars"></i><span class="ms-2">Dark</span></button></li>
+                <li><button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto"><i class="ti theme-icon ti-circle-half-2"></i><span class="ms-2">Auto</span></button></li>
+            </ul>
         </div>
-      </div>
-    </main>
+    </div>
 
-    <!-- Libs JS -->
-    <script src="http://127.0.0.1:8001/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="http://127.0.0.1:8001/assets/libs/simplebar/dist/simplebar.min.js"></script>
+    <script src="http://localhost:8000/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="http://localhost:8000/assets/libs/simplebar/dist/simplebar.min.js"></script>
+    <script src="http://localhost:8000/assets/js/theme.min.js"></script>
+    <script>
+        // ── Navbar scroll effect ──
+        const navbar = document.getElementById('pmbNavbar');
+        function updateNavbar() {
+            if (window.scrollY > 50) {
+                navbar.classList.add('navbar-scrolled');
+            } else {
+                navbar.classList.remove('navbar-scrolled');
+            }
+        }
+        window.addEventListener('scroll', updateNavbar, { passive: true });
+        updateNavbar();
 
-    <!-- Theme JS -->
-    <script src="http://127.0.0.1:8001/assets/js/theme.min.js"></script>
-    <script src="http://127.0.0.1:8001/assets/js/vendors/password.js"></script>
-  </body>
+        // ── Smooth scroll for anchor links ──
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+</body>
 </html>

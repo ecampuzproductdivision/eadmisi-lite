@@ -8,7 +8,7 @@
             <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
             <li class="breadcrumb-item"><a href="#">Settings</a></li>
             <li class="breadcrumb-item"><a href="{{ route('beasiswa-potongan.index') }}">Beasiswa & Potongan</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Plotting Mahasiswa</li>
+            <li class="breadcrumb-item active" aria-current="page">Plotting Calon Mahasiswa</li>
         </ol>
     </nav>
     <hr>
@@ -19,7 +19,7 @@
             <i class="ti ti-arrow-left fs-5"></i>
         </a>
         <div>
-            <h1 class="mb-1 fw-bold">Plotting Mahasiswa</h1>
+            <h1 class="mb-1 fw-bold">Plotting Calon Mahasiswa</h1>
             <p class="text-muted mb-0">Petakan diskon potongan registrasi ulang untuk beasiswa: <strong>{{ $master->nama_potongan }}</strong></p>
         </div>
     </div>
@@ -66,7 +66,7 @@
                         <option value="">-- Semua Periode --</option>
                         @foreach($periodes as $periode)
                             <option value="{{ $periode->id }}" {{ $selectedPeriodeId == $periode->id ? 'selected' : '' }}>
-                                {{ $periode->nama_periode }} {{ $periode->status_aktif ? '(Aktif)' : '' }}
+                                {{ $periode->label }} {{ $periode->status_aktif ? '(Aktif)' : '' }}
                             </option>
                         @endforeach
                     </select>

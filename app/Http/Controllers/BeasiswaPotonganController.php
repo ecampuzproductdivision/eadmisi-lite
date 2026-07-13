@@ -98,7 +98,7 @@ class BeasiswaPotonganController extends Controller
         $master = MasterPotongan::findOrFail($id);
 
         // Load active Period and all Period options for filter
-        $periodes = \App\Models\Periode::orderBy('nama_periode', 'desc')->get();
+        $periodes = \App\Models\Periode::orderBy('tahun_akademik', 'desc')->orderBy('semester', 'desc')->get();
         $activePeriode = \App\Models\Periode::where('status_aktif', true)->first();
         $selectedPeriodeId = $request->input('periode_id', $activePeriode?->id);
 

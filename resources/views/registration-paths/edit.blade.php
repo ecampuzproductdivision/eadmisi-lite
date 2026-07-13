@@ -443,20 +443,62 @@ document.addEventListener('DOMContentLoaded', function() {
   toggleBerkasSection();
 });
 
-// Auto-select "Penilaian Manual / Verifikasi Langsung" when both ujian & wawancara are OFF
-document.addEventListener('DOMContentLoaded', function() {
-  const toggleUjian = document.getElementById('gunakan_ujian');
-  const toggleWawancara = document.getElementById('gunakan_wawancara');
-  const metodePengumuman = document.getElementById('metode_pengumuman');
+// Dynamic disabler for "Metode Pengumuman Hasil Ujian" based on "Gunakan Ujian Online" & "Gunakan Tahapan Wawancara"
+$(document).ready(function() {
+  const $ujian = $('#gunakan_ujian');
+  const $wawancara = $('#gunakan_wawancara');
+  const $metode = $('#metode_pengumuman');
 
-  function autoSelectMetode() {
-    if (!toggleUjian.checked && !toggleWawancara.checked) {
-      metodePengumuman.value = 'penilaian_manual';
+  function updateMetodePengumumanOptions() {
+    const ujianOn = $ujian.is(':checked');
+    const wawancaraOn = $wawancara.is(':checked');
+    const currentValue = $metode.val();
+
+    // Enable all options first
+    $metode.find('option').prop('disabled', false);
+
+    if (ujianOn && !wawancaraOn) {
+      // KONDISI 1 (Ujian Online: ON, Wawancara: OFF)
+      // Aktifkan: Option A (langsung) & Option C (penilaian_manual)
+      // Disable & Uncheck: Option B (ditahan)
+      $metode.find('option[value="ditahan"]').prop('disabled', true);
+      if (currentValue === 'ditahan') {
+        $metode.val('langsung');
+      }
+    } else if (!ujianOn && wawancaraOn) {
+      // KONDISI 2 (Ujian Online: OFF, Wawancara: ON)
+      // Aktifkan: Option B (ditahan) & Option C (penilaian_manual)
+      // Disable & Uncheck: Option A (langsung)
+      $metode.find('option[value="langsung"]').prop('disabled', true);
+      if (currentValue === 'langsung') {
+        $metode.val('ditahan');
+      }
+    } else if (ujianOn && wawancaraOn) {
+      // KONDISI 3 (Ujian Online: ON, Wawancara: ON)
+      // Aktifkan: Option B (ditahan) saja. Disable: Option A (langsung) & Option C (penilaian_manual)
+      // Otomatis set value ke Option B
+      $metode.find('option[value="langsung"]').prop('disabled', true);
+      $metode.find('option[value="penilaian_manual"]').prop('disabled', true);
+      $metode.val('ditahan');
+    } else {
+      // KONDISI 4 (Ujian Online: OFF, Wawancara: OFF)
+      // Aktifkan: Option C (penilaian_manual) saja. Disable: Option A (langsung) & Option B (ditahan)
+      // Otomatis set value ke Option C
+      $metode.find('option[value="langsung"]').prop('disabled', true);
+      $metode.find('option[value="ditahan"]').prop('disabled', true);
+      $metode.val('penilaian_manual');
     }
+
+    // Trigger change to refresh Select2/UI
+    $metode.trigger('change');
   }
 
-  toggleUjian.addEventListener('change', autoSelectMetode);
-  toggleWawancara.addEventListener('change', autoSelectMetode);
+  // Bind change listeners to both switches
+  $ujian.on('change', updateMetodePengumumanOptions);
+  $wawancara.on('change', updateMetodePengumumanOptions);
+
+  // Run on initial page load
+  updateMetodePengumumanOptions();
 });
 </script>
 @endpush

@@ -135,4 +135,9 @@ class Registration extends Model
     {
         return $this->belongsTo(Kelurahan::class, 'kelurahan_id');
     }
+
+    public function plottingPotongan()
+    {
+        return $this->hasOne(PlottingPotongan::class, 'registration_id');
+    }
 }

@@ -743,25 +743,61 @@ class RegistrationPathController extends Controller
             $biayaKomponens = JalurPendaftaranBiaya::with('komponenBiaya')->where('registration_path_id', $path->id)->get();
             $totalBiaya = $biayaKomponens->sum('nominal');
 
-            if ($totalBiaya > 0) {
+            // Check if there is an active discount plotting for this student
+            $plotting = \DB::table('plotting_potongans')
+                ->join('master_potongans', 'plotting_potongans.master_potongan_id', '=', 'master_potongans.id')
+                ->where('plotting_potongans.registration_id', $registration->id)
+                ->select('plotting_potongans.nominal_potongan', 'master_potongans.nama_potongan')
+                ->first();
+
+            $discountAmount = 0;
+            $discountName = '';
+            if ($plotting) {
+                $discountAmount = (int) $plotting->nominal_potongan;
+                $discountName = $plotting->nama_potongan;
+            }
+
+            $finalBiaya = max(0, $totalBiaya - $discountAmount);
+
+            if ($finalBiaya > 0) {
                 // TRIGGER 2A: Has billing fees → generate invoice, set 'menunggu_pembayaran'
                 $itemizedDetails = [];
                 foreach ($biayaKomponens as $bk) {
                     $itemizedDetails[] = ['kode_komponen' => $bk->komponenBiaya?->kode_komponen, 'nama_komponen' => $bk->komponenBiaya?->nama_komponen, 'nominal' => (int) $bk->nominal];
                 }
-                $metadata = ['payment_type' => 'registrasi_ulang', 'itemized_breakdown' => $itemizedDetails, 'total_biaya' => $totalBiaya, 'jalur' => $path->name, 'kode_jalur' => $path->code, 'generated_at' => now()->toDateTimeString()];
+
+                // If there's a discount, append it as a negative itemized entry for billing details clarity
+                if ($discountAmount > 0) {
+                    $itemizedDetails[] = [
+                        'kode_komponen' => 'SCHOLARSHIP',
+                        'nama_komponen' => 'Potongan: ' . $discountName,
+                        'nominal' => -((int) $discountAmount)
+                    ];
+                }
+
+                $metadata = [
+                    'payment_type' => 'registrasi_ulang', 
+                    'itemized_breakdown' => $itemizedDetails, 
+                    'total_biaya' => $totalBiaya, 
+                    'potongan_beasiswa' => $discountAmount,
+                    'nama_beasiswa' => $discountName,
+                    'final_biaya' => $finalBiaya,
+                    'jalur' => $path->name, 
+                    'kode_jalur' => $path->code, 
+                    'generated_at' => now()->toDateTimeString()
+                ];
                 $paymentService = app(\App\Services\PaymentService::class);
-                $payment = $paymentService->createInvoice($registration, 'registrasi_ulang', $totalBiaya);
+                $payment = $paymentService->createInvoice($registration, 'registrasi_ulang', $finalBiaya);
                 $payment->update(['metadata' => $metadata]);
 
                 $registration->update(['status_registrasi_ulang' => 'menunggu_pembayaran']);
 
-                ActivityLogger::log('create', 'payment', 'Re-registration invoice generated: ' . $payment->invoice_number . ' for ' . ($path?->name ?? '') . ' total: ' . $totalBiaya);
+                ActivityLogger::log('create', 'payment', 'Re-registration invoice generated: ' . $payment->invoice_number . ' for ' . ($path?->name ?? '') . ' total: ' . $finalBiaya . ' (discounted by ' . $discountAmount . ' via ' . $discountName . ')');
             } else {
-                // TRIGGER 2B: No billing fees (KIP Kuliah pathway) → bypass billing, set langsung
+                // TRIGGER 2B: No billing fees or fully covered by scholarship → bypass billing, set langsung
                 $registration->update(['status_registrasi_ulang' => 'sudah_registrasi_no_tagihan']);
 
-                ActivityLogger::log('update', 'registration', 'Re-registration completed without billing (Rp 0) for #' . $registration->id);
+                ActivityLogger::log('update', 'registration', 'Re-registration completed without billing (Rp ' . $finalBiaya . ', original: ' . $totalBiaya . ', discount: ' . $discountAmount . ') for #' . $registration->id);
             }
         } else {
             // No path available → assume no billing

@@ -133,12 +133,24 @@ class HomeController extends Controller
                 $actionLabel = null;
                 $actionUrl = null;
             } elseif ($reg->status === 'exam_completed') {
-                $statusLabel = 'Ujian Selesai';
-                $badgeBg = 'bg-primary';
-                $badgeText = 'text-white';
+                if ($pathObj && $pathObj->gunakan_wawancara) {
+                    if ($reg->status_wawancara === 'menunggu_penjadwalan_wawancara') {
+                        $statusLabel = 'Menunggu Penjadwalan Wawancara';
+                        $badgeBg = 'bg-warning';
+                        $badgeText = 'text-dark';
+                    } else {
+                        $statusLabel = 'Proses Seleksi Wawancara';
+                        $badgeBg = 'bg-info';
+                        $badgeText = 'text-dark';
+                    }
+                } else {
+                    $statusLabel = 'Ujian Selesai';
+                    $badgeBg = 'bg-primary';
+                    $badgeText = 'text-white';
+                }
                 $subBadge = '';
                 $actionLabel = 'Lihat Detail';
-                $actionUrl = route('daftar-pmb.review', $pathObj?->code);
+                $actionUrl = route('daftar-pmb.steps', $pathObj?->code);
             } elseif ($reg->status === 'payment_pending') {
                 // Already has pending invoice — treat as locked
                 $isPaymentLocked = true;

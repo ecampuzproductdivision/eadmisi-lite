@@ -383,12 +383,16 @@
           $wawancaraData = $registration ? $registration->wawancara : null;
           // Determine interview step status
           $wawancaraStepStatus = 'locked';
+          // Step 5 is ONLY completed when the wawancara result is recorded (Lolos/Tidak Lolos)
+          $isWawancaraCompleted = $registration
+              && $wawancaraData
+              && in_array($wawancaraData->status_wawancara, ['Lolos', 'Tidak Lolos']);
           if ($registration && !in_array($registration->status, ['rejected', 'Gagal'])) {
-              if ($registration->status_wawancara === 'menunggu_penjadwalan_wawancara' || $registration->status_wawancara === 'menunggu_wawancara') {
-                  $wawancaraStepStatus = 'active';
-              } elseif ($currentStep > 5) {
+              if ($isWawancaraCompleted) {
                   $wawancaraStepStatus = 'completed';
-              } elseif ($currentStep == $totalSteps) {
+              } elseif ($registration->status_wawancara === 'menunggu_penjadwalan_wawancara' || $registration->status_wawancara === 'menunggu_wawancara') {
+                  $wawancaraStepStatus = 'active';
+              } elseif ($currentStep == 5) {
                   $wawancaraStepStatus = 'active';
               }
           }
@@ -485,8 +489,16 @@
               && $registration->status_kelulusan === 'Lulus'
               && $registration->status_registrasi_ulang === 'sudah_registrasi_lunas';
 
+          // ── STRICT GUARD: When wawancara is active and interview not complete, lock Step 6 ──
+          $isWawancaraBlockingFinal = $hasWawancara && $registration
+              && !$isWawancaraCompleted
+              && in_array($registration->status_wawancara, ['menunggu_penjadwalan_wawancara', 'menunggu_wawancara']);
+
           if ($registration && !in_array($registration->status, ['rejected', 'Gagal']) && $registration->status_kelulusan !== 'Tidak Lulus') {
-              if ($isRegistrationLunas) {
+              if ($isWawancaraBlockingFinal) {
+                  // Interview still in progress — keep Step 6 locked
+                  $finalStepStatus = 'locked';
+              } elseif ($isRegistrationLunas) {
                   // Fully paid re-registration - show completed state with provisioning info
                   $finalStepStatus = 'completed';
               } elseif (in_array($registration->status, ['registered'])) {

@@ -63,8 +63,10 @@ class WawancaraController extends Controller
         // Auto-transition: if admin sets schedule data, update registration status_wawancara
         if ($hasScheduleData) {
             Registration::where('id', $request->pendaftaran_id)
-                ->whereNull('status_wawancara')
-                ->orWhere('status_wawancara', 'menunggu_penjadwalan_wawancara')
+                ->where(function ($query) {
+                    $query->whereNull('status_wawancara')
+                          ->orWhere('status_wawancara', 'menunggu_penjadwalan_wawancara');
+                })
                 ->update(['status_wawancara' => 'menunggu_wawancara']);
         }
 
@@ -93,6 +95,24 @@ class WawancaraController extends Controller
                 'catatan_pewawancara' => $request->catatan_pewawancara,
             ]
         );
+
+        $registration = Registration::findOrFail($request->pendaftaran_id);
+        if ($request->status_wawancara === 'Lolos') {
+            $registration->update([
+                'status_wawancara' => 'Lolos',
+                'status' => 'accepted',
+                'status_kelulusan' => 'Lulus',
+                'status_pendaftaran' => 'Lulus',
+                'status_registrasi_ulang' => 'belum_registrasi',
+            ]);
+        } else {
+            $registration->update([
+                'status_wawancara' => 'Tidak Lolos',
+                'status' => 'rejected',
+                'status_kelulusan' => 'Tidak Lulus',
+                'status_pendaftaran' => 'Gagal',
+            ]);
+        }
 
         ActivityLogger::log('update', 'wawancara', 'Interview result for registration #' . $request->pendaftaran_id . ': ' . $request->status_wawancara);
 

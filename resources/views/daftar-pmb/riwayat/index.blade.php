@@ -129,7 +129,15 @@
                       } elseif ($registration->status === 'reviewed') {
                           $badgeBg = 'bg-secondary'; $badgeText = 'text-white'; $statusLabel = 'Direview';
                       } elseif ($registration->status === 'exam_completed') {
-                          $badgeBg = 'bg-primary'; $badgeText = 'text-white'; $statusLabel = 'Ujian Selesai';
+                          if ($pathObj && $pathObj->gunakan_wawancara) {
+                              if ($registration->status_wawancara === 'menunggu_penjadwalan_wawancara') {
+                                  $badgeBg = 'bg-warning'; $badgeText = 'text-dark'; $statusLabel = 'Menunggu Penjadwalan Wawancara';
+                              } else {
+                                  $badgeBg = 'bg-info'; $badgeText = 'text-dark'; $statusLabel = 'Proses Seleksi Wawancara';
+                              }
+                          } else {
+                              $badgeBg = 'bg-primary'; $badgeText = 'text-white'; $statusLabel = 'Ujian Selesai';
+                          }
                       } elseif ($registration->status === 'payment_pending') {
                           $isPaymentLocked = true;
                       }

@@ -304,7 +304,13 @@ class RegistrationPathController extends Controller
                     if ($hasExam && !in_array($registration->status, ['exam_completed', 'reviewed', 'accepted', 'rejected', 'Menunggu Verifikasi Registrasi Ulang', 'registered', 'Lulus', 'Gagal'])) {
                         $currentStep = 4;
                     } elseif ($hasExam && in_array($registration->status, ['exam_completed', 'reviewed', 'accepted', 'rejected', 'Menunggu Verifikasi Registrasi Ulang', 'registered', 'Lulus', 'Gagal'])) {
-                        $currentStep = $totalSteps;
+                        if ($hasWawancara) {
+                            $isWawancaraCompleted = $registration->wawancara && in_array($registration->wawancara->status_wawancara, ['Lolos', 'Tidak Lolos']);
+                            $isWawancaraCompleted = $isWawancaraCompleted || in_array($registration->status_wawancara, ['Lolos', 'Tidak Lolos']);
+                            $currentStep = $isWawancaraCompleted ? $totalSteps : 5;
+                        } else {
+                            $currentStep = $totalSteps;
+                        }
                     } elseif ($hasManualVerification && in_array($registration->status, ['Lulus', 'accepted', 'Menunggu Verifikasi Registrasi Ulang', 'registered', 'payment_pending'])) {
                         // payment_pending after re-registration submit → advance to step 5
                         $currentStep = $totalSteps;

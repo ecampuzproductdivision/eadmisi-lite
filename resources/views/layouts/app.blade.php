@@ -522,6 +522,9 @@ textarea.form-control::placeholder {
     @include('components.onboarding.checklist-widget')
     @include('components.onboarding.completion-modal')
 
+    {{-- Global Confirm Modal --}}
+    @include('components.confirm-modal')
+
     {{-- Onboarding Initialization Script --}}
     <script>
     document.addEventListener('DOMContentLoaded', function() {

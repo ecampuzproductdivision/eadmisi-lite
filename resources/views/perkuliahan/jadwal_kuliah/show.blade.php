@@ -111,7 +111,7 @@
             @if($jadwal->status_jadwal === 'Draft' && !$jadwal->isSelesai())
               <form action="{{ route('jadwal-kuliah.publikasikan', $jadwal->id_jadwal) }}" method="POST">
                 @csrf
-                <button type="submit" class="btn" style="background:#38bdf8;color:#0f172a;border-radius:10px;font-weight:600;" onclick="return confirm('Publikasikan jadwal {{ $jadwal->kode_kelas }}?')">
+                <button type="submit" class="btn" style="background:#38bdf8;color:#0f172a;border-radius:10px;font-weight:600;" onclick="return confirmAction(event, 'Publikasikan jadwal {{ $jadwal->kode_kelas }}?')">
                   <i class="ti ti-send me-1"></i>Publikasikan
                 </button>
               </form>
@@ -544,7 +544,7 @@
   // Hapus Dosen dari tim
   document.querySelectorAll('.hapus-dosen-btn').forEach(btn => {
     btn.addEventListener('click', function() {
-      if (!confirm('Hapus dosen ini dari tim pengampu?')) return;
+      if (!(await confirmAsync('Hapus dosen ini dari tim pengampu?')) return;
       const jdId = this.dataset.jd;
       fetch(`/references/jadwal-kuliah/${jadwalId}/dosen/${jdId}`, {
         method: 'DELETE',

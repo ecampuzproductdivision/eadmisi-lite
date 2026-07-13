@@ -206,7 +206,7 @@
                       @endif
                       <li><hr class="dropdown-divider"></li>
                       <li>
-                        <form action="{{ route('tahun-akademik.periode.destroy', [$ta->id_tahun_akademik, $periode->id_periode]) }}" method="POST" onsubmit="return confirm('Hapus periode ini?')">
+                        <form action="{{ route('tahun-akademik.periode.destroy', [$ta->id_tahun_akademik, $periode->id_periode]) }}" method="POST" onsubmit="return confirmSubmit(event, 'Hapus periode ini?')">
                           @csrf @method('DELETE')
                           <button type="submit" class="dropdown-item text-danger"><i class="ti ti-trash me-2"></i>Hapus</button>
                         </form>
@@ -327,7 +327,7 @@
                       <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEditKalender{{ $event->id_kalender }}"><i class="ti ti-edit me-2"></i>Edit</a></li>
                       <li><hr class="dropdown-divider"></li>
                       <li>
-                        <form action="{{ route('tahun-akademik.kalender.destroy', [$ta->id_tahun_akademik, $event->id_kalender]) }}" method="POST" onsubmit="return confirm('Hapus event ini?')">
+                        <form action="{{ route('tahun-akademik.kalender.destroy', [$ta->id_tahun_akademik, $event->id_kalender]) }}" method="POST" onsubmit="return confirmSubmit(event, 'Hapus event ini?')">
                           @csrf @method('DELETE')
                           <button type="submit" class="dropdown-item text-danger"><i class="ti ti-trash me-2"></i>Hapus</button>
                         </form>
@@ -435,7 +435,7 @@
                       <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEditNotif{{ $notif->id_notif_config }}"><i class="ti ti-edit me-2"></i>Edit</a></li>
                       <li><hr class="dropdown-divider"></li>
                       <li>
-                        <form action="{{ route('tahun-akademik.notifikasi.destroy', [$ta->id_tahun_akademik, $notif->id_notif_config]) }}" method="POST" onsubmit="return confirm('Hapus konfigurasi notifikasi ini?')">
+                        <form action="{{ route('tahun-akademik.notifikasi.destroy', [$ta->id_tahun_akademik, $notif->id_notif_config]) }}" method="POST" onsubmit="return confirmSubmit(event, 'Hapus konfigurasi notifikasi ini?')">
                           @csrf @method('DELETE')
                           <button type="submit" class="dropdown-item text-danger"><i class="ti ti-trash me-2"></i>Hapus</button>
                         </form>
@@ -523,7 +523,7 @@
           <div class="alert alert-info">
             <i class="ti ti-info-circle me-2"></i> Fitur ini akan menyalin <strong>periode kegiatan, event kalender, dan konfigurasi notifikasi</strong> dari TA yang sudah ada sebelumnya. Tanggal akan disesuaikan secara otomatis dengan rentang TA baru.
           </div>
-          <form action="{{ route('tahun-akademik.copy-template', $ta->id_tahun_akademik) }}" method="POST" onsubmit="return confirm('Salin template dari TA yang dipilih? Periode yang sudah ada tidak akan ditimpa.')">
+          <form action="{{ route('tahun-akademik.copy-template', $ta->id_tahun_akademik) }}" method="POST" onsubmit="return confirmSubmit(event, 'Salin template dari TA yang dipilih? Periode yang sudah ada tidak akan ditimpa.')">
             @csrf
             <div class="row g-3 align-items-end">
               <div class="col-md-8">

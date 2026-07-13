@@ -11,7 +11,7 @@
         <li><a class="dropdown-item" href="{{ route('mahasiswa.edit', $mhs->id_mahasiswa) }}"><i class="ti ti-edit me-2"></i>Ubah</a></li>
         <li><hr class="dropdown-divider"></li>
         <li>
-          <form action="{{ route('mahasiswa.destroy', $mhs->id_mahasiswa) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menonaktifkan mahasiswa ini?');">
+          <form action="{{ route('mahasiswa.destroy', $mhs->id_mahasiswa) }}" method="POST" class="d-inline" onsubmit="return confirmSubmit(event, 'Yakin ingin menonaktifkan mahasiswa ini?')">
             @csrf
             @method('DELETE')
             <button type="submit" class="dropdown-item text-danger"><i class="ti ti-user-off me-2"></i>Nonaktifkan</button>

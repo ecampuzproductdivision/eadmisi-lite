@@ -190,7 +190,7 @@
             </div>
 
             <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-success px-5" onclick="return confirm('Yakin akan mengaktifkan regulasi ini? Tindakan ini tidak dapat dibatalkan.')">
+              <button type="submit" class="btn btn-success px-5" onclick="return confirmAction(event, 'Yakin akan mengaktifkan regulasi ini? Tindakan ini tidak dapat dibatalkan.')">
                 <i class="ti ti-toggle-left me-1"></i> Aktifkan Regulasi
               </button>
               <a href="{{ route('kkni-sndikti.admin.regulasi.edit', $regulasi->id_regulasi) }}" class="btn btn-light border fw-semibold px-4">Batal</a>

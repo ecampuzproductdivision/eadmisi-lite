@@ -13,7 +13,7 @@
           <li><a class="dropdown-item" href="{{ route('tahun-akademik.aktivasi-panel', $ta->id_tahun_akademik) }}"><i class="ti ti-toggle-left me-2"></i>Aktivasi</a></li>
           <li><hr class="dropdown-divider"></li>
           <li>
-            <form action="{{ route('tahun-akademik.destroy', $ta->id_tahun_akademik) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus Tahun Akademik ini?')">
+            <form action="{{ route('tahun-akademik.destroy', $ta->id_tahun_akademik) }}" method="POST" class="d-inline" onsubmit="return confirmSubmit(event, 'Apakah Anda yakin ingin menghapus Tahun Akademik ini?')">
               @csrf @method('DELETE')
               <button type="submit" class="dropdown-item text-danger"><i class="ti ti-trash me-2"></i>Hapus</button>
             </form>
@@ -21,7 +21,7 @@
         @elseif($ta->status === 'AKTIF')
           <li><hr class="dropdown-divider"></li>
           <li>
-            <form action="{{ route('tahun-akademik.penutupan', $ta->id_tahun_akademik) }}" method="POST" class="d-inline" onsubmit="return confirm('Tutup Tahun Akademik ini? Semua data akan dikunci.')">
+            <form action="{{ route('tahun-akademik.penutupan', $ta->id_tahun_akademik) }}" method="POST" class="d-inline" onsubmit="return confirmSubmit(event, 'Tutup Tahun Akademik ini? Semua data akan dikunci.')">
               @csrf
               <button type="submit" class="dropdown-item text-warning"><i class="ti ti-lock me-2"></i>Tutup Semester</button>
             </form>

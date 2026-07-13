@@ -51,7 +51,7 @@ if (!function_exists('country_flag')) {
         <a href="{{ route('country.edit', $country->id) }}" class="btn btn-sm btn-light border" title="Ubah">
           <i class="ti ti-edit fs-5"></i>
         </a>
-        <form action="{{ route('country.destroy', $country->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data negara ini?');">
+        <form action="{{ route('country.destroy', $country->id) }}" method="POST" onsubmit="return confirmSubmit(event, 'Apakah Anda yakin ingin menghapus data negara ini?')">
           @csrf
           @method('DELETE')
           <button type="submit" class="btn btn-sm btn-light border text-danger" title="Hapus">

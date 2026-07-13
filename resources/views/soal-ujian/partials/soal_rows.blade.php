@@ -37,7 +37,7 @@
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
-                <form action="{{ route('paket-soal.destroy-question', [$paketSoal, $soal]) }}" method="POST" onsubmit="return confirm('Hapus soal ini?')">
+                <form action="{{ route('paket-soal.destroy-question', [$paketSoal, $soal]) }}" method="POST" onsubmit="return confirmSubmit(event, 'Hapus soal ini?')">
                     @csrf @method('DELETE')
                     <button type="submit" class="dropdown-item text-danger">
                         <i class="ti ti-trash me-2"></i> Hapus

@@ -27,7 +27,7 @@
             </a>
           @endif
           @if($ta->status === 'AKTIF')
-            <form action="{{ route('tahun-akademik.penutupan', $ta->id_tahun_akademik) }}" method="POST" onsubmit="return confirm('Tutup TA ini? Semua data akan dikunci.')">
+            <form action="{{ route('tahun-akademik.penutupan', $ta->id_tahun_akademik) }}" method="POST" onsubmit="return confirmSubmit(event, 'Tutup TA ini? Semua data akan dikunci.')">
               @csrf
               <button type="submit" class="btn btn-warning d-inline-flex align-items-center gap-2">
                 <i class="ti ti-lock"></i> Tutup Semester

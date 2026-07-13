@@ -62,7 +62,7 @@
                         <div class="d-flex gap-2 align-items-center">
                             <span class="badge {{ $menu->is_active ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }} border rounded py-1 px-2">{{ $menu->is_active ? 'Active' : 'Hidden' }}</span>
                             <a href="{{ route('menus.edit', $menu->id) }}" class="btn btn-xs btn-light border py-1 px-2" title="Edit"><i class="ti ti-edit"></i></a>
-                            <form action="{{ route('menus.destroy', $menu->id) }}" method="POST" onsubmit="return confirm('Deleting parent menu will also delete all its submenus. Are you sure?');">@csrf @method('DELETE')<button type="submit" class="btn btn-xs btn-light border text-danger py-1 px-2" title="Delete"><i class="ti ti-trash"></i></button></form>
+                            <form action="{{ route('menus.destroy', $menu->id) }}" method="POST" onsubmit="return confirmSubmit(event, 'Deleting parent menu will also delete all its submenus. Are you sure?')">@csrf @method('DELETE')<button type="submit" class="btn btn-xs btn-light border text-danger py-1 px-2" title="Delete"><i class="ti ti-trash"></i></button></form>
                         </div>
                     </div>
                     @if($menu->children->isNotEmpty())
@@ -85,7 +85,7 @@
                                 <div class="d-flex gap-2 align-items-center">
                                     <span class="badge {{ $child->is_active ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }} border rounded py-1 px-2">{{ $child->is_active ? 'Active' : 'Hidden' }}</span>
                                     <a href="{{ route('menus.edit', $child->id) }}" class="btn btn-xs btn-light border py-1 px-2"><i class="ti ti-edit"></i></a>
-                                    <form action="{{ route('menus.destroy', $child->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">@csrf @method('DELETE')<button type="submit" class="btn btn-xs btn-light border text-danger py-1 px-2"><i class="ti ti-trash"></i></button></form>
+                                    <form action="{{ route('menus.destroy', $child->id) }}" method="POST" onsubmit="return confirmSubmit(event, 'Are you sure?')">@csrf @method('DELETE')<button type="submit" class="btn btn-xs btn-light border text-danger py-1 px-2"><i class="ti ti-trash"></i></button></form>
                                 </div>
                             </div>
                             @endforeach

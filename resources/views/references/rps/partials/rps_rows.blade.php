@@ -127,7 +127,7 @@
           @endif
 
           @if($rps->status === 'DRAFT')
-            <form action="{{ route('rps.destroy', $rps->id_rps) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus RPS ini? Seluruh rancangan pertemuan dan tim pengampu akan ikut terhapus.')">
+            <form action="{{ route('rps.destroy', $rps->id_rps) }}" method="POST" class="d-inline" onsubmit="return confirmSubmit(event, 'Apakah Anda yakin ingin menghapus RPS ini? Seluruh rancangan pertemuan dan tim pengampu akan ikut terhapus.')">
               @csrf
               @method('DELETE')
               <button type="submit" class="btn btn-subtle-danger btn-sm px-2" style="border-radius: 8px;" title="Hapus Draft">

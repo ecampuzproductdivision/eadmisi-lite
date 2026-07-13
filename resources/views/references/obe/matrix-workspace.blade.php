@@ -770,7 +770,7 @@ document.getElementById('btn-delete-cell')?.addEventListener('click', async () =
   const kmkId = document.getElementById('form-kmk-id').value;
   const reason = document.getElementById('textarea-reason').value || 'Penghapusan manual';
 
-  if (!confirm('Apakah Anda yakin ingin menghapus pemetaan CPL ke MK ini?')) return;
+  if (!(await confirmAsync('Apakah Anda yakin ingin menghapus pemetaan CPL ke MK ini?')) return;
 
   const payload = {
     id_cpl: cplId,
@@ -797,7 +797,7 @@ document.querySelectorAll('.btn-bulk-assign-val').forEach(btn => {
     if (selectedBulkCells.length === 0 || isReadOnly) return;
     const value = this.dataset.val;
     
-    if (!confirm(`Terapkan tingkat kontribusi "${value}" ke ${selectedBulkCells.length} sel terpilih?`)) return;
+    if (!(await confirmAsync(`Terapkan tingkat kontribusi "${value}" ke ${selectedBulkCells.length} sel terpilih?`)) return;
     
     let processed = 0;
     let failed = 0;
@@ -822,7 +822,7 @@ document.querySelectorAll('.btn-bulk-assign-val').forEach(btn => {
 
 document.querySelector('.btn-bulk-clear')?.addEventListener('click', async function() {
   if (selectedBulkCells.length === 0 || isReadOnly) return;
-  if (!confirm(`Hapus pemetaan untuk ${selectedBulkCells.length} sel terpilih?`)) return;
+  if (!(await confirmAsync(`Hapus pemetaan untuk ${selectedBulkCells.length} sel terpilih?`)) return;
   
   let processed = 0;
   let failed = 0;
@@ -858,7 +858,7 @@ document.querySelectorAll('.btn-change-schema').forEach(btn => {
       msg += "\n\nSetiap tingkat kontribusi T/S/R yang terdaftar akan dikonversi otomatis ke bobot default: Tinggi=50%, Sedang=30%, Rendah=20%.";
     }
     
-    if (!confirm(msg)) return;
+    if (!(await confirmAsync(msg)) return;
     
     const data = await apiCall(`/references/curiculum/${kurKode}/matrix/toggle-schema`, 'POST', {
       skema: targetSkema
@@ -882,7 +882,7 @@ document.querySelectorAll('.btn-copy-matrix').forEach(btn => {
     const sourceKode = this.dataset.kur;
     const sourceNama = this.dataset.nama;
     
-    if (!confirm(`Apakah Anda yakin ingin menyalin seluruh pemetaan dari kurikulum "${sourceNama}" (${sourceKode})?\n\nPemetaan CPL-MK yang sudah dibuat di kurikulum saat ini akan DIGANTIKAN seluruhnya.`)) return;
+    if (!(await confirmAsync(`Apakah Anda yakin ingin menyalin seluruh pemetaan dari kurikulum "${sourceNama}" (${sourceKode})?\n\nPemetaan CPL-MK yang sudah dibuat di kurikulum saat ini akan DIGANTIKAN seluruhnya.`)) return;
     
     const data = await apiCall(`/references/curiculum/${kurKode}/matrix/copy`, 'POST', {
       source_kurikulum_kode: sourceKode

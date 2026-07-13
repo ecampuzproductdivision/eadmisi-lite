@@ -1215,8 +1215,8 @@
   };
 
   // Delete Sub-CPMK
-  function confirmDeleteSub(id, kode) {
-    if (!confirm('Anda yakin ingin menghapus ' + kode + '?')) return;
+  async confirmDeleteSub(id, kode) {
+    if (!(await confirmAsync('Anda yakin ingin menghapus ' + kode + '?')) return;
 
     const url = "{{ route('sub-cpmk.destroy', ['id' => ':id']) }}".replace(':id', id);
 
@@ -1244,7 +1244,7 @@
       const url = "{{ route('curiculum.course.cpmk.copy', ['kurKode' => $kurikulum->kurKode, 'courseId' => $course->id]) }}";
       const sourceKode = document.getElementById('source_kurikulum_kode').value;
 
-      if (!confirm('PENTING: Seluruh CPMK yang ada pada mata kuliah ini akan terhapus dan digantikan oleh struktur yang disalin. Lanjutkan?')) return;
+      if (!(await confirmAsync('PENTING: Seluruh CPMK yang ada pada mata kuliah ini akan terhapus dan digantikan oleh struktur yang disalin. Lanjutkan?')) return;
 
       fetch(url, {
         method: 'POST',

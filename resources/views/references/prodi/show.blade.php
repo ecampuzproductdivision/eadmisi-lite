@@ -348,7 +348,7 @@
                             </button>
                           </form>
                         @endif
-                        <form action="{{ route('prodi.akreditasi.destroy', $akr->prodiakrId) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus riwayat akreditasi ini?')">
+                        <form action="{{ route('prodi.akreditasi.destroy', $akr->prodiakrId) }}" method="POST" onsubmit="return confirmSubmit(event, 'Apakah Anda yakin ingin menghapus riwayat akreditasi ini?')">
                           @csrf
                           @method('DELETE')
                           <button type="submit" class="btn btn-sm btn-light border text-danger" title="Hapus">
@@ -484,7 +484,7 @@
                             <button type="button" class="btn btn-sm btn-light border" data-bs-toggle="modal" data-bs-target="#editPlModal-{{ $pl->id }}" title="Ubah">
                               <i class="ti ti-edit"></i>
                             </button>
-                            <form action="{{ route('prodi.profil-lulusan.destroy', $pl->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus profil lulusan ini?')">
+                            <form action="{{ route('prodi.profil-lulusan.destroy', $pl->id) }}" method="POST" onsubmit="return confirmSubmit(event, 'Apakah Anda yakin ingin menghapus profil lulusan ini?')">
                               @csrf
                               @method('DELETE')
                               <button type="submit" class="btn btn-sm btn-light border text-danger" title="Hapus">

@@ -209,8 +209,9 @@
 
 @push('scripts')
 <script>
-function processSingle(id, action) {
-    if (!confirm('Yakin ingin mengubah status pendaftar ini menjadi ' + action + '?')) return;
+async function processSingle(id, action) {
+    const confirmed = await confirmAsync('Yakin ingin mengubah status pendaftar ini menjadi ' + action + '?');
+    if (!confirmed) return;
     
     const form = document.getElementById('bulk-kelulusan-form');
     const input = document.getElementById('bulk-action-input');
@@ -241,14 +242,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const bulkActionInput = document.getElementById('bulk-action-input');
 
     if (btnBulk && bulkForm) {
-        btnBulk.addEventListener('click', function(e) {
+        btnBulk.addEventListener('click', async function(e) {
             e.preventDefault();
             const checked = document.querySelectorAll('.row-checkbox:checked');
             if (checked.length === 0) {
                 alert('Silakan pilih minimal satu pendaftar terlebih dahulu.');
                 return;
             }
-            const doLulus = confirm(checked.length + ' pendaftar dipilih. Klik OK untuk Luluskan, Batal untuk Gagalkan.');
+            const doLulus = await confirmAsync(checked.length + ' pendaftar dipilih. Klik OK untuk Luluskan, Batal untuk Gagalkan.', {
+              confirmText: 'Ya, Luluskan',
+              buttonClass: 'btn-success',
+              icon: 'checklist',
+              iconColor: 'text-success',
+              title: 'Konfirmasi Kelulusan Massal'
+            });
             if (doLulus) {
                 bulkActionInput.value = 'Lulus';
             } else {

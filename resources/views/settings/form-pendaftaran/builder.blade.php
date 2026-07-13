@@ -459,8 +459,8 @@ document.getElementById('fieldForm').addEventListener('submit', function(e) {
     .catch((err)=>{showToast('danger','Gagal menyimpan field');console.error(err);});
 });
 
-function duplicateField(id) {
-  if(!confirm('Duplikat field ini?'))return;
+async duplicateField(id) {
+  if (!(await confirmAsync('Duplikat field ini?'))return;
   fetch(`/settings/form-builder/${id}/duplicate`,{method:'POST',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'}})
     .then(r=>r.json()).then(d=>{if(d.success){showToast('success','Field diduplikasi!');setTimeout(()=>location.reload(),500);}}).catch(()=>showToast('danger','Gagal'));
 }
@@ -470,8 +470,8 @@ function toggleField(id) {
     .then(r=>r.json()).then(d=>{if(d.success){showToast('success','Status diubah!');setTimeout(()=>location.reload(),300);}}).catch(()=>showToast('danger','Gagal'));
 }
 
-function deleteField(id) {
-  if(!confirm('Hapus field ini?'))return;
+async deleteField(id) {
+  if (!(await confirmAsync('Hapus field ini?'))return;
   fetch(`/settings/form-builder/${id}`,{method:'DELETE',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'}})
     .then(r=>r.json()).then(d=>{if(d.success){showToast('success','Field dihapus!');setTimeout(()=>location.reload(),300);}}).catch(()=>showToast('danger','Gagal'));
 }

@@ -42,7 +42,7 @@
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
-                    <form action="{{ route('settings.form-pendaftaran.destroy', $form->id) }}" method="POST" onsubmit="return confirm('Hapus form {{ $form->nama }}? Semua field akan ikut terhapus.')">
+                    <form action="{{ route('settings.form-pendaftaran.destroy', $form->id) }}" method="POST" onsubmit="return confirmSubmit(event, 'Hapus form {{ $form->nama }}? Semua field akan ikut terhapus.')">
                         @csrf @method('DELETE')
                         <button type="submit" class="dropdown-item text-danger">
                             <i class="ti ti-trash me-2"></i> Hapus

@@ -608,51 +608,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. Delete Mapping Action
     document.querySelectorAll('.btn-delete-mapping').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
             e.preventDefault();
-            if (confirm('Apakah Anda yakin ingin menghapus mata kuliah ini dari kurikulum?')) {
-                const mappingId = btn.dataset.mappingId;
-                fetch(`/references/curiculum-course/${mappingId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.reload();
-                    } else {
-                        alert(data.message || 'Gagal menghapus.');
-                    }
-                });
-            }
+            const confirmed = await confirmAsync('Apakah Anda yakin ingin menghapus mata kuliah ini dari kurikulum?');
+            if (!confirmed) return;
+            const mappingId = btn.dataset.mappingId;
+            fetch(`/references/curiculum-course/${mappingId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Gagal menghapus.');
+                }
+            });
         });
     });
 
     // 5. Activation Toggler Action
     const toggleActivationBtn = document.querySelector('.btn-toggle-activation');
     if (toggleActivationBtn) {
-        toggleActivationBtn.addEventListener('click', () => {
+        toggleActivationBtn.addEventListener('click', async () => {
             const actionText = toggleActivationBtn.innerText.trim();
-            if (confirm(`Apakah Anda yakin ingin ${actionText} ini?`)) {
-                fetch('{{ route("curiculum.toggle-status", $kurikulum->kurKode) }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.reload();
-                    } else {
-                        alert(data.message || 'Gagal mengubah status aktivasi.');
-                    }
-                });
-            }
+            const confirmed = await confirmAsync(`Apakah Anda yakin ingin ${actionText} ini?`);
+            if (!confirmed) return;
+            fetch('{{ route("curiculum.toggle-status", $kurikulum->kurKode) }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Gagal mengubah status aktivasi.');
+                }
+            });
         });
     }
 

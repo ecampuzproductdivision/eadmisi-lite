@@ -290,7 +290,7 @@
               <form action="{{ route('logout') }}" method="POST" id="headerLogoutForm" class="d-none">
                 @csrf
               </form>
-              <a href="#!" onclick="event.preventDefault(); document.getElementById('headerLogoutForm').submit();" class="text-secondary d-flex align-items-center gap-2">
+              <a href="#!" data-form-id="headerLogoutForm" onclick="return confirmAction(event, '{{ __('Apakah Anda yakin ingin logout?') }}', { confirmText: '{{ __('Ya, Logout') }}', buttonClass: 'btn-primary', icon: 'logout-2', iconColor: 'text-primary', title: '{{ __('Konfirmasi Logout') }}' });" class="text-secondary d-flex align-items-center gap-2">
                 <span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

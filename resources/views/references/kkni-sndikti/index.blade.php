@@ -599,7 +599,7 @@
                       <a href="{{ route('kkni-sndikti.admin.preview-aktivasi', $reg->id_regulasi) }}" class="btn btn-sm btn-outline-success" title="Preview & Aktifkan">
                         <i class="ti ti-toggle-left"></i> Aktifkan
                       </a>
-                      <form action="{{ route('kkni-sndikti.admin.regulasi.destroy', $reg->id_regulasi) }}" method="POST" onsubmit="return confirm('Hapus regulasi Draft \"{{ $reg->nomor_peraturan }}\" secara permanen? Seluruh data butir terkait juga akan dihapus.')" class="d-inline">
+                      <form action="{{ route('kkni-sndikti.admin.regulasi.destroy', $reg->id_regulasi) }}" method="POST" onsubmit="return confirmSubmit(event, 'Hapus regulasi Draft \"{{ $reg->nomor_peraturan }}\" secara permanen? Seluruh data butir terkait juga akan dihapus.')" class="d-inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus Draft">

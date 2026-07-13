@@ -557,8 +557,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ====== AJAX ACTIONS ======
-function duplicateField(id) {
-  if (!confirm('Duplikat field ini?')) return;
+async duplicateField(id) {
+  if (!(await confirmAsync('Duplikat field ini?')) return;
   fetch(`/settings/form-builder/${id}/duplicate`, {
     method: 'POST',
     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
@@ -582,8 +582,8 @@ function toggleField(id) {
   .catch(() => showToast('danger', 'Gagal mengubah status'));
 }
 
-function deleteField(id) {
-  if (!confirm('Hapus field ini? Aksi ini tidak bisa dibatalkan.')) return;
+async deleteField(id) {
+  if (!(await confirmAsync('Hapus field ini? Aksi ini tidak bisa dibatalkan.')) return;
   fetch(`/settings/form-builder/${id}`, {
     method: 'DELETE',
     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }

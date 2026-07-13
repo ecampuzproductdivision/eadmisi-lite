@@ -37,7 +37,7 @@
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
-                <form action="{{ route('syarat-berkas.destroy-dokumen', [request()->route('templateBerkas'), $d->id]) }}" method="POST" onsubmit="return confirm('Hapus dokumen ini?');">
+                <form action="{{ route('syarat-berkas.destroy-dokumen', [request()->route('templateBerkas'), $d->id]) }}" method="POST" onsubmit="return confirmSubmit(event, 'Hapus dokumen ini?')">
                     @csrf @method('DELETE')
                     <button type="submit" class="dropdown-item text-danger">
                         <i class="ti ti-trash me-2"></i> Hapus

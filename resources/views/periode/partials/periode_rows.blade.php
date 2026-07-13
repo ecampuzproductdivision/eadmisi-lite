@@ -41,7 +41,7 @@
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
-                        <form action="{{ route('periode.destroy', $periode) }}" method="POST" onsubmit="return confirm('Hapus periode {{ $periode->label }}?')">
+                        <form action="{{ route('periode.destroy', $periode) }}" method="POST" onsubmit="return confirmSubmit(event, 'Hapus periode {{ $periode->label }}?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="dropdown-item text-danger">

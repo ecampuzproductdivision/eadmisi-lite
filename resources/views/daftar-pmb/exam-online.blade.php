@@ -139,7 +139,7 @@
               </div>
             @else
               <div class="d-grid">
-                <a href="{{ route('daftar-pmb.exam.start', $path?->code) }}" class="btn btn-primary btn-lg fw-semibold py-3" onclick="return confirm('Apakah Anda yakin ingin memulai ujian? Timer akan dimulai segera setelah Anda menekan tombol ini.');">
+                <a href="{{ route('daftar-pmb.exam.start', $path?->code) }}" class="btn btn-primary btn-lg fw-semibold py-3" onclick="return confirmAction(event, 'Apakah Anda yakin ingin memulai ujian? Timer akan dimulai segera setelah Anda menekan tombol ini.')">
                   <i class="ti ti-play-circle me-2"></i> Mulai Ujian Sekarang
                 </a>
               </div>
@@ -392,8 +392,15 @@
   });
 
   // Submit exam
-  function submitExam() {
-    if (confirm('Apakah Anda yakin ingin menyelesaikan ujian? Jawaban yang belum diisi akan dianggap salah.')) {
+  async function submitExam() {
+    const confirmed = await confirmAsync('Apakah Anda yakin ingin menyelesaikan ujian? Jawaban yang belum diisi akan dianggap salah.', {
+      confirmText: 'Ya, Selesaikan Ujian',
+      buttonClass: 'btn-primary',
+      icon: 'check-circle',
+      iconColor: 'text-primary',
+      title: 'Konfirmasi Selesai Ujian'
+    });
+    if (confirmed) {
       document.getElementById('answerForm').action = '{{ route("daftar-pmb.exam.submit", $path?->code) }}';
       document.getElementById('answerForm').submit();
     }

@@ -38,7 +38,7 @@
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
-                        <form action="{{ route('pages.destroy', $page->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this page registration?');">
+                        <form action="{{ route('pages.destroy', $page->id) }}" method="POST" onsubmit="return confirmSubmit(event, 'Are you sure you want to delete this page registration?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="dropdown-item text-danger">

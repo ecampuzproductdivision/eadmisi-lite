@@ -23,7 +23,7 @@
           <form action="{{ route('course.destroy', $course->id) }}" method="POST" class="d-inline">
             @csrf
             @method('DELETE')
-            <button type="submit" class="dropdown-item text-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')"><i class="ti ti-trash me-2"></i>Hapus</button>
+            <button type="submit" class="dropdown-item text-danger" onclick="return confirmAction(event, 'Apakah Anda yakin ingin menghapus data ini?')"><i class="ti ti-trash me-2"></i>Hapus</button>
           </form>
         </li>
       </ul>

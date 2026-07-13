@@ -13,7 +13,7 @@
           <li><a class="dropdown-item" href="{{ route('prodi.edit', $prodi->ID) }}"><i class="ti ti-edit me-2"></i>Ubah</a></li>
           <li><hr class="dropdown-divider"></li>
           <li>
-            <form action="{{ route('prodi.destroy', $prodi->ID) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?');">
+            <form action="{{ route('prodi.destroy', $prodi->ID) }}" method="POST" class="d-inline" onsubmit="return confirmSubmit(event, 'Apakah Anda yakin ingin menghapus data ini?')">
               @csrf
               @method('DELETE')
               <button type="submit" class="dropdown-item text-danger"><i class="ti ti-trash me-2"></i>Hapus</button>

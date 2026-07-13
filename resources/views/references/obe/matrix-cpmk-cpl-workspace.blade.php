@@ -826,7 +826,7 @@ document.getElementById('btn-delete-cell')?.addEventListener('click', async () =
   const cpmkId = document.getElementById('form-cpmk-id').value;
   const reason = document.getElementById('textarea-reason').value || 'Penghapusan manual';
 
-  if (!confirm('Apakah Anda yakin ingin menghapus pemetaan CPMK ke CPL ini?')) return;
+  if (!(await confirmAsync('Apakah Anda yakin ingin menghapus pemetaan CPMK ke CPL ini?')) return;
 
   const payload = {
     id_cpl: cplId,
@@ -852,7 +852,7 @@ document.querySelectorAll('.btn-copy-matrix').forEach(btn => {
     const source = this.dataset.kur;
     const nama = this.dataset.nama;
     
-    if (!confirm(`PENTING: Seluruh pemetaan CPMK-CPL di kurikulum ini akan dihapus dan disalin dari ${nama} (${source}). Lanjutkan?`)) return;
+    if (!(await confirmAsync(`PENTING: Seluruh pemetaan CPMK-CPL di kurikulum ini akan dihapus dan disalin dari ${nama} (${source}). Lanjutkan?`)) return;
     
     const data = await apiCall(`/references/curiculum/${kurKode}/matrix-cpmk-cpl/copy`, 'POST', {
       source_kurikulum_kode: source

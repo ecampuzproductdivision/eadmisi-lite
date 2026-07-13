@@ -134,7 +134,7 @@
             <a href="{{ route('registration-paths.edit', $registrationPath) }}" class="btn btn-warning d-inline-flex align-items-center gap-2">
               <i class="ti ti-edit fs-4"></i> Edit Jalur
             </a>
-            <form action="{{ route('registration-paths.destroy', $registrationPath) }}" method="POST" onsubmit="return confirm('Hapus jalur {{ $registrationPath->name }}?')">
+            <form action="{{ route('registration-paths.destroy', $registrationPath) }}" method="POST" onsubmit="return confirmSubmit(event, 'Hapus jalur {{ $registrationPath->name }}?')">
               @csrf
               @method('DELETE')
               <button type="submit" class="btn btn-danger d-inline-flex align-items-center gap-2 justify-content-center">

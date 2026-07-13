@@ -290,6 +290,109 @@ Script untuk infinite scroll / load more data.
 ])
 ```
 
+### 3.6 `components.confirm-modal` — Global Confirm Dialog
+
+Komponen modal konfirmasi global untuk menggantikan `confirm()` bawaan browser.
+
+**File:** `resources/views/components/confirm-modal.blade.php`
+
+**Include (otomatis di `layouts/app.blade.php`):**
+```blade
+{{-- Global Confirm Modal --}}
+@include('components.confirm-modal')
+```
+
+#### 3.6.1 Fungsi JavaScript Global
+
+| Fungsi | Parameter | Deskripsi |
+|--------|-----------|-----------|
+| `confirmAction(event, message, options)` | event, message, options | Untuk `onclick` attribute — return `false` (mencegah default), menampilkan modal, lalu submit form / navigate jika dikonfirmasi |
+| `confirmSubmit(event, message, options)` | event, message, options | Untuk `onsubmit` attribute — return `false` (mencegah submit form), menampilkan modal, lalu submit form jika dikonfirmasi |
+| `confirmAsync(message, options)` | message, options | Untuk async JavaScript — return Promise (true/false). Gunakan dengan `await` di `async function` |
+
+**Options object:**
+| Property | Type | Default | Deskripsi |
+|----------|------|---------|-----------|
+| `confirmText` | string | `'Ya, Hapus!'` | Teks tombol konfirmasi |
+| `buttonClass` | string | `'btn-danger'` | Class tombol (`btn-danger`, `btn-primary`, `btn-success`, `btn-warning`) |
+| `icon` | string | `'alert-triangle'` | Nama icon Tabler (tanpa prefix `ti ti-`) |
+| `iconColor` | string | `'text-warning'` | Class warna icon |
+| `submessage` | string | `''` | Teks tambahan di bawah pesan utama |
+| `title` | string | `'Konfirmasi'` | Judul modal |
+
+#### 3.6.2 Aturan Penggunaan
+
+1. **WAJIB menggunakan modal konfirmasi ini**, **DILARANG** menggunakan `confirm()` bawaan browser
+2. **Untuk action hapus** (DELETE form): gunakan `confirmSubmit(event, 'Pesan')` di `onsubmit` atau `confirmAction(event, 'Pesan')` di `onclick`
+3. **Untuk logout**: gunakan `confirmAction(event, 'Pesan', options)` dengan `data-form-id="headerLogoutForm"` untuk submit form hidden
+4. **Untuk JavaScript async** (event listener, fetch): gunakan `await confirmAsync('Pesan', options)` di dalam `async function`
+5. **Button class** disesuaikan dengan action:
+   - Delete/Remove: `btn-danger` (default, icon `alert-triangle`)
+   - Logout: `btn-primary` (icon `logout-2`)
+   - Publish/Activate: `btn-success` (icon `check-circle`)
+   - Bulk process: `btn-success` (icon `checklist`)
+   - Submit exam/test: `btn-primary` (icon `check-circle`)
+
+#### 3.6.3 Contoh Penggunaan
+
+**Form submit (onsubmit):**
+```blade
+<form action="{{ route('destroy', $id) }}" method="POST"
+      onsubmit="return confirmSubmit(event, 'Hapus data ini?')">
+    @csrf @method('DELETE')
+    <button type="submit" class="btn btn-danger">Hapus</button>
+</form>
+```
+
+**Button click (onclick) — untuk form button di actions-dropdown:**
+```blade
+<button type="submit" class="dropdown-item text-danger"
+        onclick="return confirmAction(event, 'Hapus data ini?')">
+    <i class="ti ti-trash me-2"></i> Hapus
+</button>
+```
+
+**Anchor link logout (dengan form hidden):**
+```blade
+<form action="{{ route('logout') }}" method="POST" id="logoutForm" class="d-none">@csrf</form>
+<a href="#!" data-form-id="logoutForm"
+   onclick="return confirmAction(event, 'Apakah Anda yakin ingin logout?', {
+       confirmText: 'Ya, Logout',
+       buttonClass: 'btn-primary',
+       icon: 'logout-2',
+       iconColor: 'text-primary',
+       title: 'Konfirmasi Logout'
+   })">
+    <i class="ti ti-logout"></i> Logout
+</a>
+```
+
+**Async JavaScript (event listener):**
+```javascript
+document.querySelector('.btn-delete').addEventListener('click', async function(e) {
+    e.preventDefault();
+    const confirmed = await confirmAsync('Apakah Anda yakin ingin menghapus data ini?');
+    if (!confirmed) return;
+    // proceed with delete...
+});
+```
+
+**Dengan actions-dropdown component:**
+```blade
+@include('components.actions-dropdown', ['items' => [
+    ['url' => route('destroy', $id), 'icon' => 'ti ti-trash', 'label' => 'Hapus',
+     'class' => 'text-danger', 'method' => 'DELETE', 'confirm' => 'Hapus data ini?'],
+]])
+```
+
+**Link dengan konfirmasi (navigasi):**
+```blade
+<a href="{{ route('exam.start') }}" class="btn btn-primary"
+   onclick="return confirmAction(event, 'Apakah Anda yakin ingin memulai ujian?')">
+    Mulai Ujian
+</a>
+```
+
 ---
 
 ## 4. CSS Conventions

@@ -840,7 +840,7 @@ function attachMateriActions() {
 
   document.querySelectorAll('.btn-delete-materi').forEach(btn => {
     btn.addEventListener('click', async () => {
-      if (!confirm('Hapus materi ini? Tindakan tidak dapat dibatalkan.')) return;
+      if (!(await confirmAsync('Hapus materi ini? Tindakan tidak dapat dibatalkan.')) return;
       const id = btn.dataset.id;
       const res = await fetch(`/rps-pertemuan/materi/${id}`, {
         method: 'DELETE',

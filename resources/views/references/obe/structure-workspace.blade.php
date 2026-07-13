@@ -734,7 +734,7 @@ document.addEventListener('click', async function (e) {
   if (!btn || isReadOnly) return;
   const kmkId = btn.dataset.kmkId;
   const mkNama = btn.dataset.mkNama;
-  if (!confirm(`Hapus "${mkNama}" dari kurikulum ini? Prasyarat terkait juga akan terhapus.`)) return;
+  if (!(await confirmAsync(`Hapus "${mkNama}" dari kurikulum ini? Prasyarat terkait juga akan terhapus.`)) return;
 
   const data = await apiCall(`/references/curiculum/${kurKode}/structure/update-position`, 'POST', {
     action: 'remove',
@@ -836,7 +836,7 @@ document.getElementById('prereq-form')?.addEventListener('submit', async functio
 document.addEventListener('click', async function (e) {
   const btn = e.target.closest('.btn-delete-prereq');
   if (!btn) return;
-  if (!confirm('Hapus prasyarat ini?')) return;
+  if (!(await confirmAsync('Hapus prasyarat ini?')) return;
   const id = btn.dataset.id;
   const data = await apiCall(`/references/curiculum/${kurKode}/structure/prasyarat/${id}`, 'DELETE', {});
   if (data.success) {
@@ -915,7 +915,7 @@ document.querySelectorAll('.btn-copy-structure').forEach(btn => {
   btn.addEventListener('click', async function () {
     const sourceKode = this.dataset.kur;
     const sourceNama = this.dataset.nama;
-    if (!confirm(`Salin seluruh struktur dari "${sourceNama}" ke kurikulum ini? Data semester, kelompok, MK, dan prasyarat yang ada sekarang akan DIGANTIKAN.`)) return;
+    if (!(await confirmAsync(`Salin seluruh struktur dari "${sourceNama}" ke kurikulum ini? Data semester, kelompok, MK, dan prasyarat yang ada sekarang akan DIGANTIKAN.`)) return;
 
     const data = await apiCall(`/references/curiculum/${kurKode}/structure/copy`, 'POST', {
       source_kurikulum_kode: sourceKode

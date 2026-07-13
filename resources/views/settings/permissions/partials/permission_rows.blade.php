@@ -20,7 +20,7 @@
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
-                    <form action="{{ route('permissions.destroy', $perm->id) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                    <form action="{{ route('permissions.destroy', $perm->id) }}" method="POST" onsubmit="return confirmSubmit(event, 'Are you sure?')">
                         @csrf @method('DELETE')
                         <button type="submit" class="dropdown-item text-danger">
                             <i class="ti ti-trash me-2"></i> Delete

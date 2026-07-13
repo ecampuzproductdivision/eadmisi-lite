@@ -46,7 +46,7 @@
           @if(auth()->id() != $user->id)
             <li><hr class="dropdown-divider"></li>
             <li>
-              <form action="{{ route('users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this user?');">
+              <form action="{{ route('users.destroy', $user->id) }}" method="POST" onsubmit="return confirmSubmit(event, 'Are you sure you want to delete this user?')">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="dropdown-item text-danger">

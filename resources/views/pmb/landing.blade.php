@@ -22,7 +22,7 @@
             --ds-btn-active-border-color: #c82635;
         }
         .hero-section {
-            background: linear-gradient(135deg, #1c252e 0%, #2d3748 50%, #1a365d 100%);
+            background: linear-gradient(135deg, #ea6267 0%, #d94a4f 50%, #c1383d 100%);
             min-height: 100vh;
             position: relative;
             overflow: hidden;
@@ -30,22 +30,50 @@
         .hero-section::before {
             content: '';
             position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 600px;
-            height: 600px;
+            top: -30%;
+            right: -10%;
+            width: 700px;
+            height: 700px;
             border-radius: 50%;
-            background: rgba(246, 58, 76, 0.08);
+            background: rgba(255, 255, 255, 0.06);
         }
         .hero-section::after {
             content: '';
             position: absolute;
-            bottom: -30%;
-            left: -10%;
-            width: 400px;
-            height: 400px;
+            bottom: -20%;
+            left: -5%;
+            width: 500px;
+            height: 500px;
             border-radius: 50%;
-            background: rgba(246, 58, 76, 0.05);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .hero-section .hero-accent-1 {
+            position: absolute;
+            top: 10%;
+            right: 35%;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .hero-section .hero-accent-2 {
+            position: absolute;
+            bottom: 15%;
+            right: 15%;
+            width: 120px;
+            height: 120px;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0) 100%);
+            pointer-events: none;
+            z-index: 0;
         }
         .floating-card { animation: float 6s ease-in-out infinite; }
         @keyframes float {
@@ -129,7 +157,7 @@
 
         /* ── Light Mode Tweak ── */
         [data-bs-theme="light"] .hero-section {
-            background: linear-gradient(135deg, #1c252e 0%, #2d3748 50%, #1a365d 100%) !important;
+            background: linear-gradient(135deg, #ea6267 0%, #d94a4f 50%, #c1383d 100%) !important;
         }
         [data-bs-theme="light"] .hero-section::before,
         [data-bs-theme="light"] .hero-section::after { display: block; }
@@ -196,6 +224,93 @@
         section {
             transition: background-color 0.4s ease;
         }
+
+        /* ═══ FADE-IN ANIMATIONS ═══ */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .animate-on-scroll.animate-delay-1 { transition-delay: 0.1s; }
+        .animate-on-scroll.animate-delay-2 { transition-delay: 0.2s; }
+        .animate-on-scroll.animate-delay-3 { transition-delay: 0.3s; }
+        .animate-on-scroll.animate-delay-4 { transition-delay: 0.4s; }
+        .animate-on-scroll.animate-delay-5 { transition-delay: 0.5s; }
+
+        /* Fade-in from left */
+        .animate-from-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+        .animate-from-left.animated {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Fade-in from right */
+        .animate-from-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+        .animate-from-right.animated {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Fade-in scale (for cards) */
+        .animate-scale {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .animate-scale.animated {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Stagger children animation */
+        .stagger-children > .stagger-item {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+        .stagger-children.animated > .stagger-item:nth-child(1) { transition-delay: 0.05s; }
+        .stagger-children.animated > .stagger-item:nth-child(2) { transition-delay: 0.1s; }
+        .stagger-children.animated > .stagger-item:nth-child(3) { transition-delay: 0.15s; }
+        .stagger-children.animated > .stagger-item:nth-child(4) { transition-delay: 0.2s; }
+        .stagger-children.animated > .stagger-item:nth-child(5) { transition-delay: 0.25s; }
+        .stagger-children.animated > .stagger-item:nth-child(6) { transition-delay: 0.3s; }
+        .stagger-children.animated > .stagger-item:nth-child(7) { transition-delay: 0.35s; }
+        .stagger-children.animated > .stagger-item:nth-child(8) { transition-delay: 0.4s; }
+        .stagger-children.animated > .stagger-item:nth-child(9) { transition-delay: 0.45s; }
+        .stagger-children.animated > .stagger-item:nth-child(10) { transition-delay: 0.5s; }
+        .stagger-children.animated > .stagger-item {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero entrance */
+        .hero-entrance {
+            opacity: 0;
+            transform: translateY(60px);
+            animation: heroFadeIn 1s ease-out forwards;
+        }
+        @keyframes heroFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .hero-entrance-delay-1 { animation-delay: 0.2s; }
+        .hero-entrance-delay-2 { animation-delay: 0.4s; }
+        .hero-entrance-delay-3 { animation-delay: 0.6s; }
+        .hero-entrance-delay-4 { animation-delay: 0.8s; }
     </style>
 </head>
 <body>
@@ -218,12 +333,12 @@
                     <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
                     <li class="nav-item">
                         <a id="daftarBtn" href="{{ route('register-account') }}" class="btn btn-daftar btn-outline-light d-flex align-items-center gap-2">
-                            <i class="ti ti-user-plus fs-5"></i> Daftar
+                            Daftar
                         </a>
                     </li>
                     <li class="nav-item ms-lg-2">
                         <a href="{{ route('login') }}" class="btn btn-primary d-flex align-items-center gap-2">
-                            <i class="ti ti-login fs-5"></i> Login
+                            Login
                         </a>
                     </li>
                 </ul>
@@ -233,37 +348,39 @@
 
     <!-- ═══ HERO SECTION ═══ -->
     <section class="hero-section d-flex align-items-center">
+        <div class="hero-overlay"></div>
+        <div class="hero-accent-1"></div>
+        <div class="hero-accent-2"></div>
         <div class="container position-relative" style="z-index: 1;">
             <div class="row align-items-center min-vh-100 py-8">
                 <div class="col-lg-7 py-8">
-                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 fs-6 px-3 py-2 mb-4">
-                        <i class="ti ti-sparkles me-1"></i> Penerimaan Mahasiswa Baru TA 2026/2027
+                    <span class="hero-entrance hero-entrance-delay-1 badge bg-white bg-opacity-10 text-white border border-white border-opacity-25 fs-6 px-3 py-2 mb-4">
+                        <i class="ti ti-school fs-5 me-2"></i> Penerimaan Mahasiswa Baru TA 2026/2027
                     </span>
-                    <h1 class="display-4 fw-bold text-white mb-4">
-                        Mulai Perjalanan<br>
-                        <span class="text-danger">Akademik</span> Anda
+                    <h1 class="hero-entrance hero-entrance-delay-2 display-4 fw-bold text-white mb-4">
+                        Mulai Perjalanan Akademik Anda
                     </h1>
-                    <p class="h5 font-weight-normal text-white-50 mb-6">
+                    <p class="hero-entrance hero-entrance-delay-3 h5 font-weight-normal text-white-70 mb-6" style="color: rgba(255,255,255,0.85) !important;">
                         Bergabunglah dengan ribuan mahasiswa lainnya. Proses pendaftaran mudah, cepat, dan transparan. Raih masa depanmu bersama kami.
                     </p>
-                    <div class="d-flex flex-wrap gap-3">
-                        <a href="{{ route('register-account') }}" class="btn btn-primary  d-flex align-items-center gap-2 px-5">
-                            <i class="ti ti-user-plus fs-4"></i> Daftar Sekarang
+                    <div class="hero-entrance hero-entrance-delay-4 d-flex flex-wrap gap-3">
+                        <a href="{{ route('register-account') }}" class="btn btn-primary d-flex align-items-center gap-2 px-5 fw-semibold">
+                            Daftar Sekarang
                         </a>
                         <a href="#tentang" class="btn btn-outline-light  d-flex align-items-center gap-2 px-5">
-                            <i class="ti ti-login fs-4"></i> Pelajari
+                            Pelajari
                         </a>
                     </div>
                 </div>
                 <div class="col-lg-5 d-none d-lg-flex justify-content-center">
-                    <div class="floating-card">
+                    <div class="floating-card hero-entrance hero-entrance-delay-4">
                         <div class="card shadow-lg border-0" style="width: 320px; border-radius: 20px;">
                             <div class="card-body p-5 text-center">
-                                <div class="icon-shape icon-xl bg-primary-subtle text-danger rounded-circle mx-auto mb-4" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
+                                <div class="icon-shape icon-xl bg-primary bg-opacity-10 text-primary rounded-circle mx-auto mb-4" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;">
                                     <i class="ti ti-school fs-1"></i>
                                 </div>
                                 <h4 class="fw-bold">Telah Bergabung</h4>
-                                <div class="display-4 fw-bold text-danger mb-2">12,450+</div>
+                                <div class="display-4 fw-bold text-primary mb-2">12,450+</div>
                                 <p class="text-secondary mb-0">Mahasiswa Aktif</p>
                                 <hr class="my-4">
                                 <div class="d-flex justify-content-between text-start ">
@@ -280,10 +397,10 @@
     </section>
 
     <!-- ═══ STATS BAR ═══ -->
-    <section class="position-relative" style="margin-top: -80px;">
+    <section class="position-relative animate-on-scroll" style="margin-top: -80px;">
         <div class="container">
-            <div class="row g-4">
-                <div class="col-md-3 col-6">
+            <div class="row g-4 stagger-children">
+                <div class="col-md-3 col-6 stagger-item">
                     <div class="stats-card rounded-4 p-4 text-center">
                         <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 stats-icon-wrapper bg-danger bg-opacity-10">
                             <i class="ti ti-users text-danger stats-icon"></i>
@@ -292,7 +409,7 @@
                         <div class="text-white-50">Mahasiswa</div>
                     </div>
                 </div>
-                <div class="col-md-3 col-6">
+                <div class="col-md-3 col-6 stagger-item">
                     <div class="stats-card rounded-4 p-4 text-center">
                         <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 stats-icon-wrapper bg-warning bg-opacity-10">
                             <i class="ti ti-books text-warning stats-icon"></i>
@@ -301,7 +418,7 @@
                         <div class="text-white-50">Program Studi</div>
                     </div>
                 </div>
-                <div class="col-md-3 col-6">
+                <div class="col-md-3 col-6 stagger-item">
                     <div class="stats-card rounded-4 p-4 text-center">
                         <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 stats-icon-wrapper bg-info bg-opacity-10">
                             <i class="ti ti-user-star text-info stats-icon"></i>
@@ -310,7 +427,7 @@
                         <div class="text-white-50">Dosen Ahli</div>
                     </div>
                 </div>
-                <div class="col-md-3 col-6">
+                <div class="col-md-3 col-6 stagger-item">
                     <div class="stats-card rounded-4 p-4 text-center">
                         <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 stats-icon-wrapper bg-success bg-opacity-10">
                             <i class="ti ti-calendar-stats text-success stats-icon"></i>
@@ -327,7 +444,7 @@
     <section id="tentang" class="py-16">
         <div class="container">
             <div class="row align-items-center g-6">
-                <div class="col-lg-6">
+                <div class="col-lg-6 animate-from-left">
                     <span class="badge bg-primary-subtle text-danger px-3 py-2 mb-3">Tentang Kami</span>
                     <h2 class="fw-bold display-6 mb-4">{!! $settings['landing_about_title']->value ?? 'Mengapa Memilih<br>Kampus Kami?' !!}</h2>
                     <p class="text-secondary mb-6" style="max-width: 480px;">{{ $settings['landing_about_description']->value ?? 'Kami berkomitmen untuk memberikan pendidikan berkualitas dengan kurikulum yang relevan terhadap kebutuhan industri dan perkembangan teknologi terkini.' }}</p>
@@ -335,14 +452,14 @@
                         @forelse($features as $f)
                         <div class="d-flex gap-3">
                             <div class="icon-shape icon-md bg-{{ $f->warna_skema }}-subtle text-{{ $f->warna_skema }} rounded-3 flex-shrink-0 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;"><i class="ti {{ $f->nama_icon }} fs-4"></i></div>
-                            <div><h5 class="fw-bold mb-1">{{ $f->judul_poin }}</h5><p class="text-secondary  mb-0">{{ $f->deskripsi_poin }}</p></div>
+                            <div><h4 class="fw-bold mb-1">{{ $f->judul_poin }}</h4><p class="text-secondary  mb-0">{{ $f->deskripsi_poin }}</p></div>
                         </div>
                         @empty
                         <p class="text-secondary">Belum ada data keunggulan.</p>
                         @endforelse
                     </div>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-6 animate-from-right">
                     <img src="https://placehold.co/600x500/f0f0f0/333?text=Kampus+Kami" alt="Kampus" class="img-fluid rounded-4 shadow">
                 </div>
             </div>
@@ -350,9 +467,9 @@
     </section>
 
     <!-- ═══ JALUR PENDAFTARAN (DYNAMIC) ═══ -->
-    <section id="jalur" class="py-16 section-soft-primary">
+    <section id="jalur" class="py-16 section-soft-primary animate-on-scroll">
         <div class="container">
-            <div class="text-center mb-8">
+            <div class="text-center mb-8 animate-on-scroll">
                 <span class="badge bg-primary-subtle text-danger px-3 py-2 mb-3">Jalur Pendaftaran</span>
                 <h2 class="fw-bold display-6 mb-3">Pilih Jalur Pendaftaran</h2>
                 <p class="text-secondary mx-auto" style="max-width: 540px;">Tersedia berbagai jalur pendaftaran yang dapat dipilih sesuai dengan kriteria Anda</p>
@@ -363,7 +480,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             @endif
-            <div class="row g-4">
+            <div class="row g-4 stagger-children">
                 @forelse($activePaths as $path)
                 @php
                     $isOpen = $path->registration_start && $path->registration_end
@@ -371,8 +488,8 @@
                         : true;
                     $sisaKuota = $path->quota ? $path->quota - ($path->terdaftar ?? 0) : null;
                 @endphp
-                <div class="col-lg-4 col-md-6">
-                    <div class="card path-card h-100 border-0 shadow-sm">
+                <div class="col-lg-4 col-md-6 stagger-item">
+                    <div class="card path-card h-100 border-0 shadow-sm animate-scale">
                         <div class="card-body p-5 d-flex flex-column">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
@@ -426,14 +543,14 @@
     </section>
 
     <!-- ═══ PROGRAM STUDI ═══ -->
-    <section id="program" class="py-16 section-white">
+    <section id="program" class="py-16 section-white animate-on-scroll">
         <div class="container">
-            <div class="text-center mb-8">
+            <div class="text-center mb-8 animate-on-scroll">
                 <span class="badge bg-primary-subtle text-primary px-3 py-2 mb-3">Program Studi</span>
                 <h2 class="fw-bold display-6 mb-3">Pilihan Program Studi</h2>
                 <p class="text-secondary mx-auto" style="max-width: 540px;">Tersedia berbagai program studi yang dapat disesuaikan dengan minat dan bakat Anda</p>
             </div>
-            <div class="row g-4">
+            <div class="row g-4 stagger-children">
                 @forelse($programStudis as $lp)
                 @php
                     $prodi = $lp->programStudi;
@@ -444,8 +561,8 @@
                     $jenjang = $prodi->jenjang_akademik ?? $prodi->jenjang ?? 'S1';
                     $nama = $prodi->nama_prodi ?: $prodi->nama;
                 @endphp
-                <div class="col-lg-4 col-md-6">
-                    <div class="card feature-card h-100 border-0 shadow-sm">
+                <div class="col-lg-4 col-md-6 stagger-item">
+                    <div class="card feature-card h-100 border-1 shadow-sm animate-scale">
                         <div class="card-body p-5">
                             <div class="icon-shape icon-lg bg-{{ $color }}-subtle text-{{ $color }} rounded-3 mb-4 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;"><i class="ti {{ $lp->kode_icon }} fs-2"></i></div>
                             <h5 class="fw-bold mb-2">{{ $nama }}</h5>
@@ -470,14 +587,14 @@
     </section>
 
     <!-- ═══ ALUR PMB ═══ -->
-    <section id="alur" class="py-16 section-soft-light">
+    <section id="alur" class="py-16 section-soft-light animate-on-scroll">
         <div class="container">
-            <div class="text-center mb-8">
+            <div class="text-center mb-8 animate-on-scroll">
                 <span class="badge bg-primary-subtle text-danger px-3 py-2 mb-3">Alur Pendaftaran</span>
                 <h2 class="fw-bold display-6 mb-3">Langkah Mudah Mendaftar</h2>
                 <p class="text-secondary mx-auto" style="max-width: 540px;">Ikuti langkah-langkah berikut untuk memulai perjalanan akademik Anda</p>
             </div>
-            <div class="row g-4">
+            <div class="row g-4 stagger-children">
                 @php
                     $steps = [
                         ['num' => '1', 'color' => 'danger', 'title' => 'Buat Akun', 'desc' => 'Daftar dan buat akun PMB Anda dengan mengisi data diri'],
@@ -487,7 +604,7 @@
                     ];
                 @endphp
                 @foreach($steps as $s)
-                <div class="col-lg-3 col-md-6">
+                <div class="col-lg-3 col-md-6 stagger-item">
                     <div class="text-center">
                         <div class="step-number bg-{{ $s['color'] }}-subtle text-{{ $s['color'] }} mx-auto mb-3">{{ $s['num'] }}</div>
                         <h6 class="fw-bold mb-2">{{ $s['title'] }}</h6>
@@ -505,17 +622,17 @@
     </section>
 
     <!-- ═══ FASILITAS ═══ -->
-    <section class="py-16 section-soft-primary">
+    <section class="py-16 section-soft-primary animate-on-scroll">
         <div class="container">
-            <div class="text-center mb-8">
+            <div class="text-center mb-8 animate-on-scroll">
                 <span class="badge bg-primary-subtle text-primary px-3 py-2 mb-3">Fasilitas</span>
                 <h2 class="fw-bold display-6 mb-3">{!! $settings['landing_facility_title']->value ?? 'Fasilitas Unggulan' !!}</h2>
                 <p class="text-secondary mx-auto" style="max-width: 540px;">{{ $settings['landing_facility_description']->value ?? 'Nikmati berbagai fasilitas modern untuk mendukung perkuliahan Anda' }}</p>
             </div>
-            <div class="row g-4">
+            <div class="row g-4 stagger-children">
                 @forelse($facilities as $f)
-                <div class="col-lg-3 col-md-6">
-                    <div class="card border-1 shadow-sm h-100">
+                <div class="col-lg-3 col-md-6 stagger-item">
+                    <div class="card border-1 shadow-sm h-100 animate-scale">
                         <div class="card-body text-center p-5">
                             <i class="ti {{ $f->kode_icon }} fs-1 text-danger mb-3 d-block"></i>
                             <h6 class="fw-bold">{{ $f->nama_fasilitas }}</h6>
@@ -534,10 +651,10 @@
     </section>
 
     <!-- ═══ TANYA DULU ═══ -->
-    <section id="tanya-dulu" class="py-16 section-soft-light">
+    <section id="tanya-dulu" class="py-16 section-soft-light animate-on-scroll">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-lg-8">
+                <div class="col-lg-8 animate-on-scroll">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body p-6">
                             <div class="text-center mb-5">
@@ -576,9 +693,9 @@
     </section>
 
     <!-- ═══ FAQ ═══ -->
-    <section id="faq" class="py-16 section-white">
+    <section id="faq" class="py-16 section-white animate-on-scroll">
         <div class="container">
-            <div class="text-center mb-8">
+            <div class="text-center mb-8 animate-on-scroll">
                 <span class="badge bg-primary-subtle text-danger px-3 py-2 mb-3">FAQ</span>
                 <h2 class="fw-bold display-6 mb-3">Pertanyaan Umum</h2>
                 <p class="text-secondary mx-auto" style="max-width: 540px;">Temukan jawaban untuk pertanyaan yang sering diajukan</p>
@@ -611,11 +728,11 @@
     </section>
 
     <!-- ═══ CTA ═══ -->
-    <section class="py-16" style="background: linear-gradient(135deg, #1c252e 0%, #2d3748 100%);">
+    <section class="py-16 animate-on-scroll" style="background: linear-gradient(135deg, #1c252e 0%, #2d3748 100%);">
         <div class="container text-center">
-            <h2 class="fw-bold display-6 text-white mb-4">Siap Memulai Perjalanan?</h2>
-            <p class="text-white-50 mb-6 mx-auto" style="max-width: 540px;">Daftarkan diri Anda sekarang dan jadilah bagian dari keluarga besar kampus kami.</p>
-            <div class="d-flex justify-content-center gap-3">
+            <h2 class="fw-bold display-6 text-white mb-4 animate-on-scroll">Siap Memulai Perjalanan?</h2>
+            <p class="text-white-50 mb-6 mx-auto animate-on-scroll animate-delay-1" style="max-width: 540px;">Daftarkan diri Anda sekarang dan jadilah bagian dari keluarga besar kampus kami.</p>
+            <div class="d-flex justify-content-center gap-3 animate-on-scroll animate-delay-2">
                 <a href="{{ route('register-account') }}" class="btn btn-primary px-5 d-flex align-items-center gap-2"><i class="ti ti-user-plus fs-4"></i> Daftar Sekarang</a>
                 <a href="{{ route('login') }}" class="btn btn-outline-light px-5 d-flex align-items-center gap-2"><i class="ti ti-login fs-4"></i> Login</a>
             </div>
@@ -730,6 +847,30 @@
             });
         }
         setTimeout(animateCounters, 500);
+
+        // ── Intersection Observer for Scroll Animations ──
+        const animateElements = document.querySelectorAll('.animate-on-scroll, .animate-from-left, .animate-from-right, .animate-scale, .stagger-children');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    // Trigger stagger children animation
+                    if (el.classList.contains('stagger-children')) {
+                        el.classList.add('animated');
+                    } else {
+                        el.classList.add('animated');
+                    }
+                    // Unobserve after animation to save performance
+                    observer.unobserve(el);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        animateElements.forEach(el => observer.observe(el));
     </script>
 </body>
 </html>

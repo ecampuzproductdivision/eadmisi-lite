@@ -13,7 +13,7 @@
           <li><a class="dropdown-item" href="{{ route('dosen.edit', $dosen->id_dosen) }}"><i class="ti ti-edit me-2"></i>Ubah</a></li>
           <li><hr class="dropdown-divider"></li>
           <li>
-            <form action="{{ route('dosen.destroy', $dosen->id_dosen) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus dosen ini secara permanen? Pastikan tidak ada data terkait.');">
+            <form action="{{ route('dosen.destroy', $dosen->id_dosen) }}" method="POST" class="d-inline" onsubmit="return confirmSubmit(event, 'Apakah Anda yakin ingin menghapus dosen ini secara permanen? Pastikan tidak ada data terkait.')">
               @csrf
               @method('DELETE')
               <button type="submit" class="dropdown-item text-danger"><i class="ti ti-trash me-2"></i>Hapus Permanen</button>

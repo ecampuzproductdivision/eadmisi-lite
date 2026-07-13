@@ -184,7 +184,7 @@
                 <a href="{{ route('kkni-sndikti.admin.kkni-level.edit', [$regulasi->id_regulasi, $level->id_kkni_level]) }}" class="btn btn-sm btn-light border" title="Edit">
                   <i class="ti ti-edit"></i>
                 </a>
-                <form action="{{ route('kkni-sndikti.admin.kkni-level.destroy', [$regulasi->id_regulasi, $level->id_kkni_level]) }}" method="POST" onsubmit="return confirm('Hapus Level {{ $level->level }}? Semua deskriptor terkait juga akan dihapus.')">
+                <form action="{{ route('kkni-sndikti.admin.kkni-level.destroy', [$regulasi->id_regulasi, $level->id_kkni_level]) }}" method="POST" onsubmit="return confirmSubmit(event, 'Hapus Level {{ $level->level }}? Semua deskriptor terkait juga akan dihapus.')">
                   @csrf @method('DELETE')
                   <button type="submit" class="btn btn-sm btn-light border text-danger" title="Hapus">
                     <i class="ti ti-trash"></i>
@@ -270,7 +270,7 @@
                         <a href="{{ route('kkni-sndikti.admin.butir.edit', [$regulasi->id_regulasi, $butir->id_sndikti]) }}" class="btn btn-sm btn-light border" title="Edit">
                           <i class="ti ti-edit"></i>
                         </a>
-                        <form action="{{ route('kkni-sndikti.admin.butir.destroy', [$regulasi->id_regulasi, $butir->id_sndikti]) }}" method="POST" onsubmit="return confirm('Hapus butir {{ $butir->kode_butir }}?')">
+                        <form action="{{ route('kkni-sndikti.admin.butir.destroy', [$regulasi->id_regulasi, $butir->id_sndikti]) }}" method="POST" onsubmit="return confirmSubmit(event, 'Hapus butir {{ $butir->kode_butir }}?')">
                           @csrf @method('DELETE')
                           <button type="submit" class="btn btn-sm btn-light border text-danger" title="Hapus">
                             <i class="ti ti-trash"></i>

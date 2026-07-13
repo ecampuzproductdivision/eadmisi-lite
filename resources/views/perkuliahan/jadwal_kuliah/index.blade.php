@@ -376,7 +376,7 @@
                     @if($jadwal->status_jadwal === 'Draft')
                       <form action="{{ route('jadwal-kuliah.publikasikan', $jadwal->id_jadwal) }}" method="POST" class="d-inline m-0">
                         @csrf
-                        <button type="submit" class="btn-action-premium" style="background:rgba(16,185,129,0.08);color:#047857;" title="Publikasikan" onclick="return confirm('Publikasikan jadwal {{ $jadwal->kode_kelas }}?')">
+                        <button type="submit" class="btn-action-premium" style="background:rgba(16,185,129,0.08);color:#047857;" title="Publikasikan" onclick="return confirmAction(event, 'Publikasikan jadwal {{ $jadwal->kode_kelas }}?')">
                           <i class="ti ti-send" style="font-size: 1.05rem;"></i>
                         </button>
                       </form>
@@ -390,7 +390,7 @@
                     @if($jadwal->jumlah_terdaftar === 0 && !$jadwal->isSelesai())
                       <form action="{{ route('jadwal-kuliah.destroy', $jadwal->id_jadwal) }}" method="POST" class="d-inline m-0">
                         @csrf @method('DELETE')
-                        <button type="submit" class="btn-action-premium" style="background:rgba(239,68,68,0.08);color:#b91c1c;" title="Hapus" onclick="return confirm('Hapus jadwal {{ $jadwal->kode_kelas }}? Tindakan ini tidak dapat dibatalkan.')">
+                        <button type="submit" class="btn-action-premium" style="background:rgba(239,68,68,0.08);color:#b91c1c;" title="Hapus" onclick="return confirmAction(event, 'Hapus jadwal {{ $jadwal->kode_kelas }}? Tindakan ini tidak dapat dibatalkan.')">
                           <i class="ti ti-trash" style="font-size: 1.05rem;"></i>
                         </button>
                       </form>

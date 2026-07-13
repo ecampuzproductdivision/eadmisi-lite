@@ -69,7 +69,7 @@
                   <div class="d-flex align-items-center gap-2">
                     <span class="badge {{ $badgeClass }} text-white px-3 py-2">{{ $statusBadge }}</span>
                     @if($canStart)
-                      <a href="{{ route('tes-online.start', $reg->id) }}" class="btn btn-primary px-4" onclick="return confirm('Apakah Anda yakin ingin memulai tes untuk {{ $reg->registrationPath?->name }}? Timer akan berjalan setelah ini.');">
+                      <a href="{{ route('tes-online.start', $reg->id) }}" class="btn btn-primary px-4" onclick="return confirmAction(event, 'Apakah Anda yakin ingin memulai tes untuk {{ $reg->registrationPath?->name }}? Timer akan berjalan setelah ini.')">
                         <i class="ti ti-play-circle me-1"></i> Mulai Tes
                       </a>
                     @elseif($examResult)
@@ -323,8 +323,15 @@
     });
   });
 
-  function submitExam() {
-    if (confirm('Apakah Anda yakin ingin menyelesaikan tes? Jawaban yang belum diisi akan dianggap salah.')) {
+  async function submitExam() {
+    const confirmed = await confirmAsync('Apakah Anda yakin ingin menyelesaikan tes? Jawaban yang belum diisi akan dianggap salah.', {
+      confirmText: 'Ya, Selesaikan Tes',
+      buttonClass: 'btn-primary',
+      icon: 'check-circle',
+      iconColor: 'text-primary',
+      title: 'Konfirmasi Selesai Tes'
+    });
+    if (confirmed) {
       document.getElementById('answerForm').action = '{{ route("tes-online.submit") }}';
       document.getElementById('answerForm').submit();
     }

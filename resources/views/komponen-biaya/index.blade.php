@@ -75,7 +75,7 @@
                                             <i class="ti ti-{{ $komponen->is_active ? 'player-pause' : 'player-play' }}"></i>
                                         </button>
                                     </form>
-                                    <form action="{{ route('komponen-biaya.destroy', $komponen) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus komponen biaya ini?')">
+                                    <form action="{{ route('komponen-biaya.destroy', $komponen) }}" method="POST" class="d-inline" onsubmit="return confirmSubmit(event, 'Hapus komponen biaya ini?')">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger">
                                             <i class="ti ti-trash"></i>

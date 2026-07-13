@@ -393,7 +393,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Generic AJAX Deleter
   document.querySelectorAll('.btn-delete-sub').forEach(btn => {
     btn.addEventListener('click', function() {
-      if(!confirm('Yakin ingin menghapus data ini?')) return;
+      if (!(await confirmAsync('Yakin ingin menghapus data ini?')) return;
       
       const url = this.getAttribute('data-url');
       const targetId = this.getAttribute('data-target');

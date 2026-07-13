@@ -161,8 +161,9 @@ function updateStatus(id, status) {
     .then(r => r.json()).then(d => { if (d.success) location.reload(); });
 }
 
-function deleteLead(id, name) {
-    if (!confirm(`Hapus lead dari ${name}?`)) return;
+async function deleteLead(id, name) {
+    const confirmed = await confirmAsync(`Hapus lead dari ${name}?`);
+    if (!confirmed) return;
     fetch(`/crm-leads/${id}`, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' } })
     .then(r => r.json()).then(d => { if (d.success) location.reload(); });
 }

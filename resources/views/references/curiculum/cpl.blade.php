@@ -788,25 +788,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 6. Delete CPL
     document.querySelectorAll('.btn-delete-cpl').forEach(btn => {
-        btn.addEventListener('click', () => {
-            if(confirm('Apakah Anda yakin ingin menghapus CPL ini? Semua data pemetaan PL dan MK yang bersangkutan akan ikut terhapus.')) {
-                const id = btn.dataset.id;
-                fetch(`/references/curiculum/{{ $kurikulum->kurKode }}/cpl/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.reload();
-                    } else {
-                        alert(data.message || 'Gagal menghapus CPL.');
-                    }
-                });
-            }
+        btn.addEventListener('click', async () => {
+            const confirmed = await confirmAsync('Apakah Anda yakin ingin menghapus CPL ini? Semua data pemetaan PL dan MK yang bersangkutan akan ikut terhapus.');
+            if (!confirmed) return;
+            const id = btn.dataset.id;
+            fetch(`/references/curiculum/{{ $kurikulum->kurKode }}/cpl/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Gagal menghapus CPL.');
+                }
+            });
         });
     });
 

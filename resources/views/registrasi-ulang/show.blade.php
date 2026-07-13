@@ -79,6 +79,7 @@
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-6"><label class="small text-muted mb-1 fw-semibold">Nama Lengkap</label><p class="fw-bold mb-0 fs-6">{{ $registration->nama_lengkap }}</p></div>
+                        <div class="col-md-6"><label class="small text-muted mb-1 fw-semibold">Nomor Pendaftaran</label><p class="fw-bold text-primary mb-0 fs-6">{{ $registration->no_pendaftaran ?? '-' }}</p></div>
                         <div class="col-md-6"><label class="small text-muted mb-1 fw-semibold">Jenis Kelamin</label><p class="fw-semibold mb-0">{{ $registration->jenis_kelamin == 'L' ? 'Laki-laki' : ($registration->jenis_kelamin == 'P' ? 'Perempuan' : '-') }}</p></div>
                         <div class="col-md-6"><label class="small text-muted mb-1 fw-semibold">Tempat Lahir</label><p class="fw-semibold mb-0">{{ $registration->tempat_lahir ?? '-' }}</p></div>
                         <div class="col-md-6"><label class="small text-muted mb-1 fw-semibold">Tanggal Lahir</label><p class="fw-semibold mb-0">{{ $registration->tanggal_lahir ? \Carbon\Carbon::parse($registration->tanggal_lahir)->format('d/m/Y') : '-' }}</p></div>

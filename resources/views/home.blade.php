@@ -80,6 +80,9 @@
                       </div>
                       <div class="flex-grow-1">
                         <h6 class="fw-bold mb-0">{{ $card->pathName }}</h6>
+                        @if(!empty($card->noPendaftaran))
+                          <small class="text-primary fw-semibold d-block">No. Reg: {{ $card->noPendaftaran }}</small>
+                        @endif
                         <small class="text-muted">{{ $card->createdAt->format('d/m/Y') }}</small>
                       </div>
                     </div>

@@ -171,7 +171,12 @@
                       <div class="avatar avatar-sm bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
                         <i class="ti ti-road text-primary"></i>
                       </div>
-                      <span class="fw-semibold">{{ $registration->registrationPath?->name ?? '-' }}</span>
+                      <div>
+                        <span class="fw-semibold d-block">{{ $registration->registrationPath?->name ?? '-' }}</span>
+                        @if($registration->no_pendaftaran)
+                          <span class="text-primary small fw-bold">No. Reg: {{ $registration->no_pendaftaran }}</span>
+                        @endif
+                      </div>
                     </div>
                   </td>
                   <td class="py-3">{{ $registration->programStudi1?->nama ?? '-' }}</td>

@@ -2,7 +2,7 @@
     @php $w = $reg->wawancara; @endphp
     <tr>
         <td class="py-3">{{ ($registrations->currentPage() - 1) * $registrations->perPage() + $index + 1 }}</td>
-        <td class="fw-semibold py-3">REG-{{ str_pad($reg->id, 5, '0', STR_PAD_LEFT) }}</td>
+        <td class="fw-semibold py-3 text-primary">{{ $reg->no_pendaftaran ?? 'REG-'.str_pad($reg->id, 5, '0', STR_PAD_LEFT) }}</td>
         <td class="py-3">
             <div class="d-flex align-items-center gap-2">
                 <img src="{{ optional($reg->user)->avatar_url ?? asset('assets/images/avatar/avatar-1.jpg') }}" class="rounded-circle" width="32" height="32" alt="">

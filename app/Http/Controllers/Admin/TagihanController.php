@@ -27,7 +27,8 @@ class TagihanController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('invoice_number', 'like', "%{$search}%")
                   ->orWhereHas('registration', function ($q2) use ($search) {
-                      $q2->where('nama_lengkap', 'like', "%{$search}%");
+                      $q2->where('nama_lengkap', 'like', "%{$search}%")
+                        ->orWhere('no_pendaftaran', 'like', "%{$search}%");
                   })
                   ->orWhereHas('user', function ($q3) use ($search) {
                       $q3->where('name', 'like', "%{$search}%");

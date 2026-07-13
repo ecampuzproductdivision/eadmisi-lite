@@ -129,6 +129,10 @@
         <div class="card-body">
           <div class="row g-3">
             <div class="col-md-6">
+              <label class="small text-muted mb-1">Nomor Pendaftaran</label>
+              <p class="fw-bold text-primary mb-0">{{ $registration->no_pendaftaran ?? '-' }}</p>
+            </div>
+            <div class="col-md-6">
               <label class="small text-muted mb-1">Nama Lengkap</label>
               <p class="fw-semibold mb-0">{{ $registration->nama_lengkap }}</p>
             </div>

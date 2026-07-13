@@ -34,13 +34,14 @@ class PendaftaranController extends Controller
             $query->where('status', $request->status);
         }
 
-        // Search by name or NIK
+        // Search by name, NIK, or registration number
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('nama_lengkap', 'like', "%{$search}%")
                   ->orWhere('nik', 'like', "%{$search}%")
-                  ->orWhere('no_hp', 'like', "%{$search}%");
+                  ->orWhere('no_hp', 'like', "%{$search}%")
+                  ->orWhere('no_pendaftaran', 'like', "%{$search}%");
             });
         }
 

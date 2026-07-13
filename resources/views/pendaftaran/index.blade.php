@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('content')
 @component('components.data-page-layout', ['data' => $registrations])
@@ -167,7 +167,8 @@
                             </div>
                             <div>
                                 <span class="fw-semibold">{{ $registration->nama_lengkap }}</span>
-                                @if($registration->nik)<br><span class="text-muted">NIK: {{ $registration->nik }}</span>@endif
+                                @if($registration->no_pendaftaran)<br><span class="text-primary small fw-bold">No. Reg: {{ $registration->no_pendaftaran }}</span>@endif
+                                @if($registration->nik)<br><span class="text-muted small">NIK: {{ $registration->nik }}</span>@endif
                             </div>
                         </div>
                     </td>

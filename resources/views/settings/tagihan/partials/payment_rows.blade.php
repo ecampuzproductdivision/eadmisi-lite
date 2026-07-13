@@ -10,6 +10,9 @@
             </div>
             <div>
                 <span class="fw-semibold small">{{ $payment->registration?->nama_lengkap ?? '-' }}</span>
+                @if($payment->registration?->no_pendaftaran)
+                    <br><span class="text-primary small fw-bold" style="font-size: 0.75rem;">No. Reg: {{ $payment->registration->no_pendaftaran }}</span>
+                @endif
             </div>
         </div>
     </td>

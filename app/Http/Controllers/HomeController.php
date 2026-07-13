@@ -208,6 +208,7 @@ class HomeController extends Controller
 
             return (object) [
                 'id' => $reg->id,
+                'noPendaftaran' => $reg->no_pendaftaran,
                 'pathName' => $pathObj?->name ?? 'Unknown Path',
                 'pathCode' => $pathObj?->code,
                 'prodi1' => $reg->programStudi1?->nama ?? '-',

@@ -94,6 +94,10 @@
                   <table class="table table-borderless mb-0">
                     <tbody>
                       <tr>
+                        <td class="ps-0 text-muted" style="width: 200px;">Nomor Pendaftaran</td>
+                        <td class="fw-bold text-primary">{{ $registration->no_pendaftaran ?? '-' }}</td>
+                      </tr>
+                      <tr>
                         <td class="ps-0 text-muted" style="width: 200px;">Program Studi Pilihan 1</td>
                         <td class="fw-semibold">{{ $registration->programStudi1?->nama ?? '-' }}</td>
                       </tr>
@@ -196,10 +200,15 @@
               }
             @endphp
             <div class="card border-1 shadow-sm mb-4">
-              <div class="card-header bg-light py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
-                <h5 class="fw-bold mb-0">
-                  <i class="ti ti-id-badge text-primary me-2"></i>{{ $registration->registrationPath?->name ?? '-' }} - Registrasi Ulang
-                </h5>
+               <div class="card-header bg-light py-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div>
+                  <h5 class="fw-bold mb-0">
+                    <i class="ti ti-id-badge text-primary me-2"></i>{{ $registration->registrationPath?->name ?? '-' }} - Registrasi Ulang
+                  </h5>
+                  @if($registration->no_pendaftaran)
+                    <small class="text-primary fw-bold ms-5">No. Reg: {{ $registration->no_pendaftaran }}</small>
+                  @endif
+                </div>
                 <span class="badge {{ $badgeClass }} px-3 py-2 fw-semibold">{{ $paymentStatus }}</span>
               </div>
               <div class="card-body p-0">

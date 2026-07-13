@@ -943,6 +943,10 @@
                       <small class="text-muted d-block">Agama</small>
                       <strong class="text-dark">{{ $registration->agama }}</strong>
                     </div>
+                     <div class="col-md-6">
+                      <small class="text-muted d-block">Nomor Pendaftaran</small>
+                      <strong class="text-primary">{{ $registration->no_pendaftaran }}</strong>
+                    </div>
                     <div class="col-md-6">
                       <small class="text-muted d-block">NIK</small>
                       <strong class="text-dark">{{ $registration->nik }}</strong>

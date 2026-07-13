@@ -59,7 +59,8 @@ class RegistrasiUlangController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('nama_lengkap', 'like', "%{$search}%")
                   ->orWhere('nik', 'like', "%{$search}%")
-                  ->orWhere('nim', 'like', "%{$search}%");
+                  ->orWhere('nim', 'like', "%{$search}%")
+                  ->orWhere('no_pendaftaran', 'like', "%{$search}%");
             });
         }
 

@@ -74,7 +74,11 @@
               <small class="text-muted d-block text-uppercase" style="font-size: 0.75rem;">Agama</small>
               <strong>{{ $registration->agama ?? '-' }}</strong>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
+              <small class="text-muted d-block text-uppercase" style="font-size: 0.75rem;">Nomor Pendaftaran</small>
+              <strong class="text-primary">{{ $registration->no_pendaftaran ?? '-' }}</strong>
+            </div>
+            <div class="col-md-3">
               <small class="text-muted d-block text-uppercase" style="font-size: 0.75rem;">NIK</small>
               <strong>{{ $registration->nik ?? '-' }}</strong>
             </div>

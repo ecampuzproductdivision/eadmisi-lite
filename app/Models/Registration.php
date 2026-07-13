@@ -39,9 +39,44 @@ class Registration extends Model
         'kelurahan_id',
         'nim',
         're_registration_submitted_at',
+        'no_pendaftaran',
     ];
 
     protected $table = 'registrations';
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($registration) {
+            if (empty($registration->no_pendaftaran)) {
+                $registration->no_pendaftaran = self::generateNoPendaftaran($registration->registration_path_id);
+            }
+        });
+    }
+
+    public static function generateNoPendaftaran($registrationPathId)
+    {
+        $year = date('Y');
+        $path = RegistrationPath::find($registrationPathId);
+        $pathCode = $path ? strtoupper($path->code) : 'PMB';
+        
+        $prefix = $year . $pathCode;
+        
+        // Find the latest registration number with this prefix
+        $latest = self::where('no_pendaftaran', 'like', $prefix . '%')
+            ->orderBy('no_pendaftaran', 'desc')
+            ->first();
+            
+        if ($latest) {
+            $lastNumber = (int) substr($latest->no_pendaftaran, strlen($prefix));
+            $nextNumber = $lastNumber + 1;
+        } else {
+            $nextNumber = 1;
+        }
+        
+        return $prefix . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+    }
 
     /**
      * Status registrasi ulang labels for display.

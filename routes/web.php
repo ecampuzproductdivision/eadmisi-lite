@@ -253,9 +253,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('settings/beasiswa-potongan/master', [App\Http\Controllers\BeasiswaPotonganController::class, 'storeMaster'])->name('beasiswa-potongan.master.store');
         Route::put('settings/beasiswa-potongan/master/{id}', [App\Http\Controllers\BeasiswaPotonganController::class, 'updateMaster'])->name('beasiswa-potongan.master.update');
         Route::delete('settings/beasiswa-potongan/master/{id}', [App\Http\Controllers\BeasiswaPotonganController::class, 'destroyMaster'])->name('beasiswa-potongan.master.destroy');
-        Route::post('settings/beasiswa-potongan/plotting', [App\Http\Controllers\BeasiswaPotonganController::class, 'storePlotting'])->name('beasiswa-potongan.plotting.store');
-        Route::put('settings/beasiswa-potongan/plotting/{id}', [App\Http\Controllers\BeasiswaPotonganController::class, 'updatePlotting'])->name('beasiswa-potongan.plotting.update');
-        Route::delete('settings/beasiswa-potongan/plotting/{id}', [App\Http\Controllers\BeasiswaPotonganController::class, 'destroyPlotting'])->name('beasiswa-potongan.plotting.destroy');
+        Route::get('settings/beasiswa-potongan/{id}/plotting', [App\Http\Controllers\BeasiswaPotonganController::class, 'showPlotting'])->name('beasiswa-potongan.plotting.show');
+        Route::post('settings/beasiswa-potongan/{id}/plotting', [App\Http\Controllers\BeasiswaPotonganController::class, 'savePlotting'])->name('beasiswa-potongan.plotting.save');
 
         // Komponen Biaya (Settings > Komponen Biaya)
         Route::get('settings/komponen-biaya', [\App\Http\Controllers\KomponenBiayaController::class, 'index'])->name('komponen-biaya.index');

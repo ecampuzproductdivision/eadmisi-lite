@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MasterPotongan;
 use App\Models\PlottingPotongan;
 use App\Models\Registration;
+use App\Models\RegistrationPath;
 use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -12,30 +13,12 @@ use Illuminate\Support\Facades\Validator;
 class BeasiswaPotonganController extends Controller
 {
     /**
-     * Display list of master scholarships and plottings.
+     * Display list of master scholarships.
      */
     public function index()
     {
-        $masters = MasterPotongan::orderBy('created_at', 'desc')->get();
-        
-        $plottings = PlottingPotongan::with(['registration.user', 'registration.registrationPath', 'masterPotongan'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        // Get all eligible registrations whose PMB registration payment is LUNAS
-        $eligibleRegistrations = Registration::whereNotNull('paid_at')
-            ->with(['user', 'registrationPath'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        // Attach total re-registration fee to each eligible registration
-        foreach ($eligibleRegistrations as $reg) {
-            $reg->total_biaya = \DB::table('jalur_pendaftaran_biayas')
-                ->where('registration_path_id', $reg->registration_path_id)
-                ->sum('nominal');
-        }
-
-        return view('settings.beasiswa-potongan.index', compact('masters', 'plottings', 'eligibleRegistrations'));
+        $masters = MasterPotongan::withCount('plottings')->orderBy('created_at', 'desc')->get();
+        return view('settings.beasiswa-potongan.index', compact('masters'));
     }
 
     /**
@@ -53,8 +36,7 @@ class BeasiswaPotonganController extends Controller
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
-                ->withInput()
-                ->with('active_tab', 'master');
+                ->withInput();
         }
 
         $master = MasterPotongan::create($request->all());
@@ -62,8 +44,7 @@ class BeasiswaPotonganController extends Controller
         ActivityLogger::log('create', 'master_potongan', 'Created master scholarship/discount: ' . $master->nama_potongan);
 
         return redirect()->route('beasiswa-potongan.index')
-            ->with('success', 'Master potongan berhasil ditambahkan.')
-            ->with('active_tab', 'master');
+            ->with('success', 'Master potongan berhasil ditambahkan.');
     }
 
     /**
@@ -83,8 +64,7 @@ class BeasiswaPotonganController extends Controller
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
-                ->withInput()
-                ->with('active_tab', 'master');
+                ->withInput();
         }
 
         $master->update($request->all());
@@ -92,8 +72,7 @@ class BeasiswaPotonganController extends Controller
         ActivityLogger::log('update', 'master_potongan', 'Updated master scholarship/discount: ' . $master->nama_potongan);
 
         return redirect()->route('beasiswa-potongan.index')
-            ->with('success', 'Master potongan berhasil diperbarui.')
-            ->with('active_tab', 'master');
+            ->with('success', 'Master potongan berhasil diperbarui.');
     }
 
     /**
@@ -108,82 +87,118 @@ class BeasiswaPotonganController extends Controller
         ActivityLogger::log('delete', 'master_potongan', 'Deleted master scholarship/discount: ' . $name);
 
         return redirect()->route('beasiswa-potongan.index')
-            ->with('success', 'Master potongan berhasil dihapus.')
-            ->with('active_tab', 'master');
+            ->with('success', 'Master potongan berhasil dihapus.');
     }
 
     /**
-     * Store a new Plotting Potongan.
+     * Show dedicated student plotting management page for a scholarship.
      */
-    public function storePlotting(Request $request)
+    public function showPlotting($id, Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'registration_id' => 'required|exists:registrations,id|unique:plotting_potongans,registration_id',
-            'master_potongan_id' => 'required|exists:master_potongans,id',
-            'nominal_potongan' => 'required|integer|min:0',
-            'keterangan' => 'nullable|string',
-        ], [
-            'registration_id.unique' => 'Calon mahasiswa ini sudah terdaftar mendapatkan potongan/beasiswa.',
-        ]);
+        $master = MasterPotongan::findOrFail($id);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput()
-                ->with('active_tab', 'plotting');
+        // Load active Period and all Period options for filter
+        $periodes = \App\Models\Periode::orderBy('nama_periode', 'desc')->get();
+        $activePeriode = \App\Models\Periode::where('status_aktif', true)->first();
+        $selectedPeriodeId = $request->input('periode_id', $activePeriode?->id);
+
+        // Load all Registration Paths for filter
+        $paths = RegistrationPath::orderBy('name')->get();
+        $selectedPathId = $request->input('registration_path_id');
+
+        // Text Search
+        $search = $request->input('search');
+
+        // Query eligible students (PMB paid)
+        $query = Registration::whereNotNull('paid_at')
+            ->with(['user', 'registrationPath', 'plottingPotongan.masterPotongan']);
+
+        // Apply Periode filter
+        if ($selectedPeriodeId) {
+            $query->whereHas('registrationPath', function ($q) use ($selectedPeriodeId) {
+                $q->where('periode_id', $selectedPeriodeId);
+            });
         }
 
-        $plotting = PlottingPotongan::create($request->all());
-
-        ActivityLogger::log('create', 'plotting_potongan', 'Plotted scholarship for registration #' . $plotting->registration_id . ' with nominal: ' . $plotting->nominal_potongan);
-
-        return redirect()->route('beasiswa-potongan.index')
-            ->with('success', 'Plotting potongan mahasiswa berhasil ditambahkan.')
-            ->with('active_tab', 'plotting');
-    }
-
-    /**
-     * Update a Plotting Potongan.
-     */
-    public function updatePlotting(Request $request, $id)
-    {
-        $plotting = PlottingPotongan::findOrFail($id);
-
-        $validator = Validator::make($request->all(), [
-            'master_potongan_id' => 'required|exists:master_potongans,id',
-            'nominal_potongan' => 'required|integer|min:0',
-            'keterangan' => 'nullable|string',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput()
-                ->with('active_tab', 'plotting');
+        // Apply Registration Path filter
+        if ($selectedPathId) {
+            $query->where('registration_path_id', $selectedPathId);
         }
 
-        $plotting->update($request->all());
+        // Apply search by Name/NIK/No Pendaftaran
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('no_pendaftaran', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($qu) use ($search) {
+                      $qu->where('name', 'like', "%{$search}%")
+                        ->orWhere('username', 'like', "%{$search}%");
+                  });
+            });
+        }
 
-        ActivityLogger::log('update', 'plotting_potongan', 'Updated plotting scholarship for registration #' . $plotting->registration_id . ' with nominal: ' . $plotting->nominal_potongan);
+        $registrations = $query->orderBy('created_at', 'desc')->get();
 
-        return redirect()->route('beasiswa-potongan.index')
-            ->with('success', 'Plotting potongan mahasiswa berhasil diperbarui.')
-            ->with('active_tab', 'plotting');
+        // Calculate and attach total fee + default scholarship discount for each student
+        foreach ($registrations as $reg) {
+            $reg->total_biaya = \DB::table('jalur_pendaftaran_biayas')
+                ->where('registration_path_id', $reg->registration_path_id)
+                ->sum('nominal');
+
+            // Default calculated discount value based on master settings
+            if ($reg->plottingPotongan && $reg->plottingPotongan->master_potongan_id == $master->id) {
+                // If already plotted to THIS scholarship, keep current stored value
+                $reg->calculated_potongan = (int) $reg->plottingPotongan->nominal_potongan;
+            } else {
+                if ($master->tipe_potongan === 'rupiah') {
+                    $reg->calculated_potongan = (int) $master->nilai_potongan;
+                } else {
+                    $reg->calculated_potongan = (int) round(($reg->total_biaya * $master->nilai_potongan) / 100);
+                }
+            }
+        }
+
+        return view('settings.beasiswa-potongan.plotting', compact(
+            'master', 'registrations', 'periodes', 'paths', 
+            'selectedPeriodeId', 'selectedPathId', 'search'
+        ));
     }
 
     /**
-     * Delete a Plotting Potongan.
+     * Save student plottings in bulk.
      */
-    public function destroyPlotting($id)
+    public function savePlotting(Request $request, $id)
     {
-        $plotting = PlottingPotongan::findOrFail($id);
-        $regId = $plotting->registration_id;
-        $plotting->delete();
+        $master = MasterPotongan::findOrFail($id);
 
-        ActivityLogger::log('delete', 'plotting_potongan', 'Deleted plotting scholarship for registration #' . $regId);
+        $checkedIds = $request->input('registration_ids', []);
+        $nominals = $request->input('nominals', []);
+        $keterangans = $request->input('keterangans', []);
 
-        return redirect()->route('beasiswa-potongan.index')
-            ->with('success', 'Plotting potongan mahasiswa berhasil dihapus.')
-            ->with('active_tab', 'plotting');
+        \Illuminate\Support\Facades\DB::transaction(function () use ($id, $checkedIds, $nominals, $keterangans) {
+            // 1. Delete previous plottings for this master that are no longer checked
+            PlottingPotongan::where('master_potongan_id', $id)
+                ->whereNotIn('registration_id', $checkedIds)
+                ->delete();
+
+            // 2. Insert or update the checked plottings
+            foreach ($checkedIds as $regId) {
+                $nominal = (int) ($nominals[$regId] ?? 0);
+                $keterangan = $keterangans[$regId] ?? null;
+
+                PlottingPotongan::updateOrCreate(
+                    ['registration_id' => $regId],
+                    [
+                        'master_potongan_id' => $id,
+                        'nominal_potongan' => $nominal,
+                        'keterangan' => $keterangan,
+                    ]
+                );
+            }
+        });
+
+        ActivityLogger::log('update', 'plotting_potongan', 'Bulk updated student plottings for scholarship ID: ' . $id);
+
+        return redirect()->route('beasiswa-potongan.plotting.show', $id)
+            ->with('success', 'Plotting penerima beasiswa berhasil disimpan.');
     }
 }

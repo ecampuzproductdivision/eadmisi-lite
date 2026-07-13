@@ -32,10 +32,14 @@ class TagihanController extends Controller
             ->keyBy('registration_id');
 
         // ── Section 2: Registrasi Ulang (re-registration invoices) ──
-        // Include payment_pending status because createInvoice may still set it in legacy scenarios
+        // STRICT GATE: Only show registrations where the re-registration form has been submitted
+        // (status_registrasi_ulang is not null and is in one of the valid post-submission states).
+        // This prevents premature billing leakage before the student completes Step 5.
         $ulangRegistrations = Registration::where('user_id', auth()->id())
             ->with(['registrationPath', 'programStudi1', 'programStudi2'])
             ->whereIn('status', ['Menunggu Verifikasi Registrasi Ulang', 'registered', 'payment_pending'])
+            ->whereNotNull('status_registrasi_ulang')
+            ->whereIn('status_registrasi_ulang', ['menunggu_pembayaran', 'sudah_registrasi_no_tagihan', 'sudah_registrasi_lunas'])
             ->orderBy('created_at', 'desc')
             ->get();
 

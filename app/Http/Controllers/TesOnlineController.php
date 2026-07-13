@@ -279,24 +279,44 @@ class TesOnlineController extends Controller
             'status' => 'completed',
         ]);
 
-        // Update registration status
+        // Update registration status based on metode_pengumuman
         $jalur = $registration->registrationPath;
         $threshold = ($jalur && $jalur->nilai_ambang_batas !== null) ? $jalur->nilai_ambang_batas : 75;
 
-        if ($totalScore >= $threshold) {
-            $registration->update([
-                'status' => 'accepted',
-                'status_kelulusan' => 'Lulus',
-                'status_pendaftaran' => 'Lulus',
-                'updated_at' => now()
-            ]);
+        if ($jalur && $jalur->metode_pengumuman === 'ditahan') {
+            // ── OPTION 2: "Ditahan" mode ──
+            // Do NOT auto-evaluate pass/fail. Store raw score only.
+            // Update status to exam_completed so admin can manually evaluate later.
+            $updateData = [
+                'status' => 'exam_completed',
+                'updated_at' => now(),
+            ];
+
+            // If path requires wawancara, set interview state to 'menunggu_penjadwalan_wawancara'
+            if ($jalur->gunakan_wawancara) {
+                $updateData['status_wawancara'] = 'menunggu_penjadwalan_wawancara';
+            }
+
+            $registration->update($updateData);
         } else {
-            $registration->update([
-                'status' => 'rejected',
-                'status_kelulusan' => 'Tidak Lulus',
-                'status_pendaftaran' => 'Gagal',
-                'updated_at' => now()
-            ]);
+            // ── OPTION 1: "Langsung (One Day Service)" ──
+            // ── OPTION 3: "Penilaian Manual / Verifikasi Langsung" ──
+            // Leave existing logic exactly as is (no changes)
+            if ($totalScore >= $threshold) {
+                $registration->update([
+                    'status' => 'accepted',
+                    'status_kelulusan' => 'Lulus',
+                    'status_pendaftaran' => 'Lulus',
+                    'updated_at' => now()
+                ]);
+            } else {
+                $registration->update([
+                    'status' => 'rejected',
+                    'status_kelulusan' => 'Tidak Lulus',
+                    'status_pendaftaran' => 'Gagal',
+                    'updated_at' => now()
+                ]);
+            }
         }
 
         return redirect()->route('tes-online.index')

@@ -301,7 +301,7 @@
                   <i class="ti ti-edit"></i> Ikuti Tes Online <i class="ti ti-arrow-right"></i>
                 </a>
             @elseif($currentStep > 4)
-              @if($path && in_array($path->metode_pengumuman, ['langsung', 'Langsung (One Day Service)']) && $examResult)
+              @if($examResult)
                 <div class="card border-0 bg-light rounded-3 p-4 mt-3">
                   <h6 class="fw-bold text-dark mb-3"><i class="ti ti-report me-1"></i> Hasil Ujian (CBT)</h6>
                   <div class="row g-3 align-items-center">
@@ -317,13 +317,25 @@
                         </div>
                       </div>
                     </div>
+                    @if($path && $path->metode_pengumuman !== 'ditahan')
+                    {{-- Only show ambang batas + status comparators for options 1 and 3 --}}
                     <div class="col-md-6 border-start ps-4">
                       <small class="text-muted d-block text-uppercase fw-semibold small">Ambang Batas Kelulusan</small>
                       <strong class="fs-5 text-dark">{{ $path->nilai_ambang_batas ?? 75 }}</strong>
                     </div>
+                    @endif
                   </div>
 
-                  @if(in_array($registration->status, ['accepted', 'Menunggu Verifikasi Registrasi Ulang', 'registered']))
+                  @if($path && $path->metode_pengumuman === 'ditahan')
+                    {{-- OPTION 2 (Ditahan): Show raw score ONLY, no pass/fail evaluation --}}
+                    <div class="alert alert-info border-0 shadow-sm mb-0 d-flex gap-3 mt-4">
+                      <i class="ti ti-info-circle fs-3 mt-1"></i>
+                      <div>
+                        <h6 class="fw-bold mb-1">Nilai Anda Telah Disimpan</h6>
+                        <p class="small mb-0">Penentuan kelulusan akhir menunggu hasil akumulasi tahapan berikutnya/verifikasi berkas.</p>
+                      </div>
+                    </div>
+                  @elseif(in_array($registration->status, ['accepted', 'Menunggu Verifikasi Registrasi Ulang', 'registered']))
                     <div class="alert alert-success border-0 shadow-none mb-0 d-flex gap-3 mt-4">
                       <i class="ti ti-circle-check fs-3 mt-1"></i>
                       <div>

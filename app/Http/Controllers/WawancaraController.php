@@ -44,6 +44,12 @@ class WawancaraController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        // Save schedule data
+        $hasScheduleData = $request->filled('tanggal_wawancara')
+            || $request->filled('jam_wawancara')
+            || $request->filled('lokasi_wawancara')
+            || $request->filled('nama_pewawancara');
+
         Wawancara::updateOrCreate(
             ['pendaftaran_id' => $request->pendaftaran_id],
             [
@@ -53,6 +59,14 @@ class WawancaraController extends Controller
                 'nama_pewawancara'  => $request->nama_pewawancara,
             ]
         );
+
+        // Auto-transition: if admin sets schedule data, update registration status_wawancara
+        if ($hasScheduleData) {
+            Registration::where('id', $request->pendaftaran_id)
+                ->whereNull('status_wawancara')
+                ->orWhere('status_wawancara', 'menunggu_penjadwalan_wawancara')
+                ->update(['status_wawancara' => 'menunggu_wawancara']);
+        }
 
         ActivityLogger::log('update', 'wawancara', 'Interview scheduled for registration #' . $request->pendaftaran_id);
 

@@ -28,6 +28,7 @@ class Registration extends Model
         'status_kelulusan',
         'status_pendaftaran',
         'status_registrasi_ulang',
+        'status_wawancara',
         'nisn',
         'nama_ibu_kandung',
         'penerima_kps',

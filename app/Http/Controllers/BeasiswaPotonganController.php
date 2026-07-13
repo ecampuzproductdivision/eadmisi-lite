@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MasterPotongan;
 use App\Models\PlottingPotongan;
 use App\Models\Registration;
-use App\Models\ActivityLogger;
+use App\Helpers\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 

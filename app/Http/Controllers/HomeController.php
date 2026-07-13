@@ -87,11 +87,17 @@ class HomeController extends Controller
             $hasPaidInvoice = $reg->payments->firstWhere('transaction_status', 'success');
             $isPaymentLocked = !$hasPaidInvoice;
 
-            // Terminal states (bypass the cascade).
-            // NOTE: payment_verified is NOT terminal — it falls through to the cascade
-            // so the main badge reflects the academic step (documents/exam/verification)
-            // while 'Pembayaran Terverifikasi' appears as a sub-badge only.
-            if ($reg->status === 'rejected') {
+            // ── PRIORITY: Re-registration Lunas state ──
+            if ($reg->status_kelulusan === 'Lulus' && $reg->status_registrasi_ulang === 'sudah_registrasi_lunas') {
+                $statusLabel = 'Sudah Melakukan Registrasi Ulang';
+                $badgeBg = 'bg-success';
+                $badgeText = 'text-white';
+                $subBadge = $reg->nim
+                    ? '<span class="badge bg-info text-white mt-1 d-inline-block" style="font-size:0.65rem;">NIM: ' . $reg->nim . '</span>'
+                    : '';
+                $actionLabel = 'Lihat Detail';
+                $actionUrl = route('pendaftaran.show', $reg->id);
+            } elseif ($reg->status === 'rejected') {
                 $statusLabel = 'Ditolak';
                 $badgeBg = 'bg-danger';
                 $badgeText = 'text-white';
@@ -204,9 +210,15 @@ class HomeController extends Controller
             ];
         });
 
+        // Check if any registration has reached lunas state
+        $hasLunasStatus = $registrations->contains(function ($reg) {
+            return $reg->status_kelulusan === 'Lulus' && $reg->status_registrasi_ulang === 'sudah_registrasi_lunas';
+        });
+
         return view('home', [
             'isCalonMahasiswa' => true,
             'hasRegistrations' => $hasRegistrations,
+            'hasLunasStatus' => $hasLunasStatus,
             'registrationCount' => $registrationCount,
             'registrationCards' => $registrationCards,
         ]);

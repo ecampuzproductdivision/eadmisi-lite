@@ -53,66 +53,105 @@
             <tbody>
               @forelse($registrations as $registration)
                 @php
-                  // ── UNIFIED STATUS PIPELINE (Lazy Invoice Architecture) ──
-                  $pathObj = $registration->registrationPath;
-                  $totalRequiredDocs = 0;
-                  $totalUploadedDocs = 0;
-                  $hasExamBeenTaken = false;
-                  $isPaymentLocked = true;
+                  $statusLabel = null;
+                  $badgeBg = null;
+                  $badgeText = null;
 
-                  // Payment check
-                  $paidInvoice = $registration->payments->firstWhere('transaction_status', 'success');
-                  if ($paidInvoice) $isPaymentLocked = false;
-
-                  // Document check
-                  if ($pathObj && $pathObj->templateBerkas) {
-                      $totalRequiredDocs = $pathObj->templateBerkas->syaratDokumens()
-                          ->where('status_wajib', true)
-                          ->count();
-                      $totalUploadedDocs = \App\Models\RegistrationDocument::where('registration_id', $registration->id)->count();
+                  // ── PRIORITY 1: Multi-State Re-Registration Matrix ──
+                  // If student has passed selection, show re-registration progression
+                  if ($registration->status_kelulusan === 'Lulus') {
+                      switch ($registration->status_registrasi_ulang) {
+                          case 'belum_registrasi':
+                              $statusLabel = 'Belum Registrasi Ulang';
+                              $badgeBg = 'bg-warning';
+                              $badgeText = 'text-dark';
+                              break;
+                          case 'menunggu_pembayaran':
+                              $statusLabel = 'Menunggu Pembayaran Registrasi Ulang';
+                              $badgeBg = 'bg-danger';
+                              $badgeText = 'text-white';
+                              break;
+                          case 'sudah_registrasi_no_tagihan':
+                              $statusLabel = 'Sudah Registrasi Ulang';
+                              $badgeBg = 'bg-success';
+                              $badgeText = 'text-white';
+                              break;
+                          case 'sudah_registrasi_lunas':
+                              $statusLabel = 'Sudah Melakukan Registrasi Ulang';
+                              $badgeBg = 'bg-success';
+                              $badgeText = 'text-white';
+                              break;
+                          default:
+                              $statusLabel = 'Lulus Seleksi';
+                              $badgeBg = 'bg-primary';
+                              $badgeText = 'text-white';
+                      }
+                  } elseif ($registration->status_kelulusan === 'Tidak Lulus') {
+                      $statusLabel = 'Tidak Lulus';
+                      $badgeBg = 'bg-dark';
+                      $badgeText = 'text-white';
                   }
 
-                  // Exam check
-                  if ($pathObj && $pathObj->is_ujian_online) {
-                      $hasExamBeenTaken = \App\Models\ExamResult::where('registration_id', $registration->id)
-                          ->where('status', 'completed')
-                          ->exists();
-                  }
-
-                  $isStep3Completed = ($totalRequiredDocs == 0) || ($totalUploadedDocs >= $totalRequiredDocs);
-
-                  // Terminal states (bypass cascade).
-                  // NOTE: payment_verified is NOT terminal — falls through to cascade
-                  // so the main badge shows academic step, not payment status.
-                  if ($registration->status === 'rejected') {
-                      $badgeBg = 'bg-danger'; $badgeText = 'text-white'; $statusLabel = 'Ditolak';
-                  } elseif ($registration->status === 'accepted') {
-                      $badgeBg = 'bg-success'; $badgeText = 'text-white'; $statusLabel = 'Diterima';
-                  } elseif ($registration->status === 'reviewed') {
-                      $badgeBg = 'bg-secondary'; $badgeText = 'text-white'; $statusLabel = 'Direview';
-                  } elseif ($registration->status === 'exam_completed') {
-                      $badgeBg = 'bg-primary'; $badgeText = 'text-white'; $statusLabel = 'Ujian Selesai';
-                  } elseif ($registration->status === 'payment_pending') {
+                  // ── PRIORITY 2: UNIFIED STATUS PIPELINE (Fallback) ──
+                  if (!$statusLabel) {
+                      $pathObj = $registration->registrationPath;
+                      $totalRequiredDocs = 0;
+                      $totalUploadedDocs = 0;
+                      $hasExamBeenTaken = false;
                       $isPaymentLocked = true;
-                  }
 
-                  // Cascade for unresolved statuses
-                  if (!isset($statusLabel)) {
-                      // STEP 1: Financial Gate
-                      if ($isPaymentLocked) {
-                          $badgeBg = 'bg-danger'; $badgeText = 'text-white'; $statusLabel = 'Menunggu Pembayaran';
-                      } else {
-                          // STEP 2: Document Phase
-                          if ($totalRequiredDocs > 0 && !$isStep3Completed) {
-                              $badgeBg = 'bg-warning'; $badgeText = 'text-dark'; $statusLabel = 'Belum Unggah Berkas';
-                          }
-                          // STEP 3: Exam Phase
-                          elseif ($pathObj && $pathObj->is_ujian_online && !$hasExamBeenTaken) {
-                              $badgeBg = 'bg-info'; $badgeText = 'text-dark'; $statusLabel = 'Menunggu Ujian';
-                          }
-                          // STEP 4: Final Verification
-                          else {
-                              $badgeBg = 'bg-secondary'; $badgeText = 'text-white'; $statusLabel = 'Menunggu Verifikasi Berkas';
+                      // Payment check
+                      $paidInvoice = $registration->payments->firstWhere('transaction_status', 'success');
+                      if ($paidInvoice) $isPaymentLocked = false;
+
+                      // Document check
+                      if ($pathObj && $pathObj->templateBerkas) {
+                          $totalRequiredDocs = $pathObj->templateBerkas->syaratDokumens()
+                              ->where('status_wajib', true)
+                              ->count();
+                          $totalUploadedDocs = \App\Models\RegistrationDocument::where('registration_id', $registration->id)->count();
+                      }
+
+                      // Exam check
+                      if ($pathObj && $pathObj->is_ujian_online) {
+                          $hasExamBeenTaken = \App\Models\ExamResult::where('registration_id', $registration->id)
+                              ->where('status', 'completed')
+                              ->exists();
+                      }
+
+                      $isStep3Completed = ($totalRequiredDocs == 0) || ($totalUploadedDocs >= $totalRequiredDocs);
+
+                      // Terminal states (bypass cascade).
+                      if ($registration->status === 'rejected') {
+                          $badgeBg = 'bg-danger'; $badgeText = 'text-white'; $statusLabel = 'Ditolak';
+                      } elseif ($registration->status === 'accepted') {
+                          $badgeBg = 'bg-success'; $badgeText = 'text-white'; $statusLabel = 'Diterima';
+                      } elseif ($registration->status === 'reviewed') {
+                          $badgeBg = 'bg-secondary'; $badgeText = 'text-white'; $statusLabel = 'Direview';
+                      } elseif ($registration->status === 'exam_completed') {
+                          $badgeBg = 'bg-primary'; $badgeText = 'text-white'; $statusLabel = 'Ujian Selesai';
+                      } elseif ($registration->status === 'payment_pending') {
+                          $isPaymentLocked = true;
+                      }
+
+                      // Cascade for unresolved statuses
+                      if (!$statusLabel) {
+                          // STEP 1: Financial Gate
+                          if ($isPaymentLocked) {
+                              $badgeBg = 'bg-danger'; $badgeText = 'text-white'; $statusLabel = 'Menunggu Pembayaran';
+                          } else {
+                              // STEP 2: Document Phase
+                              if ($totalRequiredDocs > 0 && !$isStep3Completed) {
+                                  $badgeBg = 'bg-warning'; $badgeText = 'text-dark'; $statusLabel = 'Belum Unggah Berkas';
+                              }
+                              // STEP 3: Exam Phase
+                              elseif ($pathObj && $pathObj->is_ujian_online && !$hasExamBeenTaken) {
+                                  $badgeBg = 'bg-info'; $badgeText = 'text-dark'; $statusLabel = 'Menunggu Ujian';
+                              }
+                              // STEP 4: Final Verification
+                              else {
+                                  $badgeBg = 'bg-secondary'; $badgeText = 'text-white'; $statusLabel = 'Menunggu Verifikasi Berkas';
+                              }
                           }
                       }
                   }

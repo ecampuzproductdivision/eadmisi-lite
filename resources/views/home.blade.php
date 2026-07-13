@@ -15,22 +15,48 @@
 
     @if($hasRegistrations)
       {{-- ========== CONDITION A: Has active registrations ========== --}}
-      {{-- Welcome Banner --}}
-      <div class="card border-0 shadow-sm rounded-3 mb-5 overflow-hidden" style="background: linear-gradient(135deg, #0d6efd15 0%, #667eea08 100%);">
-        <div class="card-body p-5">
-          <div class="row align-items-center">
-            <div class="col-lg-8">
-              <h3 class="fw-bold mb-2">Selamat Datang di Portal eAdmisi!</h3>
-              <p class="text-muted mb-0 fs-5">Halo <strong>{{ auth()->user()->name }}</strong>, pantau terus perkembangan status pendaftaran Anda secara berkala di sini.</p>
-            </div>
-            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-              <a href="{{ route('daftar-pmb') }}" class="btn btn-primary btn-lg px-4">
-                <i class="ti ti-plus me-2"></i> Pendaftaran Baru
-              </a>
+
+      @if($hasLunasStatus ?? false)
+        {{-- Success Banner for students who have completed re-registration payment --}}
+        <div class="card border-0 shadow-sm rounded-3 mb-5 overflow-hidden" style="background: linear-gradient(135deg, #28a74520 0%, #20c99708 100%);">
+          <div class="card-body p-5">
+            <div class="row align-items-center">
+              <div class="col-lg-8">
+                <h3 class="fw-bold mb-2 text-success">🎉 Pembayaran Registrasi Ulang Terverifikasi!</h3>
+                <p class="text-success-emphasis mb-0 fs-5">
+                  Halo <strong>{{ auth()->user()->name }}</strong>, data Anda telah sah sebagai Mahasiswa Baru.
+                </p>
+                <p class="text-muted mt-2 mb-0 small">
+                  Saat ini administrasi Anda sedang dalam proses pembuatan <strong>Nomor Induk Mahasiswa (NIM)</strong> 
+                  serta pembuatan akun untuk akses Portal Akademik (eAkademik). Mohon cek halaman ini secara berkala.
+                </p>
+              </div>
+              <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a href="{{ route('riwayat-pendaftaran.index') }}" class="btn btn-success btn-lg px-4">
+                  <i class="ti ti-file-text me-2"></i> Lihat Pendaftaran
+                </a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      @else
+        {{-- Welcome Banner (default) --}}
+        <div class="card border-0 shadow-sm rounded-3 mb-5 overflow-hidden" style="background: linear-gradient(135deg, #0d6efd15 0%, #667eea08 100%);">
+          <div class="card-body p-5">
+            <div class="row align-items-center">
+              <div class="col-lg-8">
+                <h3 class="fw-bold mb-2">Selamat Datang di Portal eAdmisi!</h3>
+                <p class="text-muted mb-0 fs-5">Halo <strong>{{ auth()->user()->name }}</strong>, pantau terus perkembangan status pendaftaran Anda secara berkala di sini.</p>
+              </div>
+              <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a href="{{ route('daftar-pmb') }}" class="btn btn-primary btn-lg px-4">
+                  <i class="ti ti-plus me-2"></i> Pendaftaran Baru
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      @endif
 
       <div class="row">
         <div class="col-lg-9">

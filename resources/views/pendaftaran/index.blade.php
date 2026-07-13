@@ -110,7 +110,11 @@
 
                     $isStep3Completed = ($totalRequiredDocs == 0) || ($totalUploadedDocs >= $totalRequiredDocs);
 
-                    if ($registration->status === 'rejected') {
+                    // ── PRIORITY: Re-registration Lunas state ──
+                    if ($registration->status_kelulusan === 'Lulus' && $registration->status_registrasi_ulang === 'sudah_registrasi_lunas') {
+                        $nimDisplay = $registration->nim ? ' (NIM: ' . $registration->nim . ')' : '';
+                        $badgeBg = 'bg-success-subtle text-success-emphasis border border-success-subtle'; $badgeText = ''; $statusLabel = 'Sudah Melakukan Registrasi Ulang' . $nimDisplay; $subBadge = '';
+                    } elseif ($registration->status === 'rejected') {
                         $badgeBg = 'bg-danger-subtle text-danger-emphasis border border-danger-subtle'; $badgeText = ''; $statusLabel = 'Ditolak'; $subBadge = '';
                     } elseif ($registration->status === 'accepted') {
                         $badgeBg = 'bg-success-subtle text-success-emphasis border border-success-subtle'; $badgeText = ''; $statusLabel = 'Diterima'; $subBadge = '';

@@ -367,8 +367,16 @@
         @php
           $finalStep = $totalSteps;
           $finalStepStatus = 'locked';
+          // ── Detect if registration is fully paid (lunas) ──
+          $isRegistrationLunas = $registration
+              && $registration->status_kelulusan === 'Lulus'
+              && $registration->status_registrasi_ulang === 'sudah_registrasi_lunas';
+
           if ($registration && !in_array($registration->status, ['rejected', 'Gagal']) && $registration->status_kelulusan !== 'Tidak Lulus') {
-              if (in_array($registration->status, ['registered'])) {
+              if ($isRegistrationLunas) {
+                  // Fully paid re-registration - show completed state with provisioning info
+                  $finalStepStatus = 'completed';
+              } elseif (in_array($registration->status, ['registered'])) {
                   // Fully registered - show completed recap
                   $finalStepStatus = 'completed';
               } elseif (in_array($registration->status, ['Menunggu Verifikasi Registrasi Ulang']) || $currentStep == $totalSteps) {
@@ -463,13 +471,21 @@
                 </div>
 
                 <div class="d-flex flex-wrap gap-2 mt-4">
-                  <form action="{{ route('payment.invoice', $registration->id) }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="payment_type" value="registrasi_ulang">
-                    <button type="submit" class="btn btn-success px-4">
-                      <i class="ti ti-credit-card me-2"></i> Bayar Sekarang
-                    </button>
-                  </form>
+                  @if(!$ulangPayment || !$ulangPayment->invoice_number)
+                    {{-- Only show "Bayar Sekarang" if no active invoice has been generated --}}
+                    <form action="{{ route('payment.invoice', $registration->id) }}" method="POST">
+                      @csrf
+                      <input type="hidden" name="payment_type" value="registrasi_ulang">
+                      <button type="submit" class="btn btn-success px-4">
+                        <i class="ti ti-credit-card me-2"></i> Bayar Sekarang
+                      </button>
+                    </form>
+                  @else
+                    {{-- Invoice already exists — guide student to Tagihan menu --}}
+                    <div class="text-muted small mt-2 w-100">
+                      <i class="ti ti-info-circle me-1"></i> Selesaikan pembayaran Anda melalui menu <strong>Tagihan</strong> menggunakan kode invoice di atas.
+                    </div>
+                  @endif
                   <a href="{{ route('tagihan.index') }}" class="btn btn-outline-secondary">
                     <i class="ti ti-receipt"></i> Lihat Semua Tagihan
                   </a>
@@ -738,6 +754,29 @@
                 @endif
               @else
               @endif
+            @elseif($finalStepStatus === 'completed' && $isRegistrationLunas)
+              {{-- LUNAS state: Payment completed, awaiting NIM & eAkademik provisioning --}}
+              <h5 class="fw-bold mt-3 text-success"><i class="ti ti-circle-check me-2"></i>Registrasi Ulang Selesai</h5>
+              
+              <div class="alert alert-success border-0 shadow-sm mb-4 d-flex gap-3 mt-3">
+                <i class="ti ti-circle-check fs-3 mt-1 text-success"></i>
+                <div>
+                  <h6 class="fw-bold mb-1 text-success">Pembayaran Registrasi Ulang LUNAS</h6>
+                  <p class="small mb-0">
+                    @if($ulangPayment && $ulangPayment->invoice_number)
+                      Invoice <strong>{{ $ulangPayment->invoice_number }}</strong> — Status: <span class="badge bg-success px-2 py-1">LUNAS</span>
+                      <br>
+                    @endif
+                    Menunggu proses pembuatan NIM dan akun portal eAkademik oleh tim Biro Administrasi Akademik (BAA).
+                  </p>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-start mt-4">
+                <a href="{{ route('home') }}" class="btn btn-outline-secondary px-4 me-2">
+                  <i class="ti ti-arrow-left me-1"></i> Kembali ke Dashboard
+                </a>
+              </div>
             @elseif($finalStepStatus === 'completed' && $registration && $registration->status === 'registered')
               <h5 class="fw-bold mt-3 text-success"><i class="ti ti-circle-check me-2"></i>Registrasi Ulang Selesai</h5>
               

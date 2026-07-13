@@ -47,6 +47,9 @@
         </div>
     @endslot
     @slot('exports')
+        <button type="button" class="btn btn-outline-primary d-inline-flex align-items-center gap-1 me-2" data-bs-toggle="modal" data-bs-target="#importExcelModal">
+            <i class="ti ti-upload"></i> Import Excel
+        </button>
         <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.location.href='{{ route('pendaftaran.index') }}?export=xls'">
             <i class="ti ti-file-spreadsheet"></i> .xls
         </a>
@@ -205,6 +208,64 @@
         @endif
     @endslot
 @endcomponent
+
+    <!-- Modal Import Excel -->
+    <div class="modal fade" id="importExcelModal" tabindex="-1" aria-labelledby="importExcelModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="importExcelModalLabel">
+                        <i class="ti ti-upload text-primary me-2"></i>Import Data Calon Mahasiswa via Excel
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="{{ route('pendaftaran.import') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <div class="alert alert-info border-0 rounded-3 mb-4 d-flex align-items-start gap-2 shadow-none">
+                            <i class="ti ti-info-circle text-info fs-4 mt-0"></i>
+                            <div>
+                                <span class="fw-semibold text-info d-block">Panduan Pengisian</span>
+                                <small class="text-muted" style="font-size: 0.8rem; display: block; line-height: 1.4;">
+                                    Silakan pilih jalur pendaftaran terlebih dahulu untuk mengunduh template Excel yang sesuai. Kolom data pada Excel akan menyesuaikan dengan field dinamis aktif jalur tersebut.
+                                    <br><strong>Username:</strong> Nomor Pendaftaran
+                                    <br><strong>Password Default:</strong> <code>pendaftaran123</code>
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Pilih Jalur Pendaftaran <span class="text-danger">*</span></label>
+                            <select name="registration_path_id" id="import_path_select" class="form-select" required>
+                                <option value="" selected disabled>-- Pilih Jalur Pendaftaran --</option>
+                                @foreach($paths as $path)
+                                    <option value="{{ $path->id }}">{{ $path->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <a href="#" id="download-template-btn" class="btn btn-light-primary text-primary w-100 disabled d-inline-flex align-items-center justify-content-center gap-2 py-2">
+                                <i class="ti ti-file-text fs-5"></i> 📄 Download Template Excel
+                            </a>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Upload File Excel (.xlsx) <span class="text-danger">*</span></label>
+                            <input type="file" name="file" class="form-control" accept=".xlsx" required>
+                            <div class="form-text">Pastikan file bertipe .xlsx dan kolom baris data diisi lengkap.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light border-top p-3">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-1">
+                            <i class="ti ti-check"></i> Proses Import
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -262,6 +323,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 bulkActionInput.value = 'Gagal';
             }
             bulkForm.submit();
+        });
+    }
+
+    // Dynamic Download Template link updates
+    const pathSelect = document.getElementById('import_path_select');
+    const downloadBtn = document.getElementById('download-template-btn');
+
+    if (pathSelect && downloadBtn) {
+        pathSelect.addEventListener('change', function() {
+            const pathId = this.value;
+            if (pathId) {
+                downloadBtn.href = '/pendaftaran/export-template/' + pathId;
+                downloadBtn.classList.remove('disabled');
+            } else {
+                downloadBtn.href = '#';
+                downloadBtn.classList.add('disabled');
+            }
         });
     }
 });

@@ -66,6 +66,8 @@ Route::get('/api/registration-paths', [RegistrationPathController::class, 'apiLi
         Route::post('/payment/{paymentId}/verify', [PaymentController::class, 'manualVerify'])->name('payment.manual-verify');
         Route::post('/pendaftaran/{id}/verify-re-registration', [PendaftaranController::class, 'verifyReRegistration'])->name('pendaftaran.verify-re-registration');
         Route::post('/pendaftaran/bulk-kelulusan', [PendaftaranController::class, 'bulkKelulusan'])->name('pendaftaran.bulk-kelulusan');
+        Route::get('/pendaftaran/export-template/{pathId}', [PendaftaranController::class, 'exportTemplate'])->name('pendaftaran.export-template');
+        Route::post('/pendaftaran/import', [PendaftaranController::class, 'importExcel'])->name('pendaftaran.import');
         
         // ═══ REGISTRASI ULANG MENU ═══
         Route::get('/registrasi-ulang', [\App\Http\Controllers\RegistrasiUlangController::class, 'index'])->name('registrasi-ulang.index');

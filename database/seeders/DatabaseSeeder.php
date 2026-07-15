@@ -61,6 +61,9 @@ class DatabaseSeeder extends Seeder
 
             // ── Registrasi Ulang Menu (after PendaftaranSeeder) ──
             RegistrasiUlangMenuSeeder::class,
+
+            // ── Menu Category (update categories for all menus) ──
+            MenuCategorySeeder::class,
         ]);
     }
 }

@@ -58,6 +58,17 @@
                     </div>
 
                     <div class="col-md-3 col-12">
+                        <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
+                        <select name="category" id="category" class="form-select" required>
+                            <option value="">None (Top Level)</option>
+                            <option value="MASTER_DATA" {{ old('category') == 'MASTER_DATA' ? 'selected' : '' }}>MASTER_DATA</option>
+                            <option value="TRANSACTION" {{ old('category') == 'TRANSACTION' ? 'selected' : '' }}>TRANSACTION</option>
+                            <option value="SETTINGS" {{ old('category') == 'SETTINGS' ? 'selected' : '' }}>SETTINGS</option>
+                        </select>
+                        <div class="invalid-feedback">Please select the menu category.</div>
+                    </div>
+
+                    <div class="col-md-3 col-12">
                         <label for="is_active" class="form-label">Status <span class="text-danger">*</span></label>
                         <select name="is_active" id="is_active" class="form-select" required>
                             <option value="1" {{ old('is_active', '1') == '1' ? 'selected' : '' }}>Show in Sidebar</option>
@@ -65,8 +76,6 @@
                         </select>
                         <div class="invalid-feedback">Please select the menu status.</div>
                     </div>
-
-                    <div class="col-md-3 col-12"></div>
 
                     {{-- Section: Navigation Properties --}}
                     <div class="col-12">

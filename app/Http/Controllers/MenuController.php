@@ -30,6 +30,7 @@ class MenuController extends Controller
         $request->validate([
             'menu_name' => 'required|string|max:255',
             'menu_code' => 'required|string|max:255|unique:menus',
+            'category' => 'nullable|in:MASTER_DATA,TRANSACTION,SETTINGS',
             'parent_id' => 'nullable|exists:menus,id',
             'icon' => 'nullable|string|max:255',
             'url' => 'nullable|string|max:255',
@@ -52,6 +53,7 @@ class MenuController extends Controller
         $request->validate([
             'menu_name' => 'required|string|max:255',
             'menu_code' => 'required|string|max:255|unique:menus,menu_code,' . $menu->id,
+            'category' => 'nullable|in:MASTER_DATA,TRANSACTION,SETTINGS',
             'parent_id' => 'nullable|exists:menus,id',
             'icon' => 'nullable|string|max:255',
             'url' => 'nullable|string|max:255',

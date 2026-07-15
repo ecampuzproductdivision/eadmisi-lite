@@ -126,6 +126,24 @@ html.collapsed #miniSidebar .sidebar-divider {
   border-top-color: rgba(99, 115, 129, 0.25);
 }
 
+/* Sidebar Section Header */
+.nav-section-header .nav-link {
+  padding: 0.5rem 0.75rem 0.25rem 0.75rem !important;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b !important;
+  cursor: default;
+  pointer-events: none;
+}
+[data-bs-theme="dark"] .nav-section-header .nav-link {
+  color: #94a3b8 !important;
+}
+html.collapsed #miniSidebar .nav-section-header {
+  display: none;
+}
+
 /* Collapsed sidebar ensures icons center */
 html.collapsed #miniSidebar .nav-link .nav-icon,
 html.collapsed #miniSidebar .nav-link .nav-icon-sub {

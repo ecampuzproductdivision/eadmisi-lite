@@ -36,6 +36,7 @@ class UserSeeder extends Seeder
         $homeMenu = Menu::create([
             'menu_name' => 'Home',
             'menu_code' => 'HOME',
+            'category' => null,
             'parent_id' => null,
             'icon' => 'ti ti-home',
             'url' => '/home',
@@ -98,6 +99,7 @@ class UserSeeder extends Seeder
         $settingsMenu = Menu::create([
             'menu_name' => 'Settings',
             'menu_code' => 'SETTINGS',
+            'category' => 'SETTINGS',
             'parent_id' => null,
             'icon' => 'ti-settings',
             'url' => '#',
@@ -119,6 +121,7 @@ class UserSeeder extends Seeder
             $childMenu = Menu::create([
                 'menu_name' => $item['menu_name'],
                 'menu_code' => $item['menu_code'],
+                'category' => 'SETTINGS',
                 'parent_id' => $settingsMenu->id,
                 'icon' => $item['icon'],
                 'url' => $item['url'],

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->boolean('has_completed_welcome')->default(false);
-            $table->json('completed_steps')->nullable();
+            $table->longText('completed_steps')->nullable();
             $table->boolean('is_dismissed')->default(false);
             $table->timestamps();
 

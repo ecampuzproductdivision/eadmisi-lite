@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -12,9 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('user_onboarding_progress', function (Blueprint $table) {
-            $table->renameColumn('completed_steps', 'tutorials_progress');
-        });
+        DB::statement('ALTER TABLE user_onboarding_progress CHANGE COLUMN completed_steps tutorials_progress LONGTEXT DEFAULT NULL');
     }
 
     /**
@@ -22,8 +21,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('user_onboarding_progress', function (Blueprint $table) {
-            $table->renameColumn('tutorials_progress', 'completed_steps');
-        });
+        DB::statement('ALTER TABLE user_onboarding_progress CHANGE COLUMN tutorials_progress completed_steps LONGTEXT DEFAULT NULL');
     }
 };

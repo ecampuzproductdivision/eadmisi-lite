@@ -9,10 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('registrations', function (Blueprint $table) {
-            if (!Schema::hasColumn('registrations', 'status_registrasi_ulang')) {
-                $table->string('status_registrasi_ulang', 50)->nullable()->after('status_pendaftaran')
-                    ->comment('belum_registrasi|menunggu_pembayaran|sudah_registrasi_no_tagihan|sudah_registrasi_lunas');
-            }
+            $table->string('status_registrasi_ulang', 50)->nullable()->after('status_pendaftaran')
+                ->comment('belum_registrasi|menunggu_pembayaran|sudah_registrasi_no_tagihan|sudah_registrasi_lunas');
         });
     }
 

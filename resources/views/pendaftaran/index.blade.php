@@ -9,7 +9,12 @@
     @slot('title', 'Pendaftaran PMB')
     @slot('description', 'Data pendaftaran yang sudah disubmit oleh calon mahasiswa.')
     @slot('actions')
-
+        <button type="button" class="btn btn-white d-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#importExcelModal">
+            <i class="ti ti-upload"></i> Import Excel
+        </button>
+        <button id="btn-bulk-kelulusan" class="btn btn-white d-inline-flex align-items-center gap-1">
+            <i class="ti ti-checklist"></i> Proses Kelulusan Massal
+        </button>
     @endslot
     @slot('filters')
         <div class="col-md-3 col-12">
@@ -47,18 +52,12 @@
         </div>
     @endslot
     @slot('exports')
-        <button type="button" class="btn btn-outline-primary d-inline-flex align-items-center gap-1 me-2" data-bs-toggle="modal" data-bs-target="#importExcelModal">
-            <i class="ti ti-upload"></i> Import Excel
-        </button>
         <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.location.href='{{ route('pendaftaran.index') }}?export=xls'">
             <i class="ti ti-file-spreadsheet"></i> .xls
         </a>
         <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.print()">
             <i class="ti ti-printer"></i> Print
         </a>
-        <button id="btn-bulk-kelulusan" class="btn btn-primary ml-2 d-inline-flex align-items-center gap-1">
-            <i class="ti ti-checklist"></i> Proses Kelulusan Massal
-        </button>
     @endslot
     @slot('table')
         <form id="bulk-kelulusan-form" action="{{ route('pendaftaran.bulk-kelulusan') }}" method="POST">

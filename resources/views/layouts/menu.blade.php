@@ -1,11 +1,4 @@
-<div id="miniSidebar">
-  <div class="brand-logo">
-    <a class="d-none d-md-flex align-items-center gap-2 text-body text-decoration-none" href="/home">
-      <img src="{{ asset('assets/images/brand/logo/logo-light.png') }}" class="brand-logo-img" width="24px" alt="" />
-      <span class="fw-bold fs-4 site-logo-text">Admisi</span>
-    </a>
-  </div>
-  @php
+@php
     // Determine user role for sidebar filtering
     $user = auth()->user();
     $isCalonMahasiswa = $user && $user->roles->contains('role_code', 'CALON_MAHASISWA');
@@ -19,7 +12,86 @@
         'TRANSACTION' => 'TRANSAKSI',
         'SETTINGS' => 'PENGATURAN',
     ];
-  @endphp
+@endphp
+
+<!-- Offcanvas sidebar for mobile -->
+<div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+  <div class="offcanvas-header">
+    <a class="d-flex align-items-center gap-2 text-body text-decoration-none" href="/home">
+      <img src="{{ asset('assets/images/brand/logo/logo-light.png') }}" class="brand-logo-img" width="24px" alt="" />
+      <span class="fw-bold fs-4 site-logo-text">Admisi</span>
+    </a>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body p-0">
+    <ul class="navbar-nav flex-column px-3">
+      @if(isset($sideMenus))
+        @php
+          $filteredMenus = collect($sideMenus)->filter(function($menu) use ($isCalonMahasiswa, $adminPrefixes) {
+              if (!$isCalonMahasiswa) return true;
+              $menuUrl = trim($menu->url ?? '', '/');
+              foreach ($adminPrefixes as $prefix) {
+                  if (str_starts_with($menuUrl, $prefix)) return false;
+              }
+              if ($menu->children->isNotEmpty()) {
+                  foreach ($menu->children as $child) {
+                      $childUrl = trim($child->url ?? '', '/');
+                      foreach ($adminPrefixes as $prefix) {
+                          if (str_starts_with($childUrl, $prefix)) return false;
+                      }
+                  }
+              }
+              return true;
+          });
+          $homeMenu = $filteredMenus->firstWhere('menu_code', 'HOME');
+          $groupedMenus = $filteredMenus->where('menu_code', '!=', 'HOME')->groupBy(function($menu) {
+              return $menu->category ?? 'UNCATEGORIZED';
+          });
+        @endphp
+        @if($homeMenu)
+          <li class="nav-item">
+            <a class="nav-link" href="{{ $homeMenu->url }}">
+              <span class="nav-icon"><i class="ti ti-home fs-3"></i></span>
+              <span class="text">{{ __($homeMenu->menu_name) }}</span>
+            </a>
+          </li>
+        @endif
+        @foreach(['MASTER_DATA', 'TRANSACTION', 'SETTINGS'] as $categoryKey)
+          @php $menusInCategory = $groupedMenus->get($categoryKey); @endphp
+          @if($menusInCategory && $menusInCategory->isNotEmpty())
+            <li class="nav-item nav-section-header mt-2">
+              <span class="nav-link disabled small text-uppercase fw-bold text-secondary" style="cursor: default; opacity: 0.7; font-size: 0.65rem;">{{ __($categoryLabels[$categoryKey]) }}</span>
+            </li>
+            @foreach($menusInCategory as $menu)
+              @if($menu->children->isNotEmpty())
+                <li class="nav-item">
+                  <a class="nav-link fw-semibold" href="#">{{ __($menu->menu_name) }}</a>
+                </li>
+                @foreach($menu->children as $child)
+                  <li class="nav-item ms-3">
+                    <a class="nav-link py-1 small" href="{{ $child->url }}">{{ __($child->menu_name) }}</a>
+                  </li>
+                @endforeach
+              @else
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ $menu->url }}">{{ __($menu->menu_name) }}</a>
+                </li>
+              @endif
+            @endforeach
+          @endif
+        @endforeach
+      @endif
+    </ul>
+  </div>
+</div>
+
+<div id="miniSidebar">
+  <div class="brand-logo">
+    <a class="d-none d-md-flex align-items-center gap-2 text-body text-decoration-none" href="/home">
+      <img src="{{ asset('assets/images/brand/logo/logo-light.png') }}" class="brand-logo-img" width="24px" alt="" />
+      <span class="fw-bold fs-4 site-logo-text">Admisi</span>
+    </a>
+  </div>
   <ul class="navbar-nav flex-column">
     @if(isset($sideMenus))
       @php

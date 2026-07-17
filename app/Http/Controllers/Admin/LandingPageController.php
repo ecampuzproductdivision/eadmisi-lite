@@ -167,17 +167,90 @@ class LandingPageController extends Controller
 
     public function updateSettings(Request $request)
     {
-        $keys = ['contact_email', 'contact_phone', 'contact_address', 'social_instagram', 'social_facebook', 'social_youtube', 'landing_about_title', 'landing_about_description', 'landing_facility_title', 'landing_facility_description'];
+        $keys = ['contact_email', 'contact_phone', 'contact_address', 'social_instagram', 'social_facebook', 'social_youtube', 'landing_about_title', 'landing_about_description', 'landing_facility_title', 'landing_facility_description', 'landing_banner_title', 'landing_banner_subtitle', 'landing_banner_cta_primary', 'landing_banner_cta_secondary', 'landing_banner_show_overlay', 'landing_banner_show_stats'];
 
         foreach ($keys as $key) {
-            $value = $request->input($key);
-            LandingSetting::updateOrCreate(
-                ['key' => $key],
-                ['value' => $value ?? '']
-            );
+            // Only save keys that were actually submitted in the request.
+            // This prevents overwriting existing data with empty strings
+            // when a different tab's form is submitted.
+            if ($request->has($key)) {
+                $value = $request->input($key);
+                LandingSetting::updateOrCreate(
+                    ['key' => $key],
+                    ['value' => $value ?? '']
+                );
+            }
         }
 
         return redirect()->route('settings.landing-page.index')
-            ->with('success', 'Pengaturan kontak & sosial media berhasil disimpan.');
+            ->with('success', 'Pengaturan landing page berhasil disimpan.');
+    }
+
+    public function uploadAboutImage(Request $request)
+    {
+        $request->validate([
+            'about_image' => 'required|image|mimes:png,webp|max:512',
+        ]);
+
+        $file = $request->file('about_image');
+        $filename = 'about-image.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('landing-page', $filename, 'public');
+
+        LandingSetting::updateOrCreate(
+            ['key' => 'landing_about_image'],
+            ['value' => 'storage/' . $path]
+        );
+
+        return redirect()->route('settings.landing-page.index', ['tab' => 'features'])
+            ->with('success', 'Gambar Tentang Kami berhasil diperbarui.');
+    }
+
+    public function uploadBannerImage(Request $request)
+    {
+        $request->validate([
+            'banner_image' => 'required|image|mimes:png,webp|max:512',
+        ]);
+
+        $file = $request->file('banner_image');
+        $filename = 'banner-background.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('landing-page', $filename, 'public');
+
+        LandingSetting::updateOrCreate(
+            ['key' => 'landing_banner_background'],
+            ['value' => 'storage/' . $path]
+        );
+
+        return redirect()->route('settings.landing-page.index', ['tab' => 'banner'])
+            ->with('success', 'Background Banner berhasil diperbarui.');
+    }
+
+    public function deleteAboutImage(Request $request)
+    {
+        $setting = LandingSetting::where('key', 'landing_about_image')->first();
+        if ($setting && $setting->value) {
+            $oldPath = public_path($setting->value);
+            if (file_exists($oldPath)) {
+                unlink($oldPath);
+            }
+            $setting->delete();
+        }
+
+        return redirect()->route('settings.landing-page.index', ['tab' => 'features'])
+            ->with('success', 'Gambar Tentang Kami berhasil dihapus.');
+    }
+
+    public function deleteBannerImage(Request $request)
+    {
+        $setting = LandingSetting::where('key', 'landing_banner_background')->first();
+        if ($setting && $setting->value) {
+            $oldPath = public_path($setting->value);
+            if (file_exists($oldPath)) {
+                unlink($oldPath);
+            }
+            $setting->delete();
+        }
+
+        return redirect()->route('settings.landing-page.index', ['tab' => 'banner'])
+            ->with('success', 'Background Banner berhasil dihapus.');
     }
 }

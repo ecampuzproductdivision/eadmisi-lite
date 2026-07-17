@@ -100,8 +100,8 @@
               <line x1="21" y1="21" x2="15" y2="15" />
             </svg>
           </span>
-          <small class="text-muted">Cari fitur yang tersedia</small>
-          <span class="badge bg-light text-dark border ms-1 px-1 py-0.5" style="font-size: 9px; font-weight: normal;">Ctrl+K</span>
+          <small class="text-muted d-none d-md-inline">Cari fitur yang tersedia</small>
+          <span class="badge bg-light text-dark border ms-1 px-1 py-0.5 d-none d-md-inline" style="font-size: 9px; font-weight: normal;">Ctrl+K</span>
         </button>
       <!-- Light dark mode-->
       <li>

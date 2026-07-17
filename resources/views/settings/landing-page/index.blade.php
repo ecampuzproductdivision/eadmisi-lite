@@ -41,7 +41,7 @@
             <div class="tab-content" id="landingTabsContent">
                 <!-- TAB 1: Banner Utama -->
                 <div class="tab-pane fade show active" id="banner" role="tabpanel">
-                    <div class="card border shadow-sm">
+                    <div class="card border shadow-sm mb-4">
                         <div class="card-header bg-transparent py-3 px-4 d-flex align-items-center">
                             <h5 class="fw-bold mb-0"><i class="ti ti-photo me-2"></i>Pengaturan Banner Utama</h5>
                         </div>
@@ -52,8 +52,48 @@
                                 <div class="col-md-12"><label class="form-label ">Subtitle / Deskripsi</label><textarea name="landing_banner_subtitle" class="form-control" rows="2">{{ $settings['landing_banner_subtitle']->value ?? 'Bergabunglah dengan ribuan mahasiswa lainnya...' }}</textarea></div>
                                 <div class="col-md-4"><label class="form-label ">Teks Tombol Utama</label><input type="text" name="landing_banner_cta_primary" class="form-control" value="{{ $settings['landing_banner_cta_primary']->value ?? 'Daftar Sekarang' }}" maxlength="100"></div>
                                 <div class="col-md-4"><label class="form-label ">Teks Tombol Sekunder</label><input type="text" name="landing_banner_cta_secondary" class="form-control" value="{{ $settings['landing_banner_cta_secondary']->value ?? 'Lihat Jalur' }}" maxlength="100"></div>
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" name="landing_banner_show_overlay" id="showOverlay" value="1" {{ (($settings['landing_banner_show_overlay']->value ?? '1') === '1') ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="showOverlay">Tampilkan Overlay Gelap <small class="text-muted">(background gelap di hero agar teks terbaca)</small></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" name="landing_banner_show_stats" id="showStats" value="1" {{ (($settings['landing_banner_show_stats']->value ?? '1') === '1') ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="showStats">Tampilkan Card Statistik <small class="text-muted">(Telah Bergabung, Mahasiswa Aktif, dll.)</small></label>
+                                    </div>
+                                </div>
                                 <div class="col-12"><button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2"><i class="ti ti-device-floppy"></i> Simpan Banner</button></div>
                             </form>
+                        </div>
+                    </div>
+                    <div class="card border shadow-sm">
+                        <div class="card-header bg-transparent py-3 px-4 d-flex align-items-center">
+                            <h5 class="fw-bold mb-0"><i class="ti ti-wallpaper me-2"></i>Background Image Banner</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form action="{{ route('settings.landing-page.upload-banner-image') }}" method="POST" enctype="multipart/form-data" class="row g-3">
+                                @csrf
+                                @if(isset($settings['landing_banner_background']) && $settings['landing_banner_background']->value)
+                                <div class="col-12">
+                                    <label class="form-label">Preview Saat Ini</label>
+                                    <div class="position-relative d-inline-block">
+                                        <img src="{{ asset($settings['landing_banner_background']->value) }}" alt="Banner Background" class="img-fluid rounded-3 border" style="max-height: 200px; width: auto; object-fit: cover;">
+                                        <button type="submit" form="deleteBannerForm" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle" style="width: 32px; height: 32px;" title="Hapus gambar"><i class="ti ti-trash"></i></button>
+                                    </div>
+                                </div>
+                                @endif
+                                <div class="col-md-6">
+                                    <label class="form-label">Upload Gambar Background</label>
+                                    <input type="file" name="banner_image" class="form-control" accept=".png,.webp" required>
+                                    <div class="form-text">Format: PNG, WEBP. Maks: 500KB. Resolusi responsif (min. 1920x1080px disarankan).</div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2"><i class="ti ti-upload"></i> Unggah Background</button>
+                                </div>
+                            </form>
+                            <form id="deleteBannerForm" action="{{ route('settings.landing-page.delete-banner-image') }}" method="POST" class="d-none">@csrf</form>
                         </div>
                     </div>
                 </div>
@@ -71,6 +111,34 @@
                                 <div class="col-12"><label class="form-label ">Deskripsi Pengantar Section</label><textarea name="landing_about_description" class="form-control" rows="2">{{ $settings['landing_about_description']->value ?? 'Kami berkomitmen untuk memberikan pendidikan berkualitas...' }}</textarea></div>
                                 <div class="col-12"><button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2"><i class="ti ti-device-floppy"></i> Simpan Teks Pengantar</button></div>
                             </form>
+                        </div>
+                    </div>
+                    <div class="card border shadow-sm mb-4">
+                        <div class="card-header bg-transparent py-3 px-4 d-flex align-items-center">
+                            <h5 class="fw-bold mb-0"><i class="ti ti-image me-2"></i>Gambar Sisi Kanan</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form action="{{ route('settings.landing-page.upload-about-image') }}" method="POST" enctype="multipart/form-data" class="row g-3">
+                                @csrf
+                                @if(isset($settings['landing_about_image']) && $settings['landing_about_image']->value)
+                                <div class="col-12">
+                                    <label class="form-label">Preview Saat Ini</label>
+                                    <div class="position-relative d-inline-block">
+                                        <img src="{{ asset($settings['landing_about_image']->value) }}" alt="Tentang Kami" class="img-fluid rounded-3 border" style="max-height: 200px; width: auto; object-fit: cover;">
+                                        <button type="submit" form="deleteAboutImageForm" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle" style="width: 32px; height: 32px;" title="Hapus gambar"><i class="ti ti-trash"></i></button>
+                                    </div>
+                                </div>
+                                @endif
+                                <div class="col-md-6">
+                                    <label class="form-label">Upload Gambar</label>
+                                    <input type="file" name="about_image" class="form-control" accept=".png,.webp" required>
+                                    <div class="form-text">Format: PNG, WEBP. Maks: 500KB. Resolusi responsif (min. 600x500px disarankan).</div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2"><i class="ti ti-upload"></i> Unggah Gambar</button>
+                                </div>
+                            </form>
+                            <form id="deleteAboutImageForm" action="{{ route('settings.landing-page.delete-about-image') }}" method="POST" class="d-none">@csrf</form>
                         </div>
                     </div>
                     <div class="card border shadow-sm">
@@ -297,6 +365,42 @@ function openEditFeature(id, judul, desc, icon, warna) {
   document.getElementById('editFeatureForm').action = '/settings/landing-page/feature/' + id;
   new bootstrap.Modal(document.getElementById('editFeatureModal')).show();
 }
+
+// ── Persist active tab across page reloads ──
+(function() {
+  // Function to activate tab by target selector
+  function activateTab(targetSelector) {
+    if (!targetSelector) return;
+    const tab = document.querySelector('#landingTabs [data-bs-target="' + targetSelector + '"]');
+    if (tab) {
+      const tabInstance = new bootstrap.Tab(tab);
+      tabInstance.show();
+    }
+  }
+
+  // Check URL hash first (e.g. #features), then query param (e.g. ?tab=features)
+  const hash = window.location.hash;
+  if (hash) {
+    activateTab(hash);
+  } else {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (tabParam) {
+      activateTab('#' + tabParam);
+    }
+  }
+  
+  // Update URL hash when tab changes
+  const tabs = document.querySelectorAll('#landingTabs button[data-bs-toggle="tab"]');
+  tabs.forEach(t => {
+    t.addEventListener('shown.bs.tab', function (e) {
+      const target = e.target.getAttribute('data-bs-target');
+      if (target) {
+        history.replaceState(null, null, '#' + target.replace('#', ''));
+      }
+    });
+  });
+})();
 </script>
 @endpush
 @endsection

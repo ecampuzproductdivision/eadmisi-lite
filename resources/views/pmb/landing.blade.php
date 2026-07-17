@@ -15,6 +15,9 @@
     <link rel="stylesheet" href="{{ asset('assets/libs/@tabler/icons-webfont/tabler-icons.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/theme.min.css') }}">
     <style>
+        body {
+            overflow-x: hidden;
+        }
         .btn-primary {
             --ds-btn-hover-bg: #d82939;
             --ds-btn-hover-border-color: #d82939;
@@ -26,6 +29,15 @@
             min-height: 100vh;
             position: relative;
             overflow: hidden;
+        }
+        .hero-section.has-bg-image {
+            background-blend-mode: overlay;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        [data-bs-theme="light"] .hero-section.has-bg-image {
+            background-blend-mode: overlay !important;
         }
         .hero-section::before {
             content: '';
@@ -147,6 +159,20 @@
             background: #f8f9fa;
             color: #1c252e;
         }
+
+        /* ── Fix: navbar mobile toggler terpotong ── */
+        @media (max-width: 991.98px) {
+            .nav-pmb {
+                left: 0;
+                right: 0;
+                width: 100%;
+            }
+            .nav-pmb > .container {
+                max-width: 100%;
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+        }
         .step-number {
             width: 48px; height: 48px;
             display: flex; align-items: center; justify-content: center;
@@ -156,8 +182,11 @@
         [data-bs-theme="dark"] .path-card { border-color: rgba(255,255,255,0.05); }
 
         /* ── Light Mode Tweak ── */
-        [data-bs-theme="light"] .hero-section {
+        [data-bs-theme="light"] .hero-section:not(.has-bg-image) {
             background: linear-gradient(135deg, #ea6267 0%, #d94a4f 50%, #c1383d 100%) !important;
+        }
+        [data-bs-theme="light"] .hero-section.has-bg-image {
+            background-blend-mode: overlay !important;
         }
         [data-bs-theme="light"] .hero-section::before,
         [data-bs-theme="light"] .hero-section::after { display: block; }
@@ -325,30 +354,37 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarPMB">
-                <ul class="navbar-nav ms-auto align-items-lg-center gap-2">
+                <ul class="navbar-nav mx-auto align-items-lg-center gap-1 gap-lg-3">
                     <li class="nav-item"><a class="nav-link" href="#tentang">Tentang</a></li>
                     <li class="nav-item"><a class="nav-link" href="#jalur">Jalur</a></li>
                     <li class="nav-item"><a class="nav-link" href="#alur">Alur PMB</a></li>
                     <li class="nav-item"><a class="nav-link" href="#tanya-dulu">Tanya Dulu</a></li>
                     <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
-                    <li class="nav-item">
-                        <a id="daftarBtn" href="{{ route('register-account') }}" class="btn btn-daftar btn-outline-light d-flex align-items-center gap-2">
-                            Daftar
-                        </a>
-                    </li>
-                    <li class="nav-item ms-lg-2">
-                        <a href="{{ route('login') }}" class="btn btn-primary d-flex align-items-center gap-2">
-                            Login
-                        </a>
-                    </li>
                 </ul>
+                <div class="d-flex align-items-center gap-2 ms-lg-auto mt-2 mt-lg-0">
+                    <a id="daftarBtn" href="{{ route('register-account') }}" class="btn btn-daftar btn-outline-light d-flex align-items-center gap-2 px-3 px-lg-4">
+                        Daftar
+                    </a>
+                    <a href="{{ route('login') }}" class="btn btn-primary d-flex align-items-center gap-2 px-3 px-lg-4">
+                        Login
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
 
+    @php
+        $heroBg = isset($settings['landing_banner_background']) && $settings['landing_banner_background']->value
+            ? asset($settings['landing_banner_background']->value)
+            : null;
+    @endphp
+    @php
+        $showOverlay = ($settings['landing_banner_show_overlay']->value ?? '1') === '1';
+        $showStats = ($settings['landing_banner_show_stats']->value ?? '1') === '1';
+    @endphp
     <!-- ═══ HERO SECTION ═══ -->
-    <section class="hero-section d-flex align-items-center">
-        <div class="hero-overlay"></div>
+    <section class="hero-section d-flex align-items-center{{ $heroBg ? ' has-bg-image' : '' }}"@if($heroBg) style="background-image: url('{{ $heroBg }}');"@endif>
+        @if($showOverlay)<div class="hero-overlay"></div>@endif
         <div class="hero-accent-1"></div>
         <div class="hero-accent-2"></div>
         <div class="container position-relative" style="z-index: 1;">
@@ -372,6 +408,7 @@
                         </a>
                     </div>
                 </div>
+                @if($showStats)
                 <div class="col-lg-5 d-none d-lg-flex justify-content-center">
                     <div class="floating-card hero-entrance hero-entrance-delay-4">
                         <div class="card shadow-lg border-0" style="width: 320px; border-radius: 20px;">
@@ -392,6 +429,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
             </div>
         </div>
     </section>
@@ -460,7 +498,7 @@
                     </div>
                 </div>
                 <div class="col-lg-6 animate-from-right">
-                    <img src="https://placehold.co/600x500/f0f0f0/333?text=Kampus+Kami" alt="Kampus" class="img-fluid rounded-4 shadow">
+                    <img src="{{ isset($settings['landing_about_image']) && $settings['landing_about_image']->value ? asset($settings['landing_about_image']->value) : 'https://placehold.co/600x500/f0f0f0/333?text=Kampus+Kami' }}" alt="Kampus" class="img-fluid w-100" style="object-fit: cover; min-height: 300px; max-height: 500px;">
                 </div>
             </div>
         </div>

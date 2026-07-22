@@ -16,14 +16,19 @@ return new class extends Migration
             $table->string('kode_icon', 100)->default('ti-device-analytics')->after('akreditasi');
         });
 
-        // ─── Rename columns in landing_features using raw SQL ───
-        // Use raw SQL to avoid MySQL/MariaDB version compatibility issues
-        // with information_schema.columns generation_expression
-        DB::statement('ALTER TABLE landing_features CHANGE COLUMN title judul_poin VARCHAR(255) DEFAULT NULL');
-        DB::statement('ALTER TABLE landing_features CHANGE COLUMN description deskripsi_poin TEXT DEFAULT NULL');
-        DB::statement('ALTER TABLE landing_features CHANGE COLUMN icon nama_icon VARCHAR(100) DEFAULT NULL');
+        // ─── Rename columns in landing_features ───
+        // Drop old columns and add new ones (compatible with all databases)
         Schema::table('landing_features', function (Blueprint $table) {
-            $table->string('warna_skema', 50)->default('danger')->after('nama_icon');
+            if (Schema::hasColumn('landing_features', 'title')) {
+                $table->renameColumn('title', 'judul_poin');
+            }
+            if (Schema::hasColumn('landing_features', 'description')) {
+                $table->renameColumn('description', 'deskripsi_poin');
+            }
+            if (Schema::hasColumn('landing_features', 'icon')) {
+                $table->renameColumn('icon', 'nama_icon');
+            }
+            $table->string('warna_skema', 50)->default('danger');
         });
     }
 
@@ -40,13 +45,18 @@ return new class extends Migration
         });
 
         // Revert landing_features
-        // Use raw SQL for rename to avoid MySQL/MariaDB version compatibility issues
-        DB::statement('ALTER TABLE landing_features CHANGE COLUMN judul_poin title VARCHAR(255) DEFAULT NULL');
-        DB::statement('ALTER TABLE landing_features CHANGE COLUMN deskripsi_poin description TEXT DEFAULT NULL');
-        DB::statement('ALTER TABLE landing_features CHANGE COLUMN nama_icon icon VARCHAR(100) DEFAULT NULL');
         Schema::table('landing_features', function (Blueprint $table) {
             if (Schema::hasColumn('landing_features', 'warna_skema')) {
                 $table->dropColumn('warna_skema');
+            }
+            if (Schema::hasColumn('landing_features', 'judul_poin')) {
+                $table->renameColumn('judul_poin', 'title');
+            }
+            if (Schema::hasColumn('landing_features', 'deskripsi_poin')) {
+                $table->renameColumn('deskripsi_poin', 'description');
+            }
+            if (Schema::hasColumn('landing_features', 'nama_icon')) {
+                $table->renameColumn('nama_icon', 'icon');
             }
         });
     }

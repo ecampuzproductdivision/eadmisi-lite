@@ -150,24 +150,26 @@ class FormPendaftaranController extends Controller
         if ($field->isCoreField()) {
             return response()->json(['success' => false, 'message' => 'Field sistem tidak dapat diedit.'], 403);
         }
-        $validated = $request->validate([
-            'field_label'   => 'required|string|max:255',
-            'placeholder'   => 'nullable|string|max:255',
-            'help_text'     => 'nullable|string',
-            'section'       => 'nullable|string|max:100',
-            'width'         => 'nullable|string|max:20',
-            'is_required'   => 'boolean',
-            'default_value' => 'nullable|string',
-            'options'       => 'nullable|array',
-            'options.*'     => 'string|max:255',
-        ]);
-        $validated['is_required'] = $request->boolean('is_required');
+        
+        $data = [
+            'field_label'   => $request->field_label ?: $field->field_label,
+            'placeholder'   => $request->placeholder,
+            'help_text'     => $request->help_text,
+            'section'       => $request->section,
+            'width'         => $request->width ?: 'col-12',
+            'default_value' => $request->default_value,
+        ];
+        
+        // Handle is_required from FormData checkbox (sends '1' or '0' as string)
+        $data['is_required'] = in_array($request->input('is_required'), ['1', 'true', 1, true], true);
+        
         if ($request->has('options') && is_array($request->options)) {
-            $validated['options'] = array_values(array_filter($request->options));
+            $data['options'] = array_values(array_filter($request->options, function($v) { return !empty($v); }));
         } else {
-            $validated['options'] = null;
+            $data['options'] = null;
         }
-        $field->update($validated);
+        
+        $field->update($data);
         return response()->json(['success' => true, 'message' => 'Field berhasil diperbarui', 'field' => $field]);
     }
 
@@ -203,6 +205,13 @@ class FormPendaftaranController extends Controller
         $copy->save();
         $this->resortFields($original->form_id);
         return response()->json(['success' => true, 'message' => 'Field berhasil diduplikasi']);
+    }
+
+    public function editField($id)
+    {
+        $field = FormField::findOrFail($id);
+        $field->load('form');
+        return response()->json(['success' => true, 'field' => $field]);
     }
 
     public function destroyField($id)

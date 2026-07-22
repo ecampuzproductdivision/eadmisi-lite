@@ -305,11 +305,12 @@ Route::middleware(['auth'])->group(function () {
         // Form Builder (AJAX routes untuk form builder)
         Route::prefix('settings/form-builder')->name('settings.form-builder.')->group(function () {
             Route::get('/fields/{formId}', [FormPendaftaranController::class, 'getFields'])->name('get-fields');
+            Route::get('/{id}/edit', [FormPendaftaranController::class, 'editField'])->name('edit');
             Route::post('/', [FormPendaftaranController::class, 'storeField'])->name('store');
             Route::post('/reorder', [FormPendaftaranController::class, 'reorderFields'])->name('reorder');
             Route::post('/{id}/toggle-status', [FormPendaftaranController::class, 'toggleFieldStatus'])->name('toggle-status');
             Route::post('/{id}/duplicate', [FormPendaftaranController::class, 'duplicateField'])->name('duplicate');
-            Route::put('/{id}', [FormPendaftaranController::class, 'updateField'])->name('update');
+            Route::match(['post', 'put'], '/{id}/update', [FormPendaftaranController::class, 'updateField'])->name('update');
             Route::delete('/{id}', [FormPendaftaranController::class, 'destroyField'])->name('destroy');
         });
     });

@@ -13,7 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement('ALTER TABLE user_onboarding_progress CHANGE COLUMN completed_steps tutorials_progress LONGTEXT DEFAULT NULL');
+        Schema::table('user_onboarding_progress', function (Blueprint $table) {
+            if (Schema::hasColumn('user_onboarding_progress', 'completed_steps')) {
+                $table->renameColumn('completed_steps', 'tutorials_progress');
+            }
+        });
     }
 
     /**
@@ -21,6 +25,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement('ALTER TABLE user_onboarding_progress CHANGE COLUMN tutorials_progress completed_steps LONGTEXT DEFAULT NULL');
+        Schema::table('user_onboarding_progress', function (Blueprint $table) {
+            if (Schema::hasColumn('user_onboarding_progress', 'tutorials_progress')) {
+                $table->renameColumn('tutorials_progress', 'completed_steps');
+            }
+        });
     }
 };

@@ -340,10 +340,25 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 const fieldTypes = @json($fieldTypes);
 const formId = {{ $form->id }};
 let editingFieldId = null;
+
+function confirmAsync(msg, callback) {
+  Swal.fire({
+    title: 'Konfirmasi',
+    text: msg,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Ya',
+    cancelButtonText: 'Batal',
+    reverseButtons: true
+  }).then(function(result) {
+    callback(result.isConfirmed);
+  });
+}
 
 document.addEventListener('DOMContentLoaded', function() {
   // Single unified sortable - all fields mix freely
@@ -392,23 +407,64 @@ function openAddModal(type) {
   document.getElementById('field_method').value = 'POST';
   document.getElementById('field_is_system').value = '0';
   document.getElementById('fieldForm').reset();
+  document.getElementById('field_label').value = '';
+  document.getElementById('field_placeholder').value = '';
+  document.getElementById('field_default_value').value = '';
+  document.getElementById('field_help_text').value = '';
   document.getElementById('field_name').value = '';
   delete document.getElementById('field_name').dataset.manual;
   document.getElementById('fieldModalLabel').innerHTML = '<i class="ti ti-plus me-2"></i>Tambah Field';
   document.getElementById('fieldSubmitBtn').innerHTML = '<i class="ti ti-device-floppy me-1"></i> Simpan Field';
   updateFieldTypeUI(type); toggleOptions(type);
+  // Reset options list to one empty option
+  const ol = document.getElementById('optionsList'); ol.innerHTML = '';
+  addOption('');
   new bootstrap.Modal(document.getElementById('fieldModal')).show();
 }
 
-function openEditModal(id) { showToast('info', 'Edit field akan segera hadir.'); }
+function openEditModal(id) {
+  // Fetch field data and open modal for editing
+  fetch('/settings/form-builder/' + id + '/edit', {
+    method:'GET',
+    headers:{'Accept':'application/json','X-Requested-With':'XMLHttpRequest'}
+  }).then(function(r) { return r.json(); }).then(function(d){
+    if(!d.success) return showToast('danger', d.message || 'Gagal memuat data field');
+    var f = d.field;
+    editingFieldId = f.id;
+    document.getElementById('field_type_input').value = f.field_type;
+    document.getElementById('field_method').value = 'PUT';
+    document.getElementById('field_is_system').value = f.is_system ? '1' : '0';
+    document.getElementById('field_label').value = f.field_label;
+    document.getElementById('field_name').value = f.field_name;
+    document.getElementById('field_name').dataset.manual = '1';
+    document.getElementById('field_placeholder').value = f.placeholder || '';
+    document.getElementById('field_default_value').value = f.default_value || '';
+    document.getElementById('field_section').value = f.section || '';
+    document.getElementById('field_width').value = f.width || 'col-12';
+    document.getElementById('field_help_text').value = f.help_text || '';
+    document.getElementById('field_required').checked = !!f.is_required;
+    document.getElementById('fieldModalLabel').innerHTML = '<i class="ti ti-edit me-2"></i>Edit Field';
+    document.getElementById('fieldSubmitBtn').innerHTML = '<i class="ti ti-device-floppy me-1"></i> Update Field';
+    updateFieldTypeUI(f.field_type);
+    toggleOptions(f.field_type);
+    // Populate options
+    var ol = document.getElementById('optionsList'); ol.innerHTML = '';
+    if(f.options && f.options.length){
+      f.options.forEach(function(o){ addOption(o); });
+    } else {
+      addOption('');
+    }
+    new bootstrap.Modal(document.getElementById('fieldModal')).show();
+  }).catch(function(){ showToast('danger','Gagal memuat data field'); });
+}
 
 function addPddiktiField(key) {
-  // Add a PDDIKTI standard field via AJAX - marked as system
-  const pddiktiFields = @json(\App\Models\FormField::PDDIKTI_STANDARD_FIELDS);
-  const config = pddiktiFields[key];
+  // Add a PDDIKTI standard field via AJAX
+  var pddiktiFields = @json(\App\Models\FormField::PDDIKTI_STANDARD_FIELDS);
+  var config = pddiktiFields[key];
   if (!config) return showToast('danger', 'Field PDDIKTI tidak ditemukan');
 
-  const formData = new FormData();
+  var formData = new FormData();
   formData.append('form_id', formId);
   formData.append('field_type', config.field_type);
   formData.append('field_name', key);
@@ -418,7 +474,7 @@ function addPddiktiField(key) {
   formData.append('section', config.section || '');
   formData.append('width', config.width || 'col-12');
   formData.append('is_required', config.is_required ? '1' : '0');
-  formData.append('is_system', '0');
+  formData.append('is_system', '1');
   if (config.options) {
     config.options.forEach(function(opt) { formData.append('options[]', opt); });
   }
@@ -427,14 +483,14 @@ function addPddiktiField(key) {
     method:'POST',
     headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json', 'X-Requested-With':'XMLHttpRequest'},
     body: formData
-  }).then(r=>r.json()).then(d=>{
-    if(d.success) { showToast('success','Field PDDIKTI "'+config.field_label+'" ditambahkan!'); setTimeout(()=>location.reload(),500); }
+  }).then(function(r) { return r.json(); }).then(function(d){
+    if(d.success) { showToast('success','Field PDDIKTI "'+config.field_label+'" ditambahkan!'); setTimeout(function(){ location.reload(); },500); }
     else showToast('danger', d.message||'Gagal');
-  }).catch(()=>showToast('danger','Gagal menambahkan field PDDIKTI'));
+  }).catch(function(){ showToast('danger','Gagal menambahkan field PDDIKTI'); });
 }
 
 function updateFieldTypeUI(type) {
-  const c=fieldTypes[type]||fieldTypes.text, d=document.getElementById('fieldTypeIconDisplay');
+  var c=fieldTypes[type]||fieldTypes.text, d=document.getElementById('fieldTypeIconDisplay');
   d.style.background=c.color+'15'; d.querySelector('i').className=c.icon+' fs-4'; d.querySelector('i').style.color=c.color;
   document.getElementById('fieldTypeLabelDisplay').textContent=c.label;
   document.getElementById('fieldTypeNameDisplay').textContent=type;
@@ -442,81 +498,126 @@ function updateFieldTypeUI(type) {
 
 function toggleOptions(type) { document.getElementById('optionsContainer').classList.toggle('d-none',!['select','radio','checkbox'].includes(type)); }
 
-function addOption(v='') {
-  const l=document.getElementById('optionsList'), d=document.createElement('div');
+function addOption(v) {
+  if(v === undefined) v = '';
+  var l=document.getElementById('optionsList'), d=document.createElement('div');
   d.className='input-group mb-2 option-item';
-  d.innerHTML=`<span class="input-group-text bg-white"><i class="ti ti-grip-vertical text-muted"></i></span><input type="text" name="options[]" class="form-control" placeholder="Opsi ${l.children.length+1}" value="${v}"><button type="button" class="btn btn-outline-danger" onclick="removeOption(this)"><i class="ti ti-x"></i></button>`;
+  d.innerHTML='<span class="input-group-text bg-white"><i class="ti ti-grip-vertical text-muted"></i></span><input type="text" name="options[]" class="form-control" placeholder="Opsi ' + (l.children.length+1) + '" value="' + v + '"><button type="button" class="btn btn-outline-danger" onclick="removeOption(this)"><i class="ti ti-x"></i></button>';
   l.appendChild(d);
 }
+
 function removeOption(b){if(document.querySelectorAll('.option-item').length>1)b.closest('.option-item').remove();}
 
+// Handle both add and edit via the form submit
 document.getElementById('fieldForm').addEventListener('submit', function(e) {
   e.preventDefault();
-  const formData = new FormData(this);
+  var formData = new FormData(this);
   formData.append('form_id', formId);
-  fetch('{{ route("settings.form-builder.store") }}', { method:'POST', headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json', 'X-Requested-With':'XMLHttpRequest'}, body:formData })
-    .then(r=>r.json()).then(d=>{if(d.success){showToast('success','Field berhasil ditambahkan!');bootstrap.Modal.getInstance(document.getElementById('fieldModal')).hide();setTimeout(()=>location.reload(),500);}else{showToast('danger',d.message||'Gagal menyimpan');console.error(d);}})
-    .catch((err)=>{showToast('danger','Gagal menyimpan field');console.error(err);});
+  var method = document.getElementById('field_method').value;
+
+  if (method === 'PUT' && editingFieldId) {
+    // UPDATE: POST to the /{id}/update route
+    fetch('/settings/form-builder/' + editingFieldId + '/update', {
+      method:'POST',
+      headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json', 'X-Requested-With':'XMLHttpRequest'},
+      body: formData
+    })
+    .then(function(r) { return r.json(); }).then(function(d){
+      if(d.success){
+        showToast('success','Field berhasil diperbarui!');
+        bootstrap.Modal.getInstance(document.getElementById('fieldModal')).hide();
+        setTimeout(function(){ location.reload(); },500);
+      }else{
+        showToast('danger',d.message||'Gagal menyimpan');
+        console.error(d);
+      }
+    })
+    .catch(function(err){ showToast('danger','Gagal menyimpan field'); console.error(err); });
+  } else {
+    // CREATE: POST to store route
+    fetch('{{ route("settings.form-builder.store") }}', {
+      method:'POST',
+      headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json', 'X-Requested-With':'XMLHttpRequest'},
+      body: formData
+    })
+    .then(function(r) { return r.json(); }).then(function(d){
+      if(d.success){
+        showToast('success','Field berhasil ditambahkan!');
+        bootstrap.Modal.getInstance(document.getElementById('fieldModal')).hide();
+        setTimeout(function(){ location.reload(); },500);
+      }else{
+        showToast('danger',d.message||'Gagal menyimpan');
+        console.error(d);
+      }
+    })
+    .catch(function(err){ showToast('danger','Gagal menyimpan field'); console.error(err); });
+  }
 });
 
-async duplicateField(id) {
-  if (!(await confirmAsync('Duplikat field ini?'))return;
-  fetch(`/settings/form-builder/${id}/duplicate`,{method:'POST',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'}})
-    .then(r=>r.json()).then(d=>{if(d.success){showToast('success','Field diduplikasi!');setTimeout(()=>location.reload(),500);}}).catch(()=>showToast('danger','Gagal'));
+function duplicateField(id) {
+  confirmAsync('Duplikat field ini?', function(confirmed) {
+    if (!confirmed) return;
+    fetch('/settings/form-builder/' + id + '/duplicate',{method:'POST',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'}})
+      .then(function(r){ return r.json(); }).then(function(d){ if(d.success){ showToast('success','Field diduplikasi!'); setTimeout(function(){ location.reload(); },500); } }).catch(function(){ showToast('danger','Gagal'); });
+  });
 }
 
 function toggleField(id) {
-  fetch(`/settings/form-builder/${id}/toggle-status`,{method:'POST',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'}})
-    .then(r=>r.json()).then(d=>{if(d.success){showToast('success','Status diubah!');setTimeout(()=>location.reload(),300);}}).catch(()=>showToast('danger','Gagal'));
+  fetch('/settings/form-builder/' + id + '/toggle-status',{method:'POST',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'}})
+    .then(function(r){ return r.json(); }).then(function(d){ if(d.success){ showToast('success','Status diubah!'); setTimeout(function(){ location.reload(); },300); } }).catch(function(){ showToast('danger','Gagal'); });
 }
 
-async deleteField(id) {
-  if (!(await confirmAsync('Hapus field ini?'))return;
-  fetch(`/settings/form-builder/${id}`,{method:'DELETE',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'}})
-    .then(r=>r.json()).then(d=>{if(d.success){showToast('success','Field dihapus!');setTimeout(()=>location.reload(),300);}}).catch(()=>showToast('danger','Gagal'));
+function deleteField(id) {
+  confirmAsync('Hapus field ini?', function(confirmed) {
+    if (!confirmed) return;
+    fetch('/settings/form-builder/' + id,{method:'DELETE',headers:{'X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'}})
+      .then(function(r){ return r.json(); }).then(function(d){ if(d.success){ showToast('success','Field dihapus!'); setTimeout(function(){ location.reload(); },300); } }).catch(function(){ showToast('danger','Gagal'); });
+  });
 }
 
 function previewForm() {
-  const m=new bootstrap.Modal(document.getElementById('previewModal'));m.show();
-  fetch(`/settings/form-builder/fields/${formId}`).then(r=>r.json()).then(d=>{if(d.success)renderPreview(d.fields);else document.getElementById('previewBody').innerHTML='<div class="alert alert-danger">Gagal</div>';})
-    .catch(()=>document.getElementById('previewBody').innerHTML='<div class="alert alert-danger">Gagal</div>');
+  var m=new bootstrap.Modal(document.getElementById('previewModal'));m.show();
+  fetch('/settings/form-builder/fields/' + formId).then(function(r){ return r.json(); }).then(function(d){
+    if(d.success) renderPreview(d.fields);
+    else document.getElementById('previewBody').innerHTML='<div class="alert alert-danger">Gagal</div>';
+  }).catch(function(){ document.getElementById('previewBody').innerHTML='<div class="alert alert-danger">Gagal</div>'; });
 }
 
 function renderPreview(fields) {
-  const body=document.getElementById('previewBody');
-  const keys=Object.keys(fields);
-  if(!keys.length||keys.every(k=>!fields[k].length)){body.innerHTML='<div class="text-center py-5"><i class="ti ti-file-off text-muted fs-1"></i><p class="mt-2 text-muted">Belum ada field</p></div>';return;}
-  let html=`<div class="card border-1 shadow-sm" style="border-top:8px solid #f63a4c;"><div class="card-body p-4"><div class="d-flex align-items-center gap-3 mb-4"><div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width:40px;height:40px;"><i class="ti ti-file-text text-primary"></i></div><div><h4 class="fw-bold mb-0">{{ $form->nama }}</h4></div></div><form><div class="row g-3">`;
-  keys.forEach(s=>{
-    const sf=fields[s]; if(!sf||!sf.length)return;
-    if(s) html+=`<div class="col-12"><hr><h6 class="fw-bold text-uppercase small text-muted">${s}</h6></div>`;
-    sf.forEach(f=>{
+  var body=document.getElementById('previewBody');
+  var keys=Object.keys(fields);
+  if(!keys.length||keys.every(function(k){ return !fields[k].length; })){body.innerHTML='<div class="text-center py-5"><i class="ti ti-file-off text-muted fs-1"></i><p class="mt-2 text-muted">Belum ada field</p></div>';return;}
+  var html='<div class="card border-1 shadow-sm" style="border-top:8px solid #f63a4c;"><div class="card-body p-4"><div class="d-flex align-items-center gap-3 mb-4"><div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center" style="width:40px;height:40px;"><i class="ti ti-file-text text-primary"></i></div><div><h4 class="fw-bold mb-0">{{ $form->nama }}</h4></div></div><form><div class="row g-3">';
+  keys.forEach(function(s){
+    var sf=fields[s]; if(!sf||!sf.length)return;
+    if(s) html+='<div class="col-12"><hr><h6 class="fw-bold text-uppercase small text-muted">' + s + '</h6></div>';
+    sf.forEach(function(f){
       if(!f.is_active)return;
-      const r=f.is_required?'<span class="text-danger">*</span>':'';
-      html+=`<div class="${f.width||'col-12'} mb-2"><label class="form-label fw-semibold small">${f.field_label} ${r}</label>`;
+      var r=f.is_required?'<span class="text-danger">*</span>':'';
+      html+='<div class="' + (f.width||'col-12') + ' mb-2"><label class="form-label fw-semibold small">' + f.field_label + ' ' + r + '</label>';
       switch(f.field_type){
-        case'textarea':html+=`<textarea class="form-control" rows="3" placeholder="${f.placeholder||''}"></textarea>`;break;
-        case'select':html+=`<select class="form-select"><option value="">${f.placeholder||'Pilih...'}</option>`;(f.options||[]).forEach(o=>html+=`<option>${o}</option>`);html+=`</select>`;break;
-        case'radio':(f.options||[]).forEach((o,i)=>{html+=`<div class="form-check"><input class="form-check-input" type="radio" name="${f.field_name}" id="${f.field_name}_${i}"><label class="form-check-label" for="${f.field_name}_${i}">${o}</label></div>`;});break;
-        case'checkbox':(f.options||[]).forEach((o,i)=>{html+=`<div class="form-check"><input class="form-check-input" type="checkbox" id="${f.field_name}_${i}"><label class="form-check-label" for="${f.field_name}_${i}">${o}</label></div>`;});break;
-        case'date':html+=`<input type="date" class="form-control">`;break;
-        case'number':html+=`<input type="number" class="form-control" placeholder="${f.placeholder||''}">`;break;
-        case'file':html+=`<input type="file" class="form-control">`;break;
-        case'color':html+=`<input type="color" class="form-control form-control-color" style="max-width:60px;">`;break;
-        default:html+=`<input type="${f.field_type==='email'?'email':f.field_type==='tel'?'tel':'text'}" class="form-control" placeholder="${f.placeholder||''}">`;
+        case'textarea':html+='<textarea class="form-control" rows="3" placeholder="' + (f.placeholder||'') + '"></textarea>';break;
+        case'select':html+='<select class="form-select"><option value="">' + (f.placeholder||'Pilih...') + '</option>';(f.options||[]).forEach(function(o){ html+='<option>' + o + '</option>'; });html+='</select>';break;
+        case'radio':(f.options||[]).forEach(function(o,i){ html+='<div class="form-check"><input class="form-check-input" type="radio" name="' + f.field_name + '" id="' + f.field_name + '_' + i + '"><label class="form-check-label" for="' + f.field_name + '_' + i + '">' + o + '</label></div>'; });break;
+        case'checkbox':(f.options||[]).forEach(function(o,i){ html+='<div class="form-check"><input class="form-check-input" type="checkbox" id="' + f.field_name + '_' + i + '"><label class="form-check-label" for="' + f.field_name + '_' + i + '">' + o + '</label></div>'; });break;
+        case'date':html+='<input type="date" class="form-control">';break;
+        case'number':html+='<input type="number" class="form-control" placeholder="' + (f.placeholder||'') + '">';break;
+        case'file':html+='<input type="file" class="form-control">';break;
+        case'color':html+='<input type="color" class="form-control form-control-color" style="max-width:60px;">';break;
+        default:html+='<input type="' + (f.field_type==='email'?'email':f.field_type==='tel'?'tel':'text') + '" class="form-control" placeholder="' + (f.placeholder||'') + '">';
       }
-      if(f.help_text)html+=`<small class="text-muted">${f.help_text}</small>`;
-      html+=`</div>`;
+      if(f.help_text)html+='<small class="text-muted">' + f.help_text + '</small>';
+      html+='</div>';
     });
   });
-  html+=`</div></form></div></div>`;body.innerHTML=html;
+  html+='</div></form></div></div>';body.innerHTML=html;
 }
 
 function showToast(type,msg){
-  const c=document.createElement('div');c.style.cssText='position:fixed;top:20px;right:20px;z-index:9999;max-width:400px;';
-  const icon=type==='success'?'circle-check':type==='danger'?'alert-triangle':'info-circle';
-  c.innerHTML=`<div class="alert alert-${type} alert-dismissible fade show shadow-lg border-0" role="alert"><i class="ti ti-${icon} me-2"></i>${msg}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>`;
-  document.body.appendChild(c);setTimeout(()=>{c.querySelector('.alert').classList.remove('show');setTimeout(()=>c.remove(),300);},3000);
+  var c=document.createElement('div');c.style.cssText='position:fixed;top:20px;right:20px;z-index:9999;max-width:400px;';
+  var icon=type==='success'?'circle-check':type==='danger'?'alert-triangle':'info-circle';
+  c.innerHTML='<div class="alert alert-' + type + ' alert-dismissible fade show shadow-lg border-0" role="alert"><i class="ti ti-' + icon + ' me-2"></i>' + msg + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>';
+  document.body.appendChild(c);setTimeout(function(){ c.querySelector('.alert').classList.remove('show');setTimeout(function(){ c.remove(); },300); },3000);
 }
 </script>
 @endpush

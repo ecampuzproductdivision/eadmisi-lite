@@ -70,7 +70,7 @@ class PaketSoalController extends Controller
         $validator = Validator::make($request->all(), [
             'nama_paket' => 'required|string|max:200',
             'deskripsi'  => 'nullable|string',
-            'status_aktif' => 'boolean',
+            'status_aktif' => 'nullable',
         ]);
 
         if ($validator->fails()) {
@@ -79,17 +79,10 @@ class PaketSoalController extends Controller
                 ->withInput();
         }
 
-        // If trying to activate, validate total skor == 100
-        if ($request->boolean('status_aktif')) {
-            $totalSkor = $paketSoal->soalUjians()->sum('skor');
-            if ($totalSkor !== 100) {
-                return redirect()->back()
-                    ->withErrors(['status_aktif' => 'Total skor soal dalam paket harus tepat 100 untuk dapat diaktifkan. Saat ini: ' . $totalSkor])
-                    ->withInput();
-            }
-        }
+        $data = $request->only(['nama_paket', 'deskripsi']);
+        $data['status_aktif'] = $request->has('status_aktif') ? (bool) $request->status_aktif : false;
 
-        $paketSoal->update($request->all());
+        $paketSoal->update($data);
 
         ActivityLogger::log('update', 'paket_soal', 'Updated exam package ID: ' . $paketSoal->id);
 
@@ -118,20 +111,12 @@ class PaketSoalController extends Controller
     public function toggleStatus(PaketSoal $paketSoal)
     {
         $newStatus = !$paketSoal->status_aktif;
-
-        // If activating, validate total skor == 100
-        if ($newStatus) {
-            $totalSkor = $paketSoal->soalUjians()->sum('skor');
-            if ($totalSkor !== 100) {
-                return redirect()->route('paket-soal.index')
-                    ->withErrors(['status_aktif' => 'Total skor soal dalam paket harus tepat 100 untuk dapat diaktifkan. Saat ini: ' . $totalSkor]);
-            }
-        }
-
         $paketSoal->update(['status_aktif' => $newStatus]);
 
+        ActivityLogger::log('update', 'paket_soal', 'Toggled status of package ID: ' . $paketSoal->id . ' to ' . ($newStatus ? 'active' : 'inactive'));
+
         return redirect()->route('paket-soal.index')
-            ->with('success', 'Status paket soal berhasil diubah.');
+            ->with('success', 'Status paket soal berhasil ' . ($newStatus ? 'diaktifkan' : 'dinonaktifkan') . '.');
     }
 
     // ========================================================================

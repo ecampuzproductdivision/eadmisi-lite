@@ -230,6 +230,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('settings/syarat-berkas/{templateBerkas}/store-dokumen', [SyaratBerkasController::class, 'storeDokumen'])->name('syarat-berkas.store-dokumen');
         Route::put('settings/syarat-berkas/{templateBerkas}/update-dokumen/{syaratDokumen}', [SyaratBerkasController::class, 'updateDokumen'])->name('syarat-berkas.update-dokumen');
         Route::delete('settings/syarat-berkas/{templateBerkas}/destroy-dokumen/{syaratDokumen}', [SyaratBerkasController::class, 'destroyDokumen'])->name('syarat-berkas.destroy-dokumen');
+        Route::delete('settings/syarat-berkas/document-item/{syaratDokumen}', function(\App\Models\SyaratDokumen $syaratDokumen) {
+            $templateBerkas = \App\Models\TemplateBerkas::find($syaratDokumen->template_berkas_id);
+            return app(\App\Http\Controllers\SyaratBerkasController::class)->destroyDokumen($templateBerkas, $syaratDokumen);
+        })->name('syarat-berkas.destroy-dokumen-item');
         Route::get('settings/syarat-berkas/{syaratDokumen}/edit-dokumen', [SyaratBerkasController::class, 'edit'])->name('syarat-berkas.edit-dokumen');
         Route::get('settings/logs', [ActivityLogController::class, 'index'])->name('logs.index');
         Route::get('settings/tagihan', [AdminTagihanController::class, 'index'])->name('settings.tagihan.index');

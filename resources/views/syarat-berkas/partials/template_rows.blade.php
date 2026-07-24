@@ -17,9 +17,28 @@
       ['url' => route('syarat-berkas.kelola-dokumen', $t->id), 'icon' => 'ti ti-list-details', 'label' => 'Kelola Dokumen', 'title' => 'Kelola Dokumen'],
       ['divider' => true],
       ['modal' => '#modalEditTemplate' . $t->id, 'icon' => 'ti ti-edit', 'label' => 'Edit', 'title' => 'Edit Template'],
-      ['url' => route('syarat-berkas.toggle-status', $t->id), 'icon' => 'ti ti-' . ($t->status_aktif ? 'player-pause' : 'player-play'), 'label' => $t->status_aktif ? 'Nonaktifkan' : 'Aktifkan', 'method' => 'POST', 'confirm' => ($t->status_aktif ? 'Nonaktifkan' : 'Aktifkan') . ' template ini?'],
+      [
+        'url' => route('syarat-berkas.toggle-status', $t->id),
+        'icon' => 'ti ti-' . ($t->status_aktif ? 'player-pause' : 'player-play'),
+        'label' => $t->status_aktif ? 'Nonaktifkan' : 'Aktifkan',
+        'method' => 'POST',
+        'confirm' => ($t->status_aktif ? 'Nonaktifkan' : 'Aktifkan') . ' template ini?',
+        'confirm_text' => $t->status_aktif ? 'Ya, Nonaktifkan' : 'Ya, Aktifkan',
+        'confirm_button_class' => $t->status_aktif ? 'btn-warning' : 'btn-success',
+        'confirm_icon' => $t->status_aktif ? 'alert-triangle' : 'circle-check',
+        'confirm_icon_color' => $t->status_aktif ? 'text-warning' : 'text-success'
+      ],
       ['divider' => true],
-      ['url' => route('syarat-berkas.destroy', $t->id), 'icon' => 'ti ti-trash', 'label' => 'Hapus', 'class' => 'text-danger', 'method' => 'DELETE', 'confirm' => 'Hapus template beserta semua dokumen di dalamnya?'],
+      [
+        'url' => route('syarat-berkas.destroy', $t->id),
+        'icon' => 'ti ti-trash',
+        'label' => 'Hapus',
+        'class' => 'text-danger',
+        'method' => 'DELETE',
+        'confirm' => 'Hapus template beserta semua dokumen di dalamnya?',
+        'confirm_text' => 'Ya, Hapus!',
+        'confirm_button_class' => 'btn-danger'
+      ],
     ]])
 
     <!-- Modal Edit Template -->

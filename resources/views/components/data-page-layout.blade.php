@@ -20,6 +20,18 @@
         </div>
     @endif
 
+    @if(isset($errors) && $errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="ti ti-alert-triangle fs-4 me-2"></i>
+            <ul class="mb-0 ps-3">
+                @foreach($errors->all() as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     {{ $slot ?? '' }}
 
     <div class="sticky-header-filter">

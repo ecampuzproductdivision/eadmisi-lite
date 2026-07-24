@@ -18,34 +18,35 @@
       <span class="badge bg-secondary-subtle text-secondary px-3 py-2">Opsional</span>
     @endif
   </td>
-  <td class="text-center">
-    <div class="dropdown">
-        <button class="btn btn-sm btn-light border dropdown-actions-btn" type="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" title="Actions">
-            <i class="ti ti-dots-vertical fs-5"></i>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-            <li>
-                <a href="#" class="dropdown-item edit-dokumen-btn"
-                   data-id="{{ $d->id }}"
-                   data-nama="{{ $d->nama_dokumen }}"
-                   data-ekstensi="{{ $d->ekstensi_diizinkan }}"
-                   data-maxsize="{{ $d->max_size }}"
-                   data-wajib="{{ $d->status_wajib ? 'true' : 'false' }}"
-                   data-urutan="{{ $d->urutan }}">
-                    <i class="ti ti-edit me-2"></i> Edit
-                </a>
-            </li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-                <form action="{{ route('syarat-berkas.destroy-dokumen', [request()->route('templateBerkas'), $d->id]) }}" method="POST" onsubmit="return confirmSubmit(event, 'Hapus dokumen ini?')">
-                    @csrf @method('DELETE')
-                    <button type="submit" class="dropdown-item text-danger">
-                        <i class="ti ti-trash me-2"></i> Hapus
-                    </button>
-                </form>
-            </li>
-        </ul>
-    </div>
+  <td class="text-end">
+    @include('components.actions-dropdown', ['items' => [
+      [
+        'modal' => '#modalEditDokumen',
+        'icon' => 'ti ti-edit',
+        'label' => 'Edit',
+        'title' => 'Edit Dokumen',
+        'class' => 'edit-dokumen-btn',
+        'data' => [
+          'id' => $d->id,
+          'nama' => $d->nama_dokumen,
+          'ekstensi' => $d->ekstensi_diizinkan,
+          'maxsize' => $d->max_size,
+          'wajib' => $d->status_wajib ? 'true' : 'false',
+          'urutan' => $d->urutan
+        ]
+      ],
+      ['divider' => true],
+      [
+        'url' => route('syarat-berkas.destroy-dokumen', [$d->template_berkas_id, $d->id]),
+        'icon' => 'ti ti-trash',
+        'label' => 'Hapus',
+        'class' => 'text-danger',
+        'method' => 'DELETE',
+        'confirm' => 'Apakah Anda yakin ingin menghapus item dokumen ini?',
+        'confirm_text' => 'Ya, Hapus!',
+        'confirm_button_class' => 'btn-danger'
+      ]
+    ]])
   </td>
 </tr>
 @endforeach

@@ -221,14 +221,12 @@
         event.preventDefault();
         const form = event.target;
         showConfirmDialog(message, options).then(result => {
-            if (result) {
-                // Create a hidden submit button to properly submit the form
-                const submitBtn = document.createElement('button');
-                submitBtn.type = 'submit';
-                submitBtn.style.display = 'none';
-                form.appendChild(submitBtn);
-                submitBtn.click();
-                submitBtn.remove();
+            if (result && form) {
+                if (typeof form.submit === 'function') {
+                    form.submit();
+                } else {
+                    HTMLFormElement.prototype.submit.call(form);
+                }
             }
         });
         return false;

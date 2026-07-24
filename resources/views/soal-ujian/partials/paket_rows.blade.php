@@ -23,9 +23,28 @@
         ['url' => route('paket-soal.kelola-soal', $paket->id), 'icon' => 'ti ti-list-details', 'label' => 'Kelola Soal', 'title' => 'Kelola Soal'],
         ['divider' => true],
         ['modal' => '#modalEditPaket' . $paket->id, 'icon' => 'ti ti-edit', 'label' => 'Edit', 'title' => 'Edit Paket Soal'],
-        ['url' => route('paket-soal.toggle-status', $paket->id), 'icon' => 'ti ti-' . ($paket->status_aktif ? 'player-pause' : 'player-play'), 'label' => $paket->status_aktif ? 'Nonaktifkan' : 'Aktifkan', 'method' => 'POST', 'confirm' => ($paket->status_aktif ? 'Nonaktifkan' : 'Aktifkan') . ' paket soal ini?'],
+        [
+          'url' => route('paket-soal.toggle-status', $paket->id),
+          'icon' => 'ti ti-' . ($paket->status_aktif ? 'player-pause' : 'player-play'),
+          'label' => $paket->status_aktif ? 'Nonaktifkan' : 'Aktifkan',
+          'method' => 'POST',
+          'confirm' => ($paket->status_aktif ? 'Nonaktifkan' : 'Aktifkan') . ' paket soal ini?',
+          'confirm_text' => $paket->status_aktif ? 'Ya, Nonaktifkan' : 'Ya, Aktifkan',
+          'confirm_button_class' => $paket->status_aktif ? 'btn-warning' : 'btn-success',
+          'confirm_icon' => $paket->status_aktif ? 'alert-triangle' : 'circle-check',
+          'confirm_icon_color' => $paket->status_aktif ? 'text-warning' : 'text-success'
+        ],
         ['divider' => true],
-        ['url' => route('paket-soal.destroy', $paket->id), 'icon' => 'ti ti-trash', 'label' => 'Hapus', 'class' => 'text-danger', 'method' => 'DELETE', 'confirm' => 'Hapus paket soal beserta semua soalnya?'],
+        [
+          'url' => route('paket-soal.destroy', $paket->id),
+          'icon' => 'ti ti-trash',
+          'label' => 'Hapus',
+          'class' => 'text-danger',
+          'method' => 'DELETE',
+          'confirm' => 'Hapus paket soal beserta semua soalnya?',
+          'confirm_text' => 'Ya, Hapus!',
+          'confirm_button_class' => 'btn-danger'
+        ],
       ]])
 
       <!-- Modal Edit Paket -->

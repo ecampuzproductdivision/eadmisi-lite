@@ -166,6 +166,8 @@
     </div>
   </div>
 </div>
+@include('components.confirm-modal')
+
 @endsection
 
 @push('scripts')
@@ -180,41 +182,40 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Edit modal handler
-  document.querySelectorAll('.edit-dokumen-btn').forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      var id = this.dataset.id;
-      var nama = this.dataset.nama;
-      var ekstensi = this.dataset.ekstensi;
-      var maxsize = this.dataset.maxsize;
-      var wajib = this.dataset.wajib === 'true';
-      var urutan = this.dataset.urutan;
+  // Edit modal handler (using event delegation for dynamically reloaded rows)
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.edit-dokumen-btn');
+    if (!btn) return;
 
-      document.getElementById('edit_nama').value = nama;
-      document.getElementById('edit_max_size').value = maxsize;
-      document.getElementById('edit_wajib').checked = wajib;
-      document.getElementById('edit_urutan').value = urutan;
+    var id = btn.dataset.id;
+    var nama = btn.dataset.nama || '';
+    var ekstensi = btn.dataset.ekstensi || '';
+    var maxsize = btn.dataset.maxsize;
+    var wajib = btn.dataset.wajib === 'true';
+    var urutan = btn.dataset.urutan || '';
 
-      // Set ekstensi checkboxes
-      var exts = ekstensi.split(',');
-      document.querySelectorAll('.edit-ekstensi-cb').forEach(cb => {
-        cb.checked = exts.includes(cb.value);
-      });
-      document.getElementById('edit_ekstensi').value = ekstensi;
+    document.getElementById('edit_nama').value = nama;
+    document.getElementById('edit_max_size').value = maxsize;
+    document.getElementById('edit_wajib').checked = wajib;
+    document.getElementById('edit_urutan').value = urutan;
 
-      // Sync hidden field on change
-      document.querySelectorAll('.edit-ekstensi-cb').forEach(cb => {
-        cb.onchange = function() {
-          var checked = [];
-          document.querySelectorAll('.edit-ekstensi-cb:checked').forEach(c => checked.push(c.value));
-          document.getElementById('edit_ekstensi').value = checked.join(',');
-        };
-      });
-
-      document.getElementById('formEditDokumen').action = '/settings/syarat-berkas/' + {{ $templateBerkas->id }} + '/update-dokumen/' + id;
-      new bootstrap.Modal(document.getElementById('modalEditDokumen')).show();
+    // Set ekstensi checkboxes
+    var exts = ekstensi ? ekstensi.split(',') : [];
+    document.querySelectorAll('.edit-ekstensi-cb').forEach(cb => {
+      cb.checked = exts.includes(cb.value);
     });
+    document.getElementById('edit_ekstensi').value = ekstensi;
+
+    // Sync hidden field on change
+    document.querySelectorAll('.edit-ekstensi-cb').forEach(cb => {
+      cb.onchange = function() {
+        var checked = [];
+        document.querySelectorAll('.edit-ekstensi-cb:checked').forEach(c => checked.push(c.value));
+        document.getElementById('edit_ekstensi').value = checked.join(',');
+      };
+    });
+
+    document.getElementById('formEditDokumen').action = '/settings/syarat-berkas/' + {{ $templateBerkas->id }} + '/update-dokumen/' + id;
   });
 });
 </script>

@@ -194,11 +194,19 @@ class SyaratBerkasController extends Controller
      */
     public function destroyDokumen(TemplateBerkas $templateBerkas, SyaratDokumen $syaratDokumen)
     {
+        $templateId = $templateBerkas ? $templateBerkas->id : $syaratDokumen->template_berkas_id;
         $syaratDokumen->delete();
 
         ActivityLogger::log('delete', 'syarat_dokumen', 'Deleted document ID: ' . $syaratDokumen->id);
 
-        return redirect()->route('syarat-berkas.kelola-dokumen', $templateBerkas->id)
-            ->with('success', 'Dokumen berhasil dihapus.');
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Item dokumen berhasil dihapus.'
+            ]);
+        }
+
+        return redirect()->route('syarat-berkas.kelola-dokumen', $templateId)
+            ->with('success', 'Item dokumen berhasil dihapus.');
     }
 }

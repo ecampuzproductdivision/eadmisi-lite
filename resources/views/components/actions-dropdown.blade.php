@@ -49,7 +49,12 @@
                             @method($item['method'])
                             @if(isset($item['confirm']))
                                 <button type="submit" class="dropdown-item {{ $item['class'] ?? '' }}"
-                                        onclick="return confirmAction(event, '{{ addslashes($item['confirm']) }}');">
+                                        onclick="return confirmAction(event, '{{ addslashes($item['confirm']) }}', { 
+                                            confirmText: '{{ addslashes($item['confirm_text'] ?? 'Ya, Hapus!') }}',
+                                            buttonClass: '{{ $item['confirm_button_class'] ?? 'btn-danger' }}',
+                                            icon: '{{ $item['confirm_icon'] ?? 'alert-triangle' }}',
+                                            iconColor: '{{ $item['confirm_icon_color'] ?? 'text-warning' }}'
+                                        });">
                                     <i class="{{ $item['icon'] }} me-2"></i> {{ $item['label'] }}
                                 </button>
                             @else

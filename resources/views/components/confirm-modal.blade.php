@@ -116,11 +116,49 @@
         return new Promise((resolve) => {
             resetModal();
 
+            let defaultConfirmText = 'Ya, Lanjutkan!';
+            let defaultButtonClass = 'btn-primary';
+            let defaultIcon = 'help-circle';
+            let defaultIconColor = 'text-primary';
+
+            const lowerMsg = (message || '').toLowerCase();
+            if (lowerMsg.includes('verifikasi')) {
+                defaultConfirmText = 'Ya, Verifikasi!';
+                defaultButtonClass = 'btn-success';
+                defaultIcon = 'circle-check';
+                defaultIconColor = 'text-success';
+            } else if (lowerMsg.includes('nonaktif')) {
+                defaultConfirmText = 'Ya, Nonaktifkan';
+                defaultButtonClass = 'btn-warning';
+                defaultIcon = 'alert-triangle';
+                defaultIconColor = 'text-warning';
+            } else if (lowerMsg.includes('aktif')) {
+                defaultConfirmText = 'Ya, Aktifkan';
+                defaultButtonClass = 'btn-success';
+                defaultIcon = 'circle-check';
+                defaultIconColor = 'text-success';
+            } else if (lowerMsg.includes('hapus') || lowerMsg.includes('delete')) {
+                defaultConfirmText = 'Ya, Hapus!';
+                defaultButtonClass = 'btn-danger';
+                defaultIcon = 'alert-triangle';
+                defaultIconColor = 'text-warning';
+            } else if (lowerMsg.includes('tutup')) {
+                defaultConfirmText = 'Ya, Tutup';
+                defaultButtonClass = 'btn-warning';
+                defaultIcon = 'lock';
+                defaultIconColor = 'text-warning';
+            } else if (lowerMsg.includes('salin') || lowerMsg.includes('copy')) {
+                defaultConfirmText = 'Ya, Salin';
+                defaultButtonClass = 'btn-primary';
+                defaultIcon = 'copy';
+                defaultIconColor = 'text-primary';
+            }
+
             const opts = {
-                confirmText: options.confirmText || 'Ya, Hapus!',
-                buttonClass: options.buttonClass || 'btn-danger',
-                icon: options.icon || 'alert-triangle',
-                iconColor: options.iconColor || 'text-warning',
+                confirmText: options.confirmText || defaultConfirmText,
+                buttonClass: options.buttonClass || defaultButtonClass,
+                icon: options.icon || defaultIcon,
+                iconColor: options.iconColor || defaultIconColor,
                 submessage: options.submessage || '',
                 title: options.title || 'Konfirmasi',
                 ...options

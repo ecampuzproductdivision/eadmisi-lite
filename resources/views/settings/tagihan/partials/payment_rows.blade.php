@@ -46,7 +46,7 @@
     </td>
     <td class="py-3 text-center">
         @if($payment->transaction_status === 'pending')
-            <form action="{{ route('settings.tagihan.verify', $payment->id) }}" method="POST" class="d-inline" onsubmit="return confirmSubmit(event, 'Verifikasi pembayaran {{ $payment->invoice_number }}?')">
+            <form action="{{ route('settings.tagihan.verify', $payment->id) }}" method="POST" class="d-inline" onsubmit="return confirmSubmit(event, 'Verifikasi pembayaran {{ $payment->invoice_number }}?', { confirmText: 'Ya, Verifikasi!', buttonClass: 'btn-success', icon: 'circle-check', iconColor: 'text-success' })">
                 @csrf
                 <button type="submit" class="btn btn-success btn-sm" title="Verifikasi Pembayaran">
                     <i class="ti ti-check"></i> Verifikasi

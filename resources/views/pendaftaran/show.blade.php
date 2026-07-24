@@ -82,7 +82,7 @@
                   <small class="text-danger d-block">Batas: {{ $pendingPayment->expired_at->format('d/m/Y H:i') }}</small>
                 @endif
               </div>
-              <form action="{{ route('payment.manual-verify', $pendingPayment->id) }}" method="POST" onsubmit="return confirmSubmit(event, 'Yakin ingin memverifikasi pembayaran ini?')">
+              <form action="{{ route('payment.manual-verify', $pendingPayment->id) }}" method="POST" onsubmit="return confirmSubmit(event, 'Yakin ingin memverifikasi pembayaran ini?', { confirmText: 'Ya, Verifikasi!', buttonClass: 'btn-success', icon: 'circle-check', iconColor: 'text-success' })">
                 @csrf
                 <button type="submit" class="btn btn-success btn-sm">
                   <i class="ti ti-check me-1"></i> Verifikasi Pembayaran

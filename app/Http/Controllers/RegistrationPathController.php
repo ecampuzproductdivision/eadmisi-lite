@@ -7,6 +7,7 @@ use App\Helpers\PeriodeHelper;
 use App\Models\ExamQuestion;
 use App\Models\ExamResult;
 use App\Models\KategoriJalur;
+use App\Models\Periode;
 use App\Models\ProgramStudi;
 use App\Models\Registration;
 use App\Models\RegistrationDocument;
@@ -65,6 +66,8 @@ class RegistrationPathController extends Controller
     public function create()
     {
         $kategoris = KategoriJalur::orderBy('nama')->get();
+        $periodes = Periode::orderByDesc('tahun_akademik')->get();
+        $activePeriodeId = PeriodeHelper::getActiveId();
         $programStudis = ProgramStudi::active()->orderBy('nama')->get();
         $paketSoals = PaketSoal::active()->orderBy('nama_paket')->get();
         $templateBerkas = TemplateBerkas::active()->orderBy('nama_template')->get();
@@ -72,7 +75,7 @@ class RegistrationPathController extends Controller
         $listMasterKomponen = \App\Models\KomponenBiaya::active()->orderBy('kode_komponen')->get();
         $jenisPendaftaranList = self::JENIS_PENDAFTARAN_LIST;
         $kategoriJalurList = self::KATEGORI_JALUR_LIST;
-        return view('registration-paths.create', compact('kategoris', 'programStudis', 'paketSoals', 'templateBerkas', 'forms', 'listMasterKomponen', 'jenisPendaftaranList', 'kategoriJalurList'));
+        return view('registration-paths.create', compact('kategoris', 'periodes', 'activePeriodeId', 'programStudis', 'paketSoals', 'templateBerkas', 'forms', 'listMasterKomponen', 'jenisPendaftaranList', 'kategoriJalurList'));
     }
 
     public function store(Request $request)
@@ -97,6 +100,7 @@ class RegistrationPathController extends Controller
             'color' => 'nullable|string|max:20',
             'quota' => 'nullable|integer|min:0',
             'jumlah_pilihan_prodi' => 'required|integer|in:1,2,3',
+            'periode_id' => 'required|exists:periode,id',
             'program_studi_ids' => 'required|array|min:1',
             'program_studi_ids.*' => 'exists:program_studis,id',
             'is_active' => 'boolean',
@@ -134,7 +138,6 @@ class RegistrationPathController extends Controller
                 ->withInput();
         }
 
-        $activePeriodeId = PeriodeHelper::getActiveId();
         $data = $request->except(['program_studi_ids', 'kategori_jalur']);
 
         // Handle kategori_jalur: store the selected category name directly
@@ -143,7 +146,6 @@ class RegistrationPathController extends Controller
             $data['kategori_jalur_id'] = $kategori?->id;
         }
 
-        $data['periode_id'] = $activePeriodeId;
         $path = RegistrationPath::create($data);
 
         if ($request->has('program_studi_ids')) {
@@ -174,6 +176,8 @@ class RegistrationPathController extends Controller
     public function edit(RegistrationPath $registrationPath)
     {
         $kategoris = KategoriJalur::orderBy('nama')->get();
+        $periodes = Periode::orderByDesc('tahun_akademik')->get();
+        $activePeriodeId = PeriodeHelper::getActiveId();
         $programStudis = ProgramStudi::active()->orderBy('nama')->get();
         $paketSoals = PaketSoal::active()->orderBy('nama_paket')->get();
         $templateBerkas = TemplateBerkas::active()->orderBy('nama_template')->get();
@@ -182,7 +186,7 @@ class RegistrationPathController extends Controller
         $registrationPath->load('programStudis', 'formPendaftaran', 'komponenBiayas');
         $jenisPendaftaranList = self::JENIS_PENDAFTARAN_LIST;
         $kategoriJalurList = self::KATEGORI_JALUR_LIST;
-        return view('registration-paths.edit', compact('registrationPath', 'kategoris', 'programStudis', 'paketSoals', 'templateBerkas', 'forms', 'listMasterKomponen', 'jenisPendaftaranList', 'kategoriJalurList'));
+        return view('registration-paths.edit', compact('registrationPath', 'kategoris', 'periodes', 'activePeriodeId', 'programStudis', 'paketSoals', 'templateBerkas', 'forms', 'listMasterKomponen', 'jenisPendaftaranList', 'kategoriJalurList'));
     }
 
     public function update(Request $request, RegistrationPath $registrationPath)
@@ -204,6 +208,7 @@ class RegistrationPathController extends Controller
             'color' => 'nullable|string|max:20',
             'quota' => 'nullable|integer|min:0',
             'jumlah_pilihan_prodi' => 'required|integer|in:1,2,3',
+            'periode_id' => 'required|exists:periode,id',
             'program_studi_ids' => 'required|array|min:1',
             'program_studi_ids.*' => 'exists:program_studis,id',
             'is_active' => 'boolean',

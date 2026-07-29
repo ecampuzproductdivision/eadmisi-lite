@@ -98,6 +98,19 @@
                         <h6 class="text-secondary fw-bold pb-2 mb-0 mt-2" style="border-bottom: 1px dashed #dee2e6;">Periode & Kuota</h6>
                     </div>
                     <div class="col-md-3 col-12">
+                        <label for="periode_id" class="form-label fw-semibold">Periode Akademik <span class="text-danger">*</span></label>
+                        <select name="periode_id" id="periode_id" class="form-select @error('periode_id') is-invalid @enderror" required>
+                            <option value="">Pilih periode...</option>
+                            @foreach($periodes as $periode)
+                                <option value="{{ $periode->id }}" {{ old('periode_id', $registrationPath->periode_id ?? $activePeriodeId) == $periode->id ? 'selected' : '' }}>
+                                    {{ $periode->label }} {!! $periode->status_aktif ? '(Aktif)' : '' !!}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('periode_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-3 col-12">
                         <label for="registration_start" class="form-label fw-semibold">Tanggal Mulai</label>
                         <input type="date" name="registration_start" id="registration_start" class="form-control @error('registration_start') is-invalid @enderror" value="{{ old('registration_start', $registrationPath->registration_start?->format('Y-m-d')) }}">
                         @error('registration_start') <div class="invalid-feedback">{{ $message }}</div> @enderror

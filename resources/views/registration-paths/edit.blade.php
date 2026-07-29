@@ -49,14 +49,27 @@
                         <h6 class="text-secondary fw-bold pb-2 mb-0" style="border-bottom: 1px dashed #dee2e6;">Informasi Jalur</h6>
                     </div>
                     <div class="col-md-3 col-12">
-                        <label for="kategori_jalur_id" class="form-label fw-semibold">Kategori Jalur</label>
-                        <select name="kategori_jalur_id" id="kategori_jalur_id" class="form-select @error('kategori_jalur_id') is-invalid @enderror">
+                        <label for="kategori_jalur" class="form-label fw-semibold">Kategori Jalur</label>
+                        <select name="kategori_jalur" id="kategori_jalur" class="form-select @error('kategori_jalur') is-invalid @enderror">
                             <option value="">Pilih kategori...</option>
-                            @foreach($kategoris as $kategori)
-                                <option value="{{ $kategori->id }}" {{ old('kategori_jalur_id', $registrationPath->kategori_jalur_id) == $kategori->id ? 'selected' : '' }}>{{ $kategori->nama }}</option>
+                            @php $selectedKategori = old('kategori_jalur', $registrationPath->kategori?->nama ?? ''); @endphp
+                            @foreach($kategoriJalurList as $kat)
+                                <option value="{{ $kat }}" {{ $selectedKategori == $kat ? 'selected' : '' }}>{{ $kat }}</option>
                             @endforeach
                         </select>
-                        @error('kategori_jalur_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        @error('kategori_jalur') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-3 col-12">
+                        <label for="jenis_pendaftaran" class="form-label fw-semibold">Jenis Pendaftaran</label>
+                        <select name="jenis_pendaftaran" id="jenis_pendaftaran" class="form-select @error('jenis_pendaftaran') is-invalid @enderror">
+                            <option value="">Pilih jenis pendaftaran...</option>
+                            @php $selectedJenis = old('jenis_pendaftaran', $registrationPath->jenis_pendaftaran ?? ''); @endphp
+                            @foreach($jenisPendaftaranList as $jenis)
+                                <option value="{{ $jenis }}" {{ $selectedJenis == $jenis ? 'selected' : '' }}>{{ $jenis }}</option>
+                            @endforeach
+                        </select>
+                        @error('jenis_pendaftaran') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="col-md-3 col-12">

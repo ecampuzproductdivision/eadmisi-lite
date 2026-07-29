@@ -49,6 +49,7 @@
                     <th style="width: 60px;">No</th>
                     <x-sortable-header field="code" label="Nama Jalur" />
                     <th>Kategori</th>
+                    <th>Jenis Pendaftaran</th>
                     <th>Form Template</th>
                     <th>Biaya</th>
                     <th>Periode</th>

@@ -17,11 +17,14 @@ class KategoriJalurSeeder extends Seeder
         \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
 
         $data = [
-            ['nama' => 'Seleksi Nasional'],
+            ['nama' => 'Penelusuran Minat dan Kemampuan (PMDK)'],
+            ['nama' => 'Prestasi'],
+            ['nama' => 'Program Kerjasama'],
             ['nama' => 'Seleksi Mandiri'],
-            ['nama' => 'Seleksi Prestasi'],
-            ['nama' => 'Seleksi Internasional'],
-            ['nama' => 'Seleksi Kerjasama'],
+            ['nama' => 'Seleksi Nasional Berdasarkan Tes (SNBT)'],
+            ['nama' => 'Seleksi Nasional Berdasarkan Prestasi (SNBP)'],
+            ['nama' => 'Program International'],
+            ['nama' => 'Ujian Masuk Bersama Lainnya'],
         ];
 
         DB::table('kategori_jalurs')->insert($data);

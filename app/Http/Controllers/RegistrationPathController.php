@@ -22,11 +22,34 @@ use Illuminate\Support\Facades\Validator;
 
 class RegistrationPathController extends Controller
 {
+    public const KATEGORI_JALUR_LIST = [
+        'Penelusuran Minat dan Kemampuan (PMDK)',
+        'Prestasi',
+        'Program Kerjasama',
+        'Seleksi Mandiri',
+        'Seleksi Nasional Berdasarkan Tes (SNBT)',
+        'Seleksi Nasional Berdasarkan Prestasi (SNBP)',
+        'Program International',
+        'Ujian Masuk Bersama Lainnya',
+    ];
+
+    public const JENIS_PENDAFTARAN_LIST = [
+        'Peserta Didik Baru',
+        'Pindahan',
+        'Pendidikan Non Gelar (Course)',
+        'Fast Track',
+        'RPL Perolehan SKS',
+        'RPL Transfer SKS',
+        'PPG PGP / PLPG',
+        'PPG Non PGP / PLPG',
+    ];
+
     public function index(Request $request)
     {
         $query = RegistrationPath::with('kategori', 'formPendaftaran')
             ->byActivePeriode();
         $paths = \App\Helpers\SortHelper::apply($query, ['code', 'name', 'biaya', 'kuota', 'is_active'], 'code', 'asc')->paginate(10);
+        $kategoris = KategoriJalur::orderBy('nama')->get();
 
         if ($request->ajax()) {
             return response()->json([
@@ -36,7 +59,7 @@ class RegistrationPathController extends Controller
             ]);
         }
 
-        return view('registration-paths.index', compact('paths'));
+        return view('registration-paths.index', compact('paths', 'kategoris'));
     }
 
     public function create()
@@ -47,7 +70,9 @@ class RegistrationPathController extends Controller
         $templateBerkas = TemplateBerkas::active()->orderBy('nama_template')->get();
         $forms = Form::active()->orderBy('nama')->get();
         $listMasterKomponen = \App\Models\KomponenBiaya::active()->orderBy('kode_komponen')->get();
-        return view('registration-paths.create', compact('kategoris', 'programStudis', 'paketSoals', 'templateBerkas', 'forms', 'listMasterKomponen'));
+        $jenisPendaftaranList = self::JENIS_PENDAFTARAN_LIST;
+        $kategoriJalurList = self::KATEGORI_JALUR_LIST;
+        return view('registration-paths.create', compact('kategoris', 'programStudis', 'paketSoals', 'templateBerkas', 'forms', 'listMasterKomponen', 'jenisPendaftaranList', 'kategoriJalurList'));
     }
 
     public function store(Request $request)
@@ -63,6 +88,8 @@ class RegistrationPathController extends Controller
             'code' => 'required|string|max:50|unique:registration_paths,code',
             'name' => 'required|string|max:200',
             'description' => 'nullable|string',
+            'kategori_jalur' => 'nullable|string|max:100',
+            'jenis_pendaftaran' => 'nullable|string|max:100',
             'form_pendaftaran_id' => 'nullable|exists:forms,id',
             'registration_start' => 'nullable|date',
             'registration_end' => 'nullable|date|after_or_equal:registration_start',
@@ -108,7 +135,14 @@ class RegistrationPathController extends Controller
         }
 
         $activePeriodeId = PeriodeHelper::getActiveId();
-        $data = $request->except(['program_studi_ids']);
+        $data = $request->except(['program_studi_ids', 'kategori_jalur']);
+
+        // Handle kategori_jalur: store the selected category name directly
+        if ($request->filled('kategori_jalur')) {
+            $kategori = KategoriJalur::where('nama', $request->kategori_jalur)->first();
+            $data['kategori_jalur_id'] = $kategori?->id;
+        }
+
         $data['periode_id'] = $activePeriodeId;
         $path = RegistrationPath::create($data);
 
@@ -146,7 +180,9 @@ class RegistrationPathController extends Controller
         $forms = Form::active()->orderBy('nama')->get();
         $listMasterKomponen = \App\Models\KomponenBiaya::active()->orderBy('kode_komponen')->get();
         $registrationPath->load('programStudis', 'formPendaftaran', 'komponenBiayas');
-        return view('registration-paths.edit', compact('registrationPath', 'kategoris', 'programStudis', 'paketSoals', 'templateBerkas', 'forms', 'listMasterKomponen'));
+        $jenisPendaftaranList = self::JENIS_PENDAFTARAN_LIST;
+        $kategoriJalurList = self::KATEGORI_JALUR_LIST;
+        return view('registration-paths.edit', compact('registrationPath', 'kategoris', 'programStudis', 'paketSoals', 'templateBerkas', 'forms', 'listMasterKomponen', 'jenisPendaftaranList', 'kategoriJalurList'));
     }
 
     public function update(Request $request, RegistrationPath $registrationPath)
@@ -159,6 +195,8 @@ class RegistrationPathController extends Controller
             'code' => 'required|string|max:50|unique:registration_paths,code,' . $registrationPath->id,
             'name' => 'required|string|max:200',
             'description' => 'nullable|string',
+            'kategori_jalur' => 'nullable|string|max:100',
+            'jenis_pendaftaran' => 'nullable|string|max:100',
             'form_pendaftaran_id' => 'nullable|exists:forms,id',
             'registration_start' => 'nullable|date',
             'registration_end' => 'nullable|date|after_or_equal:registration_start',
@@ -199,7 +237,15 @@ class RegistrationPathController extends Controller
             $request->merge(['metode_pengumuman' => 'penilaian_manual']);
         }
 
-        $registrationPath->update($request->except(['program_studi_ids']));
+        $data = $request->except(['program_studi_ids', 'kategori_jalur']);
+
+        // Handle kategori_jalur: store the selected category name directly
+        if ($request->filled('kategori_jalur')) {
+            $kategori = KategoriJalur::where('nama', $request->kategori_jalur)->first();
+            $data['kategori_jalur_id'] = $kategori?->id;
+        }
+
+        $registrationPath->update($data);
 
         if ($request->has('program_studi_ids')) {
             $registrationPath->programStudis()->sync($request->program_studi_ids);
@@ -286,7 +332,7 @@ class RegistrationPathController extends Controller
 
         $currentStep = 1;
         if ($registration) {
-            // Special handling: Menunggu Verifikasi Registrasi Ulang → always final step
+            // Special handling: Menunggu Verifikasi Registrasi Ulang -> always final step
             if (in_array($registration->status, ['Menunggu Verifikasi Registrasi Ulang', 'registered'])) {
                 $currentStep = $totalSteps;
             } elseif ($registration->status === 'draft' && $registration->program_studi_1_id) {
@@ -312,7 +358,7 @@ class RegistrationPathController extends Controller
                             $currentStep = $totalSteps;
                         }
                     } elseif ($hasManualVerification && in_array($registration->status, ['Lulus', 'accepted', 'Menunggu Verifikasi Registrasi Ulang', 'registered', 'payment_pending'])) {
-                        // payment_pending after re-registration submit → advance to step 5
+                        // payment_pending after re-registration submit -> advance to step 5
                         $currentStep = $totalSteps;
                     } elseif ($hasManualVerification && $registration->status === 'Gagal') {
                         $currentStep = 4;
@@ -351,7 +397,7 @@ class RegistrationPathController extends Controller
             }
         }
 
-        // ── Re-registration invoice data (any status that indicates re-registration has been submitted) ──
+        // --- Re-registration invoice data (any status that indicates re-registration has been submitted) ---
         $ulangPayment = null;
         $ulangBiayaList = collect();
         $ulangTotalBiaya = 0;
@@ -760,7 +806,7 @@ class RegistrationPathController extends Controller
             $finalBiaya = max(0, $totalBiaya - $discountAmount);
 
             if ($finalBiaya > 0) {
-                // TRIGGER 2A: Has billing fees → generate invoice, set 'menunggu_pembayaran'
+                // TRIGGER 2A: Has billing fees -> generate invoice, set 'menunggu_pembayaran'
                 $itemizedDetails = [];
                 foreach ($biayaKomponens as $bk) {
                     $itemizedDetails[] = ['kode_komponen' => $bk->komponenBiaya?->kode_komponen, 'nama_komponen' => $bk->komponenBiaya?->nama_komponen, 'nominal' => (int) $bk->nominal];
@@ -794,13 +840,13 @@ class RegistrationPathController extends Controller
 
                 ActivityLogger::log('create', 'payment', 'Re-registration invoice generated: ' . $payment->invoice_number . ' for ' . ($path?->name ?? '') . ' total: ' . $finalBiaya . ' (discounted by ' . $discountAmount . ' via ' . $discountName . ')');
             } else {
-                // TRIGGER 2B: No billing fees or fully covered by scholarship → bypass billing, set langsung
+                // TRIGGER 2B: No billing fees or fully covered by scholarship -> bypass billing, set langsung
                 $registration->update(['status_registrasi_ulang' => 'sudah_registrasi_no_tagihan']);
 
                 ActivityLogger::log('update', 'registration', 'Re-registration completed without billing (Rp ' . $finalBiaya . ', original: ' . $totalBiaya . ', discount: ' . $discountAmount . ') for #' . $registration->id);
             }
         } else {
-            // No path available → assume no billing
+            // No path available -> assume no billing
             $registration->update(['status_registrasi_ulang' => 'sudah_registrasi_no_tagihan']);
         }
 

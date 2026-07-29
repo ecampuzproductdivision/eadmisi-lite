@@ -28,6 +28,11 @@
                     <i class="ti ti-tag me-1"></i> {{ $registrationPath->kategori->nama }}
                   </span>
                 @endif
+                @if($registrationPath->jenis_pendaftaran)
+                  <span class="badge bg-info-subtle text-info px-3 py-2 fs-6">
+                    <i class="ti ti-file-description me-1"></i> {{ $registrationPath->jenis_pendaftaran }}
+                  </span>
+                @endif
               </div>
             </div>
           </div>

@@ -12,6 +12,7 @@ class RegistrationPath extends Model
     protected $fillable = [
         'periode_id',
         'kategori_jalur_id',
+        'jenis_pendaftaran',
         'form_pendaftaran_id',
         'code',
         'name',

@@ -10,6 +10,13 @@
       @endif
     </td>
     <td>
+      @if($path->jenis_pendaftaran)
+        <span class="badge bg-info-subtle text-info px-2 py-1">{{ $path->jenis_pendaftaran }}</span>
+      @else
+        <span class="text-muted">—</span>
+      @endif
+    </td>
+    <td>
       @if($path->formPendaftaran)
         <span class="badge bg-info-subtle text-info px-2 py-1">{{ $path->formPendaftaran->nama }}</span>
       @else

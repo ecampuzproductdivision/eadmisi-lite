@@ -62,4 +62,52 @@ class AccountSettingsController extends Controller
 
         return redirect()->back()->with('success', 'Avatar deleted successfully.');
     }
+
+    /**
+     * Handle Mandatory & Blocking Modal profile completion submission.
+     */
+    public function updateBiodataModal(Request $request)
+    {
+        $request->validate([
+            'nama_lengkap'  => 'required|string|max:200',
+            'jenis_kelamin' => 'required|in:L,P',
+            'phone'         => 'required|string|max:20',
+            'domisili'      => 'required|string|max:255',
+        ]);
+
+        $user = auth()->user();
+        $regencyId = is_numeric($request->domisili) ? (int)$request->domisili : null;
+
+        $user->update([
+            'name'                 => $request->nama_lengkap,
+            'jenis_kelamin'        => $request->jenis_kelamin,
+            'phone'                => $request->phone,
+            'domisili'             => $request->domisili,
+            'regency_id'           => $regencyId ?? $user->regency_id,
+            'is_profile_completed' => true,
+        ]);
+
+        // Sync to active Registration record if one exists
+        $registration = \App\Models\Registration::where('user_id', $user->id)->latest()->first();
+        if ($registration) {
+            $registration->update([
+                'nama_lengkap'  => $request->nama_lengkap,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'no_hp'         => $request->phone,
+                'regency_id'    => $regencyId ?? $registration->regency_id,
+            ]);
+        }
+
+        \App\Helpers\ActivityLogger::log('update_biodata_modal', 'profile', 'Completed biodata for user: ' . $user->email);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Biodata Anda berhasil dilengkapi! Akses penuh ke portal pendaftaran telah dibuka.',
+                'user'    => $user,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Biodata Anda berhasil dilengkapi!');
+    }
 }

@@ -463,4 +463,74 @@ class PendaftaranController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan sistem saat memproses impor data. Silakan periksa kembali file Anda. Detail: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Cetak Bukti Kelulusan (PDF) untuk Calon Mahasiswa.
+     */
+    public function cetakBuktiKelulusan(Request $request, $id = null)
+    {
+        $user = auth()->user();
+
+        if ($id) {
+            $registration = Registration::with([
+                'user',
+                'registrationPath.kategori',
+                'programStudi1',
+                'programStudi2',
+                'examResults'
+            ])->findOrFail($id);
+
+            // Authorization check
+            if ($registration->user_id !== $user->id && !in_array($user->role?->name ?? '', ['Super Admin', 'Admin', 'Panitia PMB'])) {
+                abort(403, 'Anda tidak memiliki akses untuk mencetak dokumen ini.');
+            }
+        } else {
+            $registration = Registration::with([
+                'user',
+                'registrationPath.kategori',
+                'programStudi1',
+                'programStudi2',
+                'examResults'
+            ])->where('user_id', $user->id)
+              ->latest()
+              ->firstOrFail();
+        }
+
+        // Validate status kelulusan
+        $isLulus = in_array($registration->status, ['accepted', 'Lulus']) 
+            || $registration->status_kelulusan === 'Lulus';
+
+        if (!$isLulus) {
+            abort(403, 'Dokumen Bukti Kelulusan hanya dapat dicetak oleh calon mahasiswa yang telah dinyatakan LULUS seleksi PMB.');
+        }
+
+        $prodiDiterima = $registration->programStudi1?->nama_prodi ?? '-';
+        $jenjang = $registration->programStudi1?->jenjang ?? '';
+        $examResult = $registration->examResults->sortByDesc('created_at')->first();
+        $skorUjian = $examResult ? number_format($examResult->score, 1) : null;
+
+        $tahun = date('Y');
+        $noSurat = "SKL/PMB/{$tahun}/" . ($registration->no_pendaftaran ?? $registration->id);
+
+        $pdfData = [
+            'registration' => $registration,
+            'noSurat' => $noSurat,
+            'prodiDiterima' => $prodiDiterima,
+            'jenjang' => $jenjang,
+            'skorUjian' => $skorUjian,
+            'tanggalCetak' => now()->translatedFormat('d F Y'),
+        ];
+
+        // Direct PDF download if ?download=1 or ?pdf=1 parameter is set
+        if ($request->has('download') || $request->has('pdf')) {
+            if (class_exists(\Barryvdh\DomPDF\Facade\Pdf::class)) {
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.bukti-kelulusan', $pdfData);
+                $pdf->setPaper('A4', 'portrait');
+                return $pdf->download("Bukti_Kelulusan_{$registration->no_pendaftaran}.pdf");
+            }
+        }
+
+        // Default: Return HTML print preview view (triggers browser window.print() in Chrome)
+        return view('pdf.bukti-kelulusan', $pdfData);
+    }
 }

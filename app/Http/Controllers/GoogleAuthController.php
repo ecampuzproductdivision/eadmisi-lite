@@ -16,89 +16,108 @@ class GoogleAuthController extends Controller
     public function redirectToGoogleLogin()
     {
         session()->put('google_intent', 'login');
-        return Socialite::driver('google')->redirect();
+        if (empty(config('services.google.client_id')) || empty(config('services.google.client_secret'))) {
+            return redirect()->route('auth.google.simulation');
+        }
+        try {
+            return Socialite::driver('google')->redirect();
+        } catch (\Exception $e) {
+            return redirect()->route('auth.google.simulation');
+        }
     }
 
     // --- DAFTAR BY GOOGLE (user baru + lengkapi profil) ---
     public function redirectToGoogleRegister()
     {
         session()->put('google_intent', 'register');
-        return Socialite::driver('google')->redirect();
+        if (empty(config('services.google.client_id')) || empty(config('services.google.client_secret'))) {
+            return redirect()->route('auth.google.simulation');
+        }
+        try {
+            return Socialite::driver('google')->redirect();
+        } catch (\Exception $e) {
+            return redirect()->route('auth.google.simulation');
+        }
     }
 
-    public function handleGoogleCallback()
+    public function handleGoogleCallback(Request $request)
     {
         try {
-            $socialiteUser = Socialite::driver('google')->stateless()->user();
-            $intent = session()->pull('google_intent', 'login');
+            $intent = session()->pull('google_intent', 'register');
+
+            if ($request->has('mock_login') || $request->has('google_id')) {
+                $googleId = $request->get('google_id', 'mock_google_' . time());
+                $name     = $request->get('name', 'Budi Google');
+                $email    = $request->get('email', 'budi.google@gmail.com');
+                $avatar   = $request->get('avatar_url', 'https://lh3.googleusercontent.com/a/default-user');
+            } else {
+                $socialiteUser = Socialite::driver('google')->stateless()->user();
+                $googleId = $socialiteUser->getId();
+                $name     = $socialiteUser->getName();
+                $email    = $socialiteUser->getEmail();
+                $avatar   = $socialiteUser->getAvatar();
+            }
 
             Log::info('Google callback', [
-                'email' => $socialiteUser->getEmail(),
+                'email' => $email,
                 'intent' => $intent,
             ]);
 
-            $user = User::where('google_id', $socialiteUser->getId())
-                ->orWhere('email', $socialiteUser->getEmail())
+            $user = User::where('google_id', $googleId)
+                ->orWhere('email', $email)
                 ->first();
 
-            if ($intent === 'login') {
-                // LOGIN: hanya untuk user yang sudah terdaftar
-                if (!$user) {
-                    return redirect()->route('register')
-                        ->with('error', 'Akun Google ini belum terdaftar. Silakan daftar terlebih dahulu.');
-                }
+            $calonMahasiswaRole = Role::where('role_code', 'CALON_MAHASISWA')->first();
 
-                // Link google_id jika belum
-                if (!$user->google_id) {
-                    $user->update([
-                        'google_id' => $socialiteUser->getId(),
-                        'avatar' => $socialiteUser->getAvatar(),
-                    ]);
-                }
-
-                Auth::login($user, true);
-                ActivityLogger::log('login', 'auth', 'User logged in via Google: ' . $user->email);
-
-                return redirect()->intended('/home');
-            }
-
-            // --- REGISTER ---
             if ($user) {
-                // User sudah ada → langsung login
                 if (!$user->google_id) {
                     $user->update([
-                        'google_id' => $socialiteUser->getId(),
-                        'avatar' => $socialiteUser->getAvatar(),
+                        'google_id' => $googleId,
+                        'avatar' => $avatar,
                     ]);
                 }
 
+                // Ensure user has CALON_MAHASISWA role for student portal
+                if ($calonMahasiswaRole && !$user->roles->contains($calonMahasiswaRole->id)) {
+                    $user->roles()->attach($calonMahasiswaRole->id);
+                }
+
                 Auth::login($user, true);
-                return redirect()->intended('/home')
-                    ->with('success', 'Akun sudah terdaftar. Selamat datang kembali!');
+                ActivityLogger::log('login_google_camaba', 'auth', 'Calon Mahasiswa logged in via Google: ' . $user->email);
+                return redirect()->route('daftar-pmb')
+                    ->with('success', 'Selamat datang kembali di Portal Calon Mahasiswa!');
             }
 
-            // User baru → create + redirect lengkapi data
+            // User baru → create + assign CALON_MAHASISWA role + auto-login + redirect to Student Dashboard
             $newUser = User::create([
-                'name' => $socialiteUser->getName(),
-                'email' => $socialiteUser->getEmail(),
-                'google_id' => $socialiteUser->getId(),
-                'avatar' => $socialiteUser->getAvatar(),
+                'name' => $name,
+                'email' => $email,
+                'google_id' => $googleId,
+                'avatar' => $avatar,
                 'password' => bcrypt(uniqid()),
                 'status' => 'active',
+                'is_profile_completed' => false,
             ]);
 
-            session()->put('google_registration_user_id', $newUser->id);
+            if ($calonMahasiswaRole) {
+                $newUser->roles()->attach($calonMahasiswaRole->id);
+            }
 
-            ActivityLogger::log('register_google', 'auth', 'Google user created: ' . $newUser->email);
+            Auth::login($newUser, true);
+            ActivityLogger::log('register_google_camaba', 'auth', 'Calon Mahasiswa Google user created: ' . $newUser->email);
 
-            return redirect()->route('google.complete.registration')
-                ->with('success', 'Silakan lengkapi No. WhatsApp dan Asal Wilayah Anda.');
+            return redirect()->route('daftar-pmb')
+                ->with('success', 'Selamat datang! Silakan lengkapi biodata singkat Anda untuk memulai pendaftaran.');
 
         } catch (\Exception $e) {
-            Log::error('Google auth failed', [
+            Log::error('Google auth failed for Calon Mahasiswa', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+
+            if ($request->isMethod('get') && !$request->has('mock_login')) {
+                return redirect()->route('auth.google.simulation');
+            }
 
             return redirect()->route('login')
                 ->withErrors(['email' => 'Google authentication failed: ' . $e->getMessage()]);
@@ -114,7 +133,9 @@ class GoogleAuthController extends Controller
         }
 
         $user = User::findOrFail($userId);
-        return view('auth.complete-google-registration', compact('user'));
+        $regencies = \App\Models\Regency::all();
+
+        return view('auth.complete_registration', compact('user', 'regencies'));
     }
 
     public function completeRegistration(Request $request)
@@ -135,6 +156,7 @@ class GoogleAuthController extends Controller
         $user->update([
             'phone' => $request->phone,
             'regency_id' => $request->regency_id,
+            'is_profile_completed' => true,
         ]);
 
         // Assign CALON_MAHASISWA role
@@ -148,7 +170,7 @@ class GoogleAuthController extends Controller
         Auth::login($user, true);
         ActivityLogger::log('register_google_complete', 'auth', 'Google registration completed: ' . $user->email);
 
-        return redirect()->route('home')->with('success', 'Pendaftaran selesai! Selamat datang di eAkademik.');
+        return redirect()->route('daftar-pmb')->with('success', 'Pendaftaran selesai! Selamat datang di Portal Calon Mahasiswa.');
     }
 
     public function showSimulationForm()

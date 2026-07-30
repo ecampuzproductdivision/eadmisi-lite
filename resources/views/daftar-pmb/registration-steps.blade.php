@@ -272,9 +272,14 @@
                     <div>
                       <h6 class="fw-bold mb-1">Dinyatakan Lulus Seleksi</h6>
                       <p class="small mb-0">Selamat! Anda dinyatakan <strong>Lulus</strong> seleksi berdasarkan penilaian manual oleh tim seleksi. Silakan lanjut ke tahap Registrasi Ulang.</p>
-                      <a href="{{ route('daftar-pmb.steps', ['pathCode' => $path?->code, 're_registration' => 1]) }}" class="btn btn-success btn-sm mt-2 px-3">
-                        <i class="ti ti-id-badge me-1"></i> Mulai Registrasi Ulang
-                      </a>
+                      <div class="d-flex align-items-center gap-2 mt-2">
+                        <a href="{{ route('daftar-pmb.steps', ['pathCode' => $path?->code, 're_registration' => 1]) }}" class="btn btn-success btn-sm px-3">
+                          <i class="ti ti-id-badge me-1"></i> Mulai Registrasi Ulang
+                        </a>
+                        <a href="{{ route('pendaftaran.cetak-bukti-kelulusan', ['id' => $registration->id]) }}" target="_blank" class="btn btn-outline-secondary btn-sm px-3">
+                          <i class="ti ti-printer me-1"></i> Cetak Bukti Kelulusan
+                        </a>
+                      </div>
                     </div>
                   </div>
                 @elseif($registration->status === 'Gagal')
@@ -342,9 +347,14 @@
                       <div>
                         <h6 class="fw-bold mb-1">Dinyatakan Lulus Seleksi</h6>
                         <p class="small mb-0">Selamat! Nilai ujian Anda memenuhi ambang batas minimal kelulusan. Silakan klik tombol di bawah untuk melakukan registrasi ulang.</p>
-                        <a href="#stepFinal" class="btn btn-success btn-sm mt-3 px-4">
-                          <i class="ti ti-id-badge me-1"></i> Mulai Registrasi Ulang
-                        </a>
+                        <div class="d-flex align-items-center gap-2 mt-3">
+                          <a href="#stepFinal" class="btn btn-success btn-sm px-4">
+                            <i class="ti ti-id-badge me-1"></i> Mulai Registrasi Ulang
+                          </a>
+                          <a href="{{ route('pendaftaran.cetak-bukti-kelulusan', ['id' => $registration->id]) }}" target="_blank" class="btn btn-outline-secondary btn-sm px-4">
+                            <i class="ti ti-printer me-1"></i> Cetak Bukti Kelulusan
+                          </a>
+                        </div>
                       </div>
                     </div>
                   @elseif($registration->status === 'rejected')
@@ -619,7 +629,7 @@
                 
                 @if(!$isReRegistrationActive)
                   <!-- Automated Re-registration Entry Trigger -->
-                  @if($pendaftaran->status_kelulusan === 'Lulus')
+                  @if(($registration->status_kelulusan ?? '') === 'Lulus' || in_array($registration->status ?? '', ['accepted', 'Lulus']) || (($pendaftaran->status_kelulusan ?? '') === 'Lulus'))
                       <div class="card border-success shadow-sm my-4" style="background-color: #f8fff9; border-left: 5px solid #28a745;">
                           <div class="card-body p-4">
                               <div class="d-flex align-items-center mb-3">
@@ -633,18 +643,23 @@
                               </div>
                               
                               <p class="card-text text-dark" style="font-size: 0.95rem; line-height: 1.6;">
-                                  Berdasarkan hasil evaluasi ujian online CBT dengan perolehan skor <strong>{{ $pendaftaran->skor_ujian }}</strong>, Anda telah memenuhi nilai ambang batas kelulusan yang ditentukan. Silakan melanjutkan ke tahap berikutnya untuk melengkapi berkas administrasi dan mengunci status kemahasiswaan Anda.
+                                  Selamat! Anda telah memenuhi syarat dan dinyatakan <strong>LULUS</strong> seleksi Penerimaan Mahasiswa Baru. Silakan melanjutkan ke tahap berikutnya untuk melengkapi berkas registrasi ulang dan mengunci status kemahasiswaan Anda.
                               </p>
                               
                               <hr class="my-3" style="border-top: 1px dashed #28a745;">
                               
-                              <div class="d-flex justify-content-between align-items-center flex-wrap">
+                              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
                                   <span class="text-muted small mb-2 mb-md-0">
-                                      <i class="ti ti-clock me-1"></i> Diproses secara instan melalui sistem One Day Service.
+                                      <i class="ti ti-clock me-1"></i> Diproses secara resmi oleh Panitia PMB.
                                   </span>
-                                  <a href="{{ route('daftar-pmb.steps', ['pathCode' => $path?->code, 're_registration' => 1]) }}" class="btn btn-success px-4 py-2 font-weight-bold shadow-sm">
-                                      <i class="ti ti-arrow-right me-2"></i> Mulai Registrasi Ulang <i class="ti ti-file-text ms-1"></i>
-                                  </a>
+                                  <div class="d-flex align-items-center gap-2">
+                                      <a href="{{ route('pendaftaran.cetak-bukti-kelulusan', ['id' => $registration->id]) }}" target="_blank" class="btn btn-outline-secondary px-4 py-2 font-weight-bold shadow-sm">
+                                          <i class="ti ti-printer me-2"></i> Cetak Bukti Kelulusan
+                                      </a>
+                                      <a href="{{ route('daftar-pmb.steps', ['pathCode' => $path?->code, 're_registration' => 1]) }}" class="btn btn-success px-4 py-2 font-weight-bold shadow-sm">
+                                          <i class="ti ti-arrow-right me-2"></i> Mulai Registrasi Ulang <i class="ti ti-file-text ms-1"></i>
+                                      </a>
+                                  </div>
                               </div>
                           </div>
                       </div>
@@ -664,10 +679,10 @@
                   @csrf
                   
                   <div class="row g-3">
-                    <!-- 1. Nama Lengkap (Autofilled & Readonly) -->
+                    <!-- 1. Nama Lengkap (Editable) -->
                     <div class="col-md-6">
-                      <label class="form-label fw-semibold text-uppercase small text-muted">Nama Lengkap</label>
-                      <input type="text" class="form-control bg-light" name="nama_lengkap" value="{{ old('nama_lengkap', $registration->nama_lengkap ?? auth()->user()->name) }}" readonly>
+                      <label class="form-label fw-semibold text-uppercase small text-muted">Nama Lengkap <span class="text-danger">*</span></label>
+                      <input type="text" class="form-control" name="nama_lengkap" value="{{ old('nama_lengkap', $registration->nama_lengkap ?? auth()->user()->name) }}" required>
                     </div>
 
                     <!-- 2. Jenis Kelamin (Autofilled & Readonly) -->
@@ -720,10 +735,10 @@
                       <small class="text-muted">Harus bernilai tepat 10 digit angka.</small>
                     </div>
 
-                    <!-- 8. Nomor Handphone (Autofilled & Readonly) -->
+                    <!-- 8. Nomor Handphone (Editable) -->
                     <div class="col-md-6">
-                      <label class="form-label fw-semibold text-uppercase small text-muted">Nomor Handphone</label>
-                      <input type="tel" class="form-control bg-light" name="no_hp" value="{{ old('no_hp', $registration->no_hp ?? auth()->user()->phone) }}" readonly>
+                      <label class="form-label fw-semibold text-uppercase small text-muted">Nomor Handphone <span class="text-danger">*</span></label>
+                      <input type="tel" class="form-control" name="no_hp" value="{{ old('no_hp', $registration->no_hp ?? auth()->user()->phone) }}" required>
                     </div>
 
                     <!-- 9. Alamat Email (Autofilled & Readonly) -->

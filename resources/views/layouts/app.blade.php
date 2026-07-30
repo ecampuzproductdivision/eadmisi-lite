@@ -550,6 +550,13 @@ textarea.form-control::placeholder {
         const welcomeModal = document.getElementById('welcomeOnboardingModal');
         if (!welcomeModal) return;
 
+        // Check if user has incomplete profile (blocking modal active)
+        @auth
+        @if(!auth()->user()->isProfileComplete())
+        return;
+        @endif
+        @endauth
+
         // Check if we have onboarding progress data
         fetch('{{ route("onboarding.progress") }}')
             .then(r => r.json())
@@ -610,6 +617,8 @@ textarea.form-control::placeholder {
         }
     });
     </script>
+
+    @include('components.modal-complete-profile')
 
     @stack('scripts')
 <script>

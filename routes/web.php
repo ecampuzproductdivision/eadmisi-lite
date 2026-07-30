@@ -88,6 +88,8 @@ Route::get('/api/registration-paths', [RegistrationPathController::class, 'apiLi
         Route::get('/daftar-pmb/registrasi/{pathCode?}/review', [RegistrationPathController::class, 'review'])->name('daftar-pmb.review');
         Route::post('/daftar-pmb/registrasi/{pathCode?}/re-registration', [RegistrationPathController::class, 'reRegistrationStore'])->name('daftar-pmb.re-registration.store');
         Route::get('/daftar-pmb/pembayaran-registrasi/{registrationId}', [RegistrationPathController::class, 'pembayaranRegistrasi'])->name('daftar-pmb.pembayaran-registrasi');
+        Route::get('/pendaftaran/cetak-bukti-kelulusan/{id?}', [PendaftaranController::class, 'cetakBuktiKelulusan'])->name('pendaftaran.cetak-bukti-kelulusan');
+        Route::post('/profile/complete-biodata', [AccountSettingsController::class, 'updateBiodataModal'])->name('profile.complete-biodata');
 
         // Dynamic re-registration route
         Route::get('/mahasiswa/registrasi-ulang', function() {

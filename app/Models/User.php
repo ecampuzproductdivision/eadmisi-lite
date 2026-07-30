@@ -29,6 +29,8 @@ class User extends Authenticatable
         'regency_id',
         'password',
         'status',
+        'is_profile_completed',
+        'jenis_kelamin',
         'google_id',
         'avatar',
         'otp_code',
@@ -78,5 +80,20 @@ class User extends Authenticatable
             return $this->attributes['avatar'];
         }
         return asset('assets/images/avatar/avatar-1.jpg');
+    }
+
+    /**
+     * Check whether user's profile is fully completed.
+     */
+    public function isProfileComplete(): bool
+    {
+        if ($this->is_profile_completed) {
+            return true;
+        }
+
+        return !empty($this->name) 
+            && !empty($this->phone) 
+            && !empty($this->jenis_kelamin) 
+            && (!empty($this->regency_id) || !empty($this->domisili));
     }
 }

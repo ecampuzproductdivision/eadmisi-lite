@@ -480,8 +480,10 @@
         <div class="accordion accordion-flush mb-4" id="historyAccordion">
           <div class="accordion-item border rounded shadow-xs bg-light">
             <h2 class="accordion-header">
-              <button class="accordion-button collapsed py-2 px-3 fw-bold small text-muted bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHistory">
-                <i class="ti ti-history me-1"></i> Riwayat Perubahan Sel (Audit Log)
+              <button class="accordion-button collapsed py-2 px-3 fw-bold small text-muted bg-light d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHistory">
+                <i class="ti ti-history me-1"></i>
+                <span class="flex-grow-1">Riwayat Perubahan Sel (Audit Log)</span>
+                <i class="ti ti-chevron-down accordion-chevron fs-5"></i>
               </button>
             </h2>
             <div id="collapseHistory" class="accordion-collapse collapse" data-bs-parent="#historyAccordion">

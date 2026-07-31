@@ -16,6 +16,23 @@
     <link rel="stylesheet" href="{{ asset('assets/css/theme.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/libs/select2/css/select2.min.css') }}">
     <style>
+        body {
+            background-image: url('{{ App\Models\LandingSetting::getValue("login_register_background") ? asset(App\Models\LandingSetting::getValue("login_register_background")) : "" }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        [data-bs-theme="dark"] body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 0;
+        }
+        [data-bs-theme="dark"] main {
+            position: relative;
+            z-index: 1;
+        }
         .btn-primary { --ds-btn-hover-bg: #d82939; --ds-btn-hover-border-color: #d82939; --ds-btn-active-bg: #c82635; --ds-btn-active-border-color: #c82635; }
         .site-logo-text { color: #1c252e !important; }
         [data-bs-theme="dark"] .site-logo-text { color: #cfd1d2 !important; }

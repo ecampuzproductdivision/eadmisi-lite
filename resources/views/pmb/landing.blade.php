@@ -518,64 +518,91 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             @endif
-            <div class="row g-4 stagger-children">
-                @forelse($activePaths as $path)
-                @php
-                    $isOpen = $path->registration_start && $path->registration_end
-                        ? now()->between($path->registration_start->startOfDay(), $path->registration_end->endOfDay())
-                        : true;
-                    $sisaKuota = $path->quota ? $path->quota - ($path->terdaftar ?? 0) : null;
-                @endphp
-                <div class="col-lg-4 col-md-6 stagger-item">
-                    <div class="card path-card h-100 border-0 shadow-sm animate-scale">
-                        <div class="card-body p-5 d-flex flex-column">
-                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                 <span class="badge bg-{{ $path->color ?? 'secondary' }}-subtle text-{{ $path->color ?? 'secondary' }} px-3 py-1.5 fs-6">{{ $path->kategori->nama ?? 'Jalur' }}</span>
-                                 @if($isOpen)
-                                     <span class="badge bg-success-subtle text-success px-3 py-1.5 fs-6"><i class="ti ti-circle-check me-1"></i>Buka</span>
-                                 @else
-                                     <span class="badge bg-secondary-subtle text-secondary px-3 py-1.5 fs-6"><i class="ti ti-clock me-1"></i>Tutup</span>
-                                 @endif
-                             </div>
-                             @if($path->periode)
-                                 <div class="mb-3">
-                                     <span class="badge bg-info-subtle text-info px-2.5 py-1.5 text-wrap text-start lh-base" style="font-size: 0.78rem;">
-                                         <i class="ti ti-calendar-event me-1"></i>Pendaftaran TA {{ $path->periode->tahun_akademik }} - {{ $path->periode->semester }}
-                                     </span>
-                                 </div>
-                             @endif
-                             <h5 class="fw-bold mb-2">{{ $path->name }}</h5>
-                            @if($path->description)
-                            <p class="text-secondary  mb-4">{{ Str::limit($path->description, 100) }}</p>
-                            @endif
-                            <div class="mt-auto">
-                                <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-3">
-                                    <small class="text-secondary text-nowrap me-2"><i class="ti ti-calendar me-1"></i>@if($path->registration_start && $path->registration_end){{ $path->registration_start->format('d/m/Y') }} - {{ $path->registration_end->format('d/m/Y') }}@else Sepanjang Tahun @endif</small>
-                                    <span class="fw-bold text-danger text-nowrap">Rp {{ number_format($path->fee, 0, ',', '.') }}</span>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <p class="text-secondary"><i class="ti ti-users me-1"></i>
-                                        @if($sisaKuota !== null && $sisaKuota > 0) Sisa <strong>{{ $sisaKuota }}</strong> kursi
-                                        @elseif($sisaKuota !== null && $sisaKuota <= 0) <span class="text-danger">Penuh</span>
-                                        @else Kuota tak terbatas @endif</p>
-                                    @if($path->jumlah_pilihan_prodi)
-                                    <p class="text-secondary"><i class="ti ti-checks me-1"></i>{{ $path->jumlah_pilihan_prodi }} pilihan</p>
+            @php
+                $groupedPaths = $activePaths->groupBy(fn($p) => $p->kategori->nama ?? 'Jalur');
+            @endphp
+
+            @if($groupedPaths->isNotEmpty())
+            {{-- Horizontal Tabs by Category --}}
+            <ul class="nav nav-tabs nav-fill mb-6 border-0" id="jalurTabs" role="tablist">
+                @foreach($groupedPaths as $kategori => $paths)
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-semibold py-3 px-4 {{ $loop->first ? 'active' : '' }}"
+                            id="jalur-tab-{{ Str::slug($kategori) }}"
+                            data-bs-toggle="tab"
+                            data-bs-target="#jalur-{{ Str::slug($kategori) }}"
+                            type="button" role="tab">
+                        <i class="ti ti-tag me-2"></i>{{ $kategori }}
+                        <span class="badge bg-primary-subtle text-primary ms-2">{{ $paths->count() }}</span>
+                    </button>
+                </li>
+                @endforeach
+            </ul>
+
+            {{-- Tab Content --}}
+            <div class="tab-content" id="jalurTabsContent">
+                @foreach($groupedPaths as $kategori => $kategoriPaths)
+                <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="jalur-{{ Str::slug($kategori) }}" role="tabpanel">
+                    <div class="row g-4 stagger-children">
+                        @foreach($kategoriPaths as $path)
+                        @php
+                            $isOpen = $path->registration_start && $path->registration_end
+                                ? now()->between($path->registration_start->startOfDay(), $path->registration_end->endOfDay())
+                                : true;
+                            $sisaKuota = $path->quota ? $path->quota - ($path->terdaftar ?? 0) : null;
+                        @endphp
+                        <div class="col-lg-4 col-md-6 stagger-item">
+                            <div class="card path-card h-100 border-0 shadow-sm animate-scale">
+                                <div class="card-body p-5 d-flex flex-column">
+                                     <div class="d-flex justify-content-between align-items-center mb-2">
+                                         <span class="badge bg-{{ $path->color ?? 'secondary' }}-subtle text-{{ $path->color ?? 'secondary' }} px-3 py-1.5 fs-6">{{ $path->kategori->nama ?? 'Jalur' }}</span>
+                                         @if($isOpen)
+                                             <span class="badge bg-success-subtle text-success px-3 py-1.5 fs-6"><i class="ti ti-circle-check me-1"></i>Buka</span>
+                                         @else
+                                             <span class="badge bg-secondary-subtle text-secondary px-3 py-1.5 fs-6"><i class="ti ti-clock me-1"></i>Tutup</span>
+                                         @endif
+                                     </div>
+                                     <h5 class="fw-bold mb-2">{{ $path->name }}</h5>
+                                    @if($path->description)
+                                    <p class="text-secondary mb-4">{{ Str::limit($path->description, 100) }}</p>
                                     @endif
+                                    @if($path->periode)
+                                    <p class="text-secondary mb-4" style="font-size: 0.85rem;">
+                                        <i class="ti ti-calendar-event me-1"></i>Pendaftaran TA {{ $path->periode->tahun_akademik }} - {{ $path->periode->semester }}
+                                    </p>
+                                    @endif
+                                    <div class="mt-auto">
+                                        <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-3">
+                                            <small class="text-secondary text-nowrap me-2"><i class="ti ti-calendar me-1"></i>@if($path->registration_start && $path->registration_end){{ $path->registration_start->format('d/m/Y') }} - {{ $path->registration_end->format('d/m/Y') }}@else Sepanjang Tahun @endif</small>
+                                            <span class="fw-bold text-danger text-nowrap">Rp {{ number_format($path->fee, 0, ',', '.') }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <p class="text-secondary"><i class="ti ti-users me-1"></i>
+                                                @if($sisaKuota !== null && $sisaKuota > 0) Sisa <strong>{{ $sisaKuota }}</strong> kursi
+                                                @elseif($sisaKuota !== null && $sisaKuota <= 0) <span class="text-danger">Penuh</span>
+                                                @else Kuota tak terbatas @endif</p>
+                                            @if($path->jumlah_pilihan_prodi)
+                                            <p class="text-secondary"><i class="ti ti-checks me-1"></i>{{ $path->jumlah_pilihan_prodi }} pilihan</p>
+                                            @endif
+                                        </div>
+                                        <a href="{{ route('register', $path->id) }}" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2">
+                                            <i class="ti ti-arrow-right fs-5"></i> Daftar Sekarang
+                                        </a>
+                                    </div>
                                 </div>
-                                <a href="{{ route('register', $path->id) }}" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2">
-                                    <i class="ti ti-arrow-right fs-5"></i> Daftar Sekarang
-                                </a>
                             </div>
                         </div>
+                        @endforeach
                     </div>
                 </div>
-                @empty
-                <div class="col-12 text-center py-6">
-                    <i class="ti ti-road-off text-secondary" style="font-size: 3rem;"></i>
-                    <p class="mt-3 text-secondary">Belum ada jalur pendaftaran yang tersedia saat ini.</p>
-                </div>
-                @endforelse
+                @endforeach
             </div>
+            @else
+            <div class="text-center py-6">
+                <i class="ti ti-road-off text-secondary" style="font-size: 3rem;"></i>
+                <p class="mt-3 text-secondary">Belum ada jalur pendaftaran yang tersedia saat ini.</p>
+            </div>
+            @endif
         </div>
     </section>
 
@@ -631,23 +658,31 @@
                 <h2 class="fw-bold display-6 mb-3">Langkah Mudah Mendaftar</h2>
                 <p class="text-secondary mx-auto" style="max-width: 540px;">Ikuti langkah-langkah berikut untuk memulai perjalanan akademik Anda</p>
             </div>
-            <div class="row g-4 stagger-children">
-                @php
-                    $steps = [
-                        ['num' => '1', 'color' => 'danger', 'title' => 'Buat Akun', 'desc' => 'Daftar dan buat akun PMB Anda dengan mengisi data diri'],
-                        ['num' => '2', 'color' => 'warning', 'title' => 'Isi Data Pendaftaran', 'desc' => 'Lengkapi formulir pendaftaran dan pilih program studi'],
-                        ['num' => '3', 'color' => 'info', 'title' => 'Upload Dokumen', 'desc' => 'Unggah dokumen persyaratan yang diperlukan'],
-                        ['num' => '4', 'color' => 'success', 'title' => 'Konfirmasi & Seleksi', 'desc' => 'Tunggu hasil seleksi dan lakukan pembayaran jika diterima'],
-                    ];
-                @endphp
+            @php
+                $steps = [
+                    ['num' => '1', 'color' => 'danger', 'title' => 'Buat Akun', 'desc' => 'Daftar dan buat akun PMB Anda dengan mengisi data diri'],
+                    ['num' => '2', 'color' => 'warning', 'title' => 'Isi Data Pendaftaran', 'desc' => 'Lengkapi formulir pendaftaran dan pilih program studi'],
+                    ['num' => '3', 'color' => 'info', 'title' => 'Upload Dokumen', 'desc' => 'Unggah dokumen persyaratan yang diperlukan'],
+                    ['num' => '4', 'color' => 'success', 'title' => 'Konfirmasi & Seleksi', 'desc' => 'Tunggu hasil seleksi dan lakukan pembayaran jika diterima'],
+                ];
+            @endphp
+            <div class="d-flex flex-column flex-lg-row align-items-center justify-content-center gap-0 gap-lg-0 stagger-children">
                 @foreach($steps as $s)
-                <div class="col-lg-3 col-md-6 stagger-item">
-                    <div class="text-center">
-                        <div class="step-number bg-{{ $s['color'] }}-subtle text-{{ $s['color'] }} mx-auto mb-3">{{ $s['num'] }}</div>
-                        <h6 class="fw-bold mb-2">{{ $s['title'] }}</h6>
-                        <p class="text-secondary  mb-0">{{ $s['desc'] }}</p>
+                <div class="d-flex flex-column align-items-center text-center stagger-item px-2" style="flex:1; max-width:280px;">
+                    <div class="step-number bg-{{ $s['color'] }}-subtle text-{{ $s['color'] }} mx-auto mb-3 position-relative">
+                        {{ $s['num'] }}
                     </div>
+                    <h6 class="fw-bold mb-2">{{ $s['title'] }}</h6>
+                    <p class="text-secondary mb-0 small">{{ $s['desc'] }}</p>
                 </div>
+                @if(!$loop->last)
+                <div class="d-none d-lg-flex align-items-center justify-content-center text-muted stagger-item flex-shrink-0" style="width:60px;">
+                    <i class="ti ti-chevron-right fs-1"></i>
+                </div>
+                <div class="d-flex d-lg-none align-items-center justify-content-center text-muted stagger-item py-2">
+                    <i class="ti ti-chevron-down fs-1"></i>
+                </div>
+                @endif
                 @endforeach
             </div>
             <div class="text-center mt-8">
@@ -739,26 +774,39 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col-lg-8">
-                    <div class="accordion" id="faqAccordion">
-                        @php
-                            $faqs = [
-                                ['id' => 'faq1', 'q' => 'Bagaimana cara mendaftar sebagai mahasiswa baru?', 'a' => 'Anda dapat mendaftar secara online melalui portal PMB kami. Buat akun, lengkapi data diri, pilih program studi, upload dokumen persyaratan, dan submit pendaftaran Anda.'],
-                                ['id' => 'faq2', 'q' => 'Apa saja persyaratan pendaftaran?', 'a' => 'Persyaratan umum meliputi: Ijazah SMA/SMK/MA sederajat, rapor, kartu identitas, pas foto terbaru, dan dokumen pendukung lainnya sesuai program studi yang dipilih.'],
-                                ['id' => 'faq3', 'q' => 'Apakah ada beasiswa yang tersedia?', 'a' => 'Ya, kami menyediakan berbagai program beasiswa seperti Beasiswa Prestasi Akademik, Beasiswa Atlet, Beasiswa Kurang Mampu (KIP Kuliah), dan beasiswa kerjasama dengan perusahaan mitra.'],
-                                ['id' => 'faq4', 'q' => 'Kapan batas waktu pendaftaran?', 'a' => 'Pendaftaran dibuka dalam beberapa gelombang. Gelombang I: Januari - Maret, Gelombang II: April - Juni, Gelombang III: Juli - Agustus. Informasi detail dapat dilihat di portal PMB.'],
-                            ];
-                        @endphp
-                        @foreach($faqs as $faq)
-                        <div class="accordion-item border-0 mb-3 shadow-sm">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#{{ $faq['id'] }}">{{ $faq['q'] }}</button>
-                            </h2>
-                            <div id="{{ $faq['id'] }}" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body text-secondary">{{ $faq['a'] }}</div>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
+                    @include('components.accordion', [
+                        'id' => 'faqAccordion',
+                        'items' => [
+                            [
+                                'id' => 'faq1',
+                                'title' => 'Bagaimana cara mendaftar sebagai mahasiswa baru?',
+                                'content' => 'Anda dapat mendaftar secara online melalui portal PMB kami. Buat akun, lengkapi data diri, pilih program studi, upload dokumen persyaratan, dan submit pendaftaran Anda.',
+                                'item_class' => 'border-0 mb-3 shadow-sm',
+                                'body_class' => 'text-secondary px-4 py-3',
+                            ],
+                            [
+                                'id' => 'faq2',
+                                'title' => 'Apa saja persyaratan pendaftaran?',
+                                'content' => 'Persyaratan umum meliputi: Ijazah SMA/SMK/MA sederajat, rapor, kartu identitas, pas foto terbaru, dan dokumen pendukung lainnya sesuai program studi yang dipilih.',
+                                'item_class' => 'border-0 mb-3 shadow-sm',
+                                'body_class' => 'text-secondary px-4 py-3',
+                            ],
+                            [
+                                'id' => 'faq3',
+                                'title' => 'Apakah ada beasiswa yang tersedia?',
+                                'content' => 'Ya, kami menyediakan berbagai program beasiswa seperti Beasiswa Prestasi Akademik, Beasiswa Atlet, Beasiswa Kurang Mampu (KIP Kuliah), dan beasiswa kerjasama dengan perusahaan mitra.',
+                                'item_class' => 'border-0 mb-3 shadow-sm',
+                                'body_class' => 'text-secondary px-4 py-3',
+                            ],
+                            [
+                                'id' => 'faq4',
+                                'title' => 'Kapan batas waktu pendaftaran?',
+                                'content' => 'Pendaftaran dibuka dalam beberapa gelombang. Gelombang I: Januari - Maret, Gelombang II: April - Juni, Gelombang III: Juli - Agustus. Informasi detail dapat dilihat di portal PMB.',
+                                'item_class' => 'border-0 mb-3 shadow-sm',
+                                'body_class' => 'text-secondary px-4 py-3',
+                            ],
+                        ],
+                    ])
                 </div>
             </div>
         </div>

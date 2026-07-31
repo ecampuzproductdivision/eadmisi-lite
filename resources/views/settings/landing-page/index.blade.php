@@ -35,6 +35,9 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link " id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab"><i class="ti ti-address-book me-2"></i>Kontak & Sosial Media</button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link " id="login-register-tab" data-bs-toggle="tab" data-bs-target="#login-register" type="button" role="tab"><i class="ti ti-lock me-2"></i>Form Login & Register</button>
+                </li>
             </ul>
         </div>
         <div class="card-body p-4">
@@ -267,6 +270,37 @@
                             <div class="col-12"><button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2 px-4"><i class="ti ti-device-floppy"></i> Simpan Pengaturan</button></div>
                         </div>
                     </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- TAB 6: Form Login & Register -->
+                <div class="tab-pane fade" id="login-register" role="tabpanel">
+                    <div class="card border shadow-sm">
+                        <div class="card-header bg-transparent py-3 px-4 d-flex align-items-center">
+                            <h5 class="fw-bold mb-0"><i class="ti ti-lock me-2"></i>Background Image Halaman Login & Register</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form action="{{ route('settings.landing-page.upload-login-register-image') }}" method="POST" enctype="multipart/form-data" class="row g-3">
+                                @csrf
+                                @if(isset($settings['login_register_background']) && $settings['login_register_background']->value)
+                                <div class="col-12">
+                                    <label class="form-label">Preview Saat Ini</label>
+                                    <div class="position-relative d-inline-block">
+                                        <img src="{{ asset($settings['login_register_background']->value) }}" alt="Login Register Background" class="img-fluid rounded-3 border" style="max-height: 200px; width: auto; object-fit: cover;">
+                                        <button type="submit" form="deleteLoginRegisterForm" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle" style="width: 32px; height: 32px;" title="Hapus gambar"><i class="ti ti-trash"></i></button>
+                                    </div>
+                                </div>
+                                @endif
+                                <div class="col-md-6">
+                                    <label class="form-label">Upload Gambar Background</label>
+                                    <input type="file" name="login_register_image" class="form-control" accept=".png,.jpeg,.jpg,.webp" required>
+                                    <div class="form-text">Format: PNG, JPEG, WEBP. Maks: 5MB. Background akan diterapkan di halaman Login dan Register.</div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2"><i class="ti ti-upload"></i> Unggah Background</button>
+                                </div>
+                            </form>
+                            <form id="deleteLoginRegisterForm" action="{{ route('settings.landing-page.delete-login-register-image') }}" method="POST" class="d-none">@csrf</form>
                         </div>
                     </div>
                 </div>

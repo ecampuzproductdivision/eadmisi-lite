@@ -127,6 +127,9 @@ html.collapsed #miniSidebar .sidebar-divider {
 }
 
 /* Sidebar Section Header */
+.nav-item.nav-section-header {
+  padding-top: 1rem !important;
+}
 .nav-section-header .nav-link {
   padding: 0.5rem 0.75rem 0.25rem 0.75rem !important;
   font-size: 0.65rem;

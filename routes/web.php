@@ -294,6 +294,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('settings/landing-page/upload-banner-image', [LandingPageController::class, 'uploadBannerImage'])->name('settings.landing-page.upload-banner-image');
         Route::post('settings/landing-page/delete-about-image', [LandingPageController::class, 'deleteAboutImage'])->name('settings.landing-page.delete-about-image');
         Route::post('settings/landing-page/delete-banner-image', [LandingPageController::class, 'deleteBannerImage'])->name('settings.landing-page.delete-banner-image');
+        Route::post('settings/landing-page/upload-login-register-image', [LandingPageController::class, 'uploadLoginRegisterImage'])->name('settings.landing-page.upload-login-register-image');
+        Route::post('settings/landing-page/delete-login-register-image', [LandingPageController::class, 'deleteLoginRegisterImage'])->name('settings.landing-page.delete-login-register-image');
 
         // Form Pendaftaran (Settings > Form Pendaftaran)
         Route::prefix('settings/form-pendaftaran')->name('settings.form-pendaftaran.')->group(function () {

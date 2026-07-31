@@ -296,8 +296,9 @@
             @forelse($kkniLevels as $level)
             <div class="accordion-item kkni-level-card" data-level="{{ $level->level }}" data-jenjang="{{ $level->jenjang_pendidikan }}">
               <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ $level->level }}" aria-expanded="false" aria-controls="flush-collapse{{ $level->level }}">
+                <button class="accordion-button collapsed d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse{{ $level->level }}" aria-expanded="false" aria-controls="flush-collapse{{ $level->level }}">
                   <div class="d-flex align-items-center gap-3 w-100 me-2">
+                    <i class="ti ti-chevron-down accordion-chevron fs-5 text-muted flex-shrink-0"></i>
                     <span class="badge bg-{{ $level->level >= 6 ? 'primary' : 'secondary' }} px-3 py-2 rounded-pill">Level {{ $level->level }}</span>
                     <div>
                       <h6 class="fw-bold mb-0 text-dark text-start">{{ $level->nama_level }}</h6>

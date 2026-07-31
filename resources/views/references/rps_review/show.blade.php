@@ -170,7 +170,7 @@
               @endphp
               <div class="accordion-item border border-slate-200 mb-2 shadow-none" style="border-radius: 8px; overflow: hidden;">
                 <h2 class="accordion-header" id="heading-{{ $p->id_pertemuan }}">
-                  <button class="accordion-button collapsed py-3 px-4 bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $p->id_pertemuan }}">
+                  <button class="accordion-button collapsed py-3 px-4 bg-white d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $p->id_pertemuan }}">
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
                       <div class="d-flex align-items-center gap-2">
                         <span class="badge rounded-pill px-3 py-1 fw-bold {{ in_array($p->jenis_pertemuan, ['UTS','UAS']) ? 'bg-info text-white' : 'bg-slate-900 text-white' }}" style="font-size:0.72rem;">{{ in_array($p->jenis_pertemuan, ['UTS','UAS']) ? $p->jenis_pertemuan : 'Minggu '.$p->nomor_pertemuan }}</span>
@@ -180,6 +180,7 @@
                         <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size:0.68rem;"><i class="ti ti-award me-1"></i>{{ $pCpmkCode }}</span>
                       @endif
                     </div>
+                    <i class="ti ti-chevron-down accordion-chevron fs-5 text-muted flex-shrink-0"></i>
                   </button>
                 </h2>
                 <div id="collapse-{{ $p->id_pertemuan }}" class="accordion-collapse collapse" data-bs-parent="#pertemuanAccordion">
@@ -303,8 +304,9 @@
                 @if($items->isNotEmpty())
                   <div class="accordion-item border border-slate-200 mb-2 shadow-none" style="border-radius: 8px; overflow:hidden;">
                     <h2 class="accordion-header">
-                      <button class="accordion-button collapsed py-2 px-3 bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-check-{{ $catCode }}">
-                        <strong class="text-dark small">{{ $catLabel }}</strong>
+                      <button class="accordion-button collapsed py-2 px-3 bg-white d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-check-{{ $catCode }}">
+                        <strong class="text-dark small flex-grow-1">{{ $catLabel }}</strong>
+                        <i class="ti ti-chevron-down accordion-chevron fs-5 text-muted"></i>
                       </button>
                     </h2>
                     <div id="collapse-check-{{ $catCode }}" class="accordion-collapse collapse" data-bs-parent="#checklistAccordion">

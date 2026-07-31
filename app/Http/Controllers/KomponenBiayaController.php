@@ -12,6 +12,27 @@ class KomponenBiayaController extends Controller
     public function index(Request $request)
     {
         $query = KomponenBiaya::orderBy('kode_komponen');
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('kode_komponen', 'like', "%{$search}%")
+                  ->orWhere('nama_komponen', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%");
+            });
+        }
+
+        // Status filter
+        if ($request->filled('status')) {
+            $status = $request->status;
+            if ($status === 'active') {
+                $query->where('is_active', true);
+            } elseif ($status === 'inactive') {
+                $query->where('is_active', false);
+            }
+        }
+
         $komponens = $query->paginate(20);
 
         if ($request->ajax()) {
@@ -19,6 +40,7 @@ class KomponenBiayaController extends Controller
                 'html' => view('komponen-biaya.partials.rows', compact('komponens'))->render(),
                 'next_page' => $komponens->nextPageUrl(),
                 'has_more' => $komponens->hasMorePages(),
+                'total' => $komponens->total(),
             ]);
         }
 

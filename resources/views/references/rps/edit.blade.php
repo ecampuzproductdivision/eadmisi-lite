@@ -236,7 +236,7 @@
               @endphp
               <div class="accordion-item border border-slate-200 mb-2 shadow-none" style="border-radius: 8px; overflow: hidden;">
                     <h2 class="accordion-header" id="heading-{{ $p->id_pertemuan }}">
-                      <button class="accordion-button collapsed py-2 px-4 bg-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $p->id_pertemuan }}" aria-expanded="false" aria-controls="collapse-{{ $p->id_pertemuan }}">
+                      <button class="accordion-button collapsed py-2 px-4 bg-white d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ $p->id_pertemuan }}" aria-expanded="false" aria-controls="collapse-{{ $p->id_pertemuan }}">
                         <div class="d-flex align-items-center justify-content-between w-100 me-3">
                           <div class="d-flex align-items-center gap-2 flex-wrap">
                             {{-- Week badge --}}
@@ -248,6 +248,7 @@
                               <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size:0.68rem;"><i class="ti ti-award me-1" style="font-size:0.7rem;"></i>{{ $pCpmkCode }}</span>
                             @endif
                             {{-- Method chips --}}
+                            <i class="ti ti-chevron-down accordion-chevron fs-5 text-muted flex-shrink-0"></i>
                             @foreach(array_slice($pMethods, 0, 3) as $mc)
                               @if(isset($methodLabels[$mc]))
                                 <span class="badge bg-light text-secondary border" style="font-size:0.65rem;">{{ $methodLabels[$mc] }}</span>

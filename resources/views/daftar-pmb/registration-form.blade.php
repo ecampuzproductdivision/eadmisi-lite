@@ -207,32 +207,26 @@
           <div class="card border-1 shadow-sm">
             <div class="card-body p-4">
               <h6 class="fw-bold mb-3"><i class="ti ti-help-circle text-info me-2"></i>Pertanyaan Umum</h6>
-              <div class="accordion accordion-flush" id="faqAccordion">
-                <div class="accordion-item border-0">
-                  <h2 class="accordion-header">
-                    <button class="accordion-button collapsed p-2 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" style="font-size: 0.85rem;">
-                      Bagaimana jika data salah?
-                    </button>
-                  </h2>
-                  <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body p-2 text-muted" style="font-size: 0.82rem;">
-                      Anda dapat mengedit data sebelum mengirim. Setelah submit, hubungi admin untuk perubahan.
-                    </div>
-                  </div>
-                </div>
-                <div class="accordion-item border-0">
-                  <h2 class="accordion-header">
-                    <button class="accordion-button collapsed p-2 fw-semibold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" style="font-size: 0.85rem;">
-                      Berapa lama proses seleksi?
-                    </button>
-                  </h2>
-                  <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body p-2 text-muted" style="font-size: 0.82rem;">
-                      Proses seleksi biasanya 1-2 minggu setelah batas pendaftaran ditutup.
-                    </div>
-                  </div>
-                </div>
-              </div>
+              @include('components.accordion', [
+                  'id' => 'faqAccordion',
+                  'flush' => true,
+                  'items' => [
+                      [
+                          'id' => 'faq1',
+                          'title' => 'Bagaimana jika data salah?',
+                          'content' => 'Anda dapat mengedit data sebelum mengirim. Setelah submit, hubungi admin untuk perubahan.',
+                          'item_class' => 'border-0',
+                          'body_class' => 'p-2 text-muted',
+                      ],
+                      [
+                          'id' => 'faq3',
+                          'title' => 'Berapa lama proses seleksi?',
+                          'content' => 'Proses seleksi biasanya 1-2 minggu setelah batas pendaftaran ditutup.',
+                          'item_class' => 'border-0',
+                          'body_class' => 'p-2 text-muted',
+                      ],
+                  ],
+              ])
             </div>
           </div>
         </div>

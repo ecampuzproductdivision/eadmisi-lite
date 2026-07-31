@@ -1,113 +1,90 @@
 @extends('layouts.app')
 
 @section('content')
-<main class="p-2">
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-            <li class="breadcrumb-item"><a href="#">Settings</a></li>
-            <li class="breadcrumb-item active">Komponen Biaya</li>
-        </ol>
-    </nav>
-    <hr>
-
-    <div class="d-flex align-items-center justify-content-between my-5">
-        <div>
-            <h1 class="mb-1 fw-bold">Komponen Biaya</h1>
-            <p class="text-muted mb-0">Kelola master komponen biaya untuk Registrasi Ulang (ePembayaran).</p>
-        </div>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
-            <i class="ti ti-plus me-1"></i> Tambah Komponen Biaya
+@component('components.data-page-layout', ['data' => $komponens])
+    @slot('breadcrumbs', [
+        ['label' => 'Home', 'url' => route('home')],
+        ['label' => 'Settings', 'url' => '#'],
+        ['label' => 'Komponen Biaya', 'active' => true],
+    ])
+    @slot('title', 'Komponen Biaya')
+    @slot('description', 'Kelola master komponen biaya untuk Registrasi Ulang (ePembayaran).')
+    @slot('actions')
+        <button type="button" class="btn btn-dark d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#createModal">
+            <i class="ti ti-plus fs-4"></i> Tambah Komponen Biaya
         </button>
-    </div>
-
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="ti ti-check-circle fs-4 me-2"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    @if($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="ti ti-alert-circle fs-4 me-2"></i>
-            <strong>Terjadi kesalahan:</strong>
-            <ul class="mb-0 mt-1">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    <div class="card border-1 shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4">Kode</th>
-                            <th>Nama Komponen</th>
-                            <th>Deskripsi</th>
-                            <th>Status</th>
-                            <th class="text-end pe-4">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="komponen-rows">
-                        @forelse($komponens as $komponen)
-                            <tr>
-                                <td class="ps-4"><code>{{ $komponen->kode_komponen }}</code></td>
-                                <td>{{ $komponen->nama_komponen }}</td>
-                                <td>{{ $komponen->deskripsi ?? '-' }}</td>
-                                <td>
-                                    <span class="badge bg-{{ $komponen->is_active ? 'success' : 'secondary' }}">
-                                        {{ $komponen->is_active ? 'Aktif' : 'Nonaktif' }}
-                                    </span>
-                                </td>
-                                <td class="text-end pe-4">
-                                    <button type="button" class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#editModal{{ $komponen->id }}">
-                                        <i class="ti ti-edit"></i>
-                                    </button>
-                                    <form action="{{ route('komponen-biaya.toggle-status', $komponen) }}" method="POST" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-outline-{{ $komponen->is_active ? 'warning' : 'success' }} me-1" title="{{ $komponen->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
-                                            <i class="ti ti-{{ $komponen->is_active ? 'player-pause' : 'player-play' }}"></i>
-                                        </button>
-                                    </form>
-                                    <form action="{{ route('komponen-biaya.destroy', $komponen) }}" method="POST" class="d-inline" onsubmit="return confirmSubmit(event, 'Hapus komponen biaya ini?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="ti ti-trash"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="5" class="text-center py-4 text-muted">Belum ada data komponen biaya.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
+    @endslot
+    @slot('filters')
+        <div class="col-md-3 col-12">
+            <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0"><i class="ti ti-search text-muted"></i></span>
+                <input type="text" name="search" class="form-control border-start-0" placeholder="Cari kode, nama komponen..." value="{{ request('search') }}">
             </div>
         </div>
-    </div>
+        <div class="col-md-3 col-12">
+            <select name="status" class="form-select">
+                <option value="">Semua Status</option>
+                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Aktif</option>
+                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
+            </select>
+        </div>
+        <div class="col-md-3 col-12 d-flex gap-2">
+            <button type="submit" class="btn btn-white border"><i class="ti ti-filter"></i> Terapkan</button>
+            <a href="{{ route('komponen-biaya.index') }}" class="btn btn-white border px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
+        </div>
+    @endslot
+    @slot('exports')
+        <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.location.href='{{ route('komponen-biaya.index') }}?export=xls'">
+            <i class="ti ti-file-spreadsheet"></i> .xls
+        </a>
+        <a href="#" class="btn btn-white d-inline-flex align-items-center gap-1" onclick="window.print()">
+            <i class="ti ti-printer"></i> Print
+        </a>
+    @endslot
+    @slot('table')
+        @include('components.ajax-sort-script', ['tableBodyId' => 'komponen-rows'])
+        <table class="table align-middle text-nowrap mb-0 table-hover table-ead">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4 py-3">Kode</th>
+                    <th class="py-3">Nama Komponen</th>
+                    <th class="py-3">Deskripsi</th>
+                    <th class="py-3" style="width:120px;">Status</th>
+                    <th class="py-3 text-end pe-4" style="width:80px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="komponen-rows">
+                @include('komponen-biaya.partials.rows')
+            </tbody>
+        </table>
+        <div id="loading-spinner" class="d-none text-center py-3">
+            <div class="spinner-border text-primary" role="status" style="width: 1.5rem; height: 1.5rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    @endslot
+    @slot('spinner', true)
+    @slot('sentinel', true)
+@endcomponent
 
-    <div class="mt-3">
-        {{ $komponens->links() }}
-    </div>
-</main>
+@include('components.infinite-scroll-script', [
+    'tableBodyId' => 'komponen-rows',
+    'spinnerId' => 'loading-spinner',
+    'nextPageUrl' => $komponens->nextPageUrl(),
+    'hasMore' => $komponens->hasMorePages(),
+])
 
 {{-- Create Modal --}}
-<div class="modal fade" id="createModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
+<div class="modal fade" id="createModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
             <form action="{{ route('komponen-biaya.store') }}" method="POST">
                 @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title">Tambah Komponen Biaya</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Tambah Komponen Biaya</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Kode Komponen <span class="text-danger">*</span></label>
                         <input type="text" name="kode_komponen" class="form-control" placeholder="Contoh: REG01, ALM01" required maxlength="50" value="{{ old('kode_komponen') }}">
@@ -127,9 +104,9 @@
                         <label for="create_is_active" class="form-check-label fw-semibold">Aktif</label>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer border-0">
                     <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                    <button type="submit" class="btn btn-primary px-4">Simpan</button>
                 </div>
             </form>
         </div>
@@ -138,16 +115,16 @@
 
 {{-- Edit Modals --}}
 @foreach($komponens as $komponen)
-    <div class="modal fade" id="editModal{{ $komponen->id }}" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
+    <div class="modal fade" id="editModal{{ $komponen->id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
                 <form action="{{ route('komponen-biaya.update', $komponen) }}" method="POST">
                     @csrf @method('PUT')
-                    <div class="modal-header">
-                        <h5 class="modal-title">Edit Komponen Biaya</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title fw-bold">Edit Komponen Biaya</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body p-4">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Kode Komponen <span class="text-danger">*</span></label>
                             <input type="text" name="kode_komponen" class="form-control" required maxlength="50" value="{{ old('kode_komponen', $komponen->kode_komponen) }}">
@@ -166,9 +143,9 @@
                             <label for="edit_is_active_{{ $komponen->id }}" class="form-check-label fw-semibold">Aktif</label>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer border-0">
                         <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <button type="submit" class="btn btn-primary px-4">Simpan</button>
                     </div>
                 </form>
             </div>

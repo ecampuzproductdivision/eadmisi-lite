@@ -253,4 +253,38 @@ class LandingPageController extends Controller
         return redirect()->route('settings.landing-page.index', ['tab' => 'banner'])
             ->with('success', 'Background Banner berhasil dihapus.');
     }
+
+    public function uploadLoginRegisterImage(Request $request)
+    {
+        $request->validate([
+            'login_register_image' => 'required|image|mimes:png,jpeg,webp|max:5120',
+        ]);
+
+        $file = $request->file('login_register_image');
+        $filename = 'login-register-background.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('landing-page', $filename, 'public');
+
+        LandingSetting::updateOrCreate(
+            ['key' => 'login_register_background'],
+            ['value' => 'storage/' . $path]
+        );
+
+        return redirect()->route('settings.landing-page.index', ['tab' => 'login-register'])
+            ->with('success', 'Background Login & Register berhasil diperbarui.');
+    }
+
+    public function deleteLoginRegisterImage(Request $request)
+    {
+        $setting = LandingSetting::where('key', 'login_register_background')->first();
+        if ($setting && $setting->value) {
+            $oldPath = public_path($setting->value);
+            if (file_exists($oldPath)) {
+                unlink($oldPath);
+            }
+            $setting->delete();
+        }
+
+        return redirect()->route('settings.landing-page.index', ['tab' => 'login-register'])
+            ->with('success', 'Background Login & Register berhasil dihapus.');
+    }
 }

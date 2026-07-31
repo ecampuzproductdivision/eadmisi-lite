@@ -1159,3 +1159,121 @@ Language switcher menggunakan **Bootstrap dropdown**, bukan toggle pills:
 13. **Badge** harus menggunakan subtle variants: `bg-{color}-subtle text-{color}-emphasis border border-{color}-subtle` (kecuali warning tanpa border)
 14. **Onboarding** welcome modal + Driver.js tour + checklist widget untuk user baru
 15. **Onboarding entry points** welcome modal otomatis, menu "Panduan Aplikasi" di profile dropdown, dan floating button di kanan bawah
+
+---
+
+## 18. Accordion Component
+
+### 18.1 Reusable Component (`components.accordion`)
+
+**File:** `resources/views/components/accordion.blade.php`
+
+Komponen accordion standar dengan icon **chevron-down** (`ti ti-chevron-down`) di pojok kanan header yang berotasi 180° saat accordion dibuka.
+
+**Usage:**
+```blade
+@include('components.accordion', [
+    'id' => 'faqAccordion',
+    'flush' => false, // optional, default false
+    'alwaysOpen' => false, // optional, default false (uses data-bs-parent)
+    'items' => [
+        [
+            'id' => 'faq1',
+            'title' => 'Question?',
+            'content' => 'Answer...',
+            'show' => false, // optional, default false
+            'icon' => 'ti ti-help-circle', // optional icon before title
+            'item_class' => 'border-0 mb-2', // optional class for accordion-item
+            'body_class' => 'px-4 py-3', // optional class for accordion-body
+        ],
+    ],
+])
+```
+
+**Parameters:**
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `id` | string | auto-generated | ID unik untuk accordion container |
+| `flush` | bool | false | Gunakan `accordion-flush` (tanpa border/background) |
+| `alwaysOpen` | bool | false | Jika true, tidak menggunakan `data-bs-parent` (multiple items bisa terbuka bersamaan) |
+| `items` | array | [] | Array item accordion |
+
+**Item Properties:**
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `id` | string | auto | ID unik item |
+| `title` | string | required | Judul/header accordion |
+| `content` | string | null | HTML content body |
+| `show` | bool | false | State awal (terbuka/tertutup) |
+| `icon` | string | null | Tabler icon sebelum title (e.g. `ti ti-help-circle`) |
+| `item_class` | string | `'border-0 mb-2'` | Class tambahan untuk `accordion-item` |
+| `body_class` | string | `'px-4 py-3'` | Class tambahan untuk `accordion-body` |
+
+### 18.2 Standar Implementasi Manual (tanpa component)
+
+Untuk accordion yang membutuhkan konten kompleks (looping Blade, form, dll), gunakan pattern manual berikut:
+
+```blade
+<div class="accordion" id="myAccordion">
+    <div class="accordion-item border-0 mb-2">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed d-flex align-items-center gap-2" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#collapseItem">
+                <span class="flex-grow-1">Judul Accordion</span>
+                <i class="ti ti-chevron-down accordion-chevron fs-5 text-muted"></i>
+            </button>
+        </h2>
+        <div id="collapseItem" class="accordion-collapse collapse" data-bs-parent="#myAccordion">
+            <div class="accordion-body px-4 py-3">
+                <!-- Konten -->
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+### 18.3 Aturan Accordion
+
+1. **WAJIB** menambahkan icon `ti ti-chevron-down` dengan class `accordion-chevron` di pojok kanan button header
+2. **WAJIB** menyembunyikan default Bootstrap chevron (`accordion-button::after`) dengan `display: none !important`
+3. **WAJIB** menambahkan CSS berikut (otomatis jika menggunakan component):
+   ```css
+   .accordion-chevron {
+       transition: transform 0.3s ease;
+   }
+   /* Chevron down (ti ti-chevron-down) saat collapsed (inactive),
+      chevron up (rotasi 180deg) saat expanded (active) */
+   .accordion-button:not(.collapsed) .accordion-chevron {
+       transform: rotate(180deg);
+   }
+   .accordion-button::after {
+       display: none !important;
+   }
+   ```
+4. **WAJIB** menggunakan `d-flex align-items-center gap-2` pada button header
+5. **WAJIB** menggunakan `flex-grow-1` pada elemen judul agar chevron tetap di kanan
+6. **DILARANG** menggunakan `accordion-button::after` (default Bootstrap chevron) — harus diganti dengan `ti ti-chevron-down`
+7. **DILARANG** menggunakan inline `style` untuk mengatur font-size pada accordion button — gunakan class utility
+8. **DILARANG** menggunakan `btn-close-white` pada modal di dalam accordion
+9. Untuk accordion sederhana (FAQ), gunakan `@include('components.accordion')`
+10. Untuk accordion kompleks (looping, form), gunakan pattern manual dengan chevron icon
+
+**Perilaku Chevron:**
+- **Collapsed (inactive):** Icon `ti ti-chevron-down` (panah ke bawah)
+- **Expanded (active):** Icon berotasi 180° menjadi panah ke atas (`chevron-up`) melalui CSS `transform: rotate(180deg)`
+- Transisi menggunakan `transition: transform 0.3s ease` untuk animasi halus
+
+### 18.4 Halaman yang Menggunakan Accordion
+
+| Halaman | File | Tipe |
+|---------|------|------|
+| Landing Page FAQ | `pmb/landing.blade.php` | Component |
+| Form Pendaftaran FAQ | `daftar-pmb/registration-form.blade.php` | Component (flush) |
+| Form Builder | `settings/form-pendaftaran/builder.blade.php` | Manual |
+| RPS Review Pertemuan | `references/rps_review/show.blade.php` | Manual |
+| RPS Review Checklist | `references/rps_review/show.blade.php` | Manual |
+| RPS Edit Pertemuan | `references/rps/edit.blade.php` | Manual |
+| OBE CPMK Course Workspace | `references/obe/cpmk-course-workspace.blade.php` | Manual (custom arrow) |
+| OBE Matrix Workspace | `references/obe/matrix-workspace.blade.php` | Manual |
+| OBE Matrix CPMK-CPL | `references/obe/matrix-cpmk-cpl-workspace.blade.php` | Manual |
+| KKNI SNDikti | `references/kkni-sndikti/index.blade.php` | Manual |

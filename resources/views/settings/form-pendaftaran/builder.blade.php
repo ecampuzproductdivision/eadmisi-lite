@@ -47,8 +47,10 @@
                 <!-- Card 1: Generic Fields -->
                 <div class="accordion-item border-0 mb-2">
                   <h2 class="accordion-header">
-                    <button class="accordion-button fw-semibold py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#genericFields" aria-expanded="true">
-                      <i class="ti ti-settings me-2"></i> Komponen Dasar (Generic)
+                    <button class="accordion-button fw-semibold py-2 px-3 d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#genericFields" aria-expanded="true">
+                      <i class="ti ti-settings me-2"></i>
+                      <span class="flex-grow-1">Komponen Dasar (Generic)</span>
+                      <i class="ti ti-chevron-down accordion-chevron fs-5 text-muted"></i>
                     </button>
                   </h2>
                   <div id="genericFields" class="accordion-collapse collapse show" data-bs-parent="#fieldAccordion">
@@ -72,8 +74,10 @@
                 <!-- Card 2: PDDIKTI Standard Fields -->
                 <div class="accordion-item border-0">
                   <h2 class="accordion-header">
-                    <button class="accordion-button fw-semibold py-2 px-3 collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pddiktiFields" aria-expanded="false">
-                      <i class="ti ti-gift me-2" style="color: #dc3545;"></i> Standar PDDIKTI (Siap Pakai)
+                    <button class="accordion-button fw-semibold py-2 px-3 collapsed d-flex align-items-center gap-2" type="button" data-bs-toggle="collapse" data-bs-target="#pddiktiFields" aria-expanded="false">
+                      <i class="ti ti-gift me-2" style="color: #dc3545;"></i>
+                      <span class="flex-grow-1">Standar PDDIKTI (Siap Pakai)</span>
+                      <i class="ti ti-chevron-down accordion-chevron fs-5 text-muted"></i>
                     </button>
                   </h2>
                   <div id="pddiktiFields" class="accordion-collapse collapse" data-bs-parent="#fieldAccordion">

@@ -25,6 +25,16 @@
     </td>
     <td>Rp {{ number_format($path->fee, 0, ',', '.') }}</td>
     <td>
+      @if($path->periode)
+        <span class="fw-semibold">{{ $path->periode->tahun_akademik }} - {{ $path->periode->semester }}</span>
+        @if($path->periode->status_aktif)
+          <span class="badge bg-primary-subtle text-primary ms-1" style="font-size: 0.7rem;">Aktif</span>
+        @endif
+      @else
+        <span class="text-muted">—</span>
+      @endif
+    </td>
+    <td>
       @if($path->registration_start && $path->registration_end)
         <small>{{ $path->registration_start->format('d/m/Y') }} - {{ $path->registration_end->format('d/m/Y') }}</small>
       @else

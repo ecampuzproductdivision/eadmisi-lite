@@ -244,6 +244,7 @@
                                     <div class="d-flex flex-wrap gap-1 align-items-center">
                                         <span class="badge bg-${path.color}-subtle text-${path.color} px-2 py-1">${path.code}</span>
                                         ${path.kategori ? `<span class="badge bg-dark-subtle text-dark px-2 py-1">${path.kategori}</span>` : ''}
+                                        ${path.periode_label ? `<span class="badge bg-info-subtle text-info px-2 py-1"><i class="ti ti-calendar-event me-1"></i>${path.periode_label}</span>` : ''}
                                         ${path.is_open
                                             ? '<span class="badge bg-success-subtle text-success status-badge"><i class="ti ti-circle-check me-1"></i> Dibuka</span>'
                                             : '<span class="badge bg-danger-subtle text-danger status-badge"><i class="ti ti-circle-off me-1"></i> Ditutup</span>'

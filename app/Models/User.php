@@ -87,6 +87,11 @@ class User extends Authenticatable
      */
     public function isProfileComplete(): bool
     {
+        // Only CALON_MAHASISWA needs to complete their profile
+        if (!$this->roles->contains('role_code', 'CALON_MAHASISWA')) {
+            return true;
+        }
+
         if ($this->is_profile_completed) {
             return true;
         }

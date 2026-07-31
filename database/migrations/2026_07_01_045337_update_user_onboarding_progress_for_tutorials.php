@@ -13,7 +13,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement('ALTER TABLE user_onboarding_progress CHANGE COLUMN completed_steps tutorials_progress LONGTEXT DEFAULT NULL');
+        if (DB::getDriverName() === 'sqlite') {
+            Schema::table('user_onboarding_progress', function (Blueprint $table) {
+                $table->renameColumn('completed_steps', 'tutorials_progress');
+            });
+        } else {
+            DB::statement('ALTER TABLE user_onboarding_progress CHANGE COLUMN completed_steps tutorials_progress LONGTEXT DEFAULT NULL');
+        }
     }
 
     /**
@@ -21,6 +27,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement('ALTER TABLE user_onboarding_progress CHANGE COLUMN tutorials_progress completed_steps LONGTEXT DEFAULT NULL');
+        if (DB::getDriverName() === 'sqlite') {
+            Schema::table('user_onboarding_progress', function (Blueprint $table) {
+                $table->renameColumn('tutorials_progress', 'completed_steps');
+            });
+        } else {
+            DB::statement('ALTER TABLE user_onboarding_progress CHANGE COLUMN tutorials_progress completed_steps LONGTEXT DEFAULT NULL');
+        }
     }
 };

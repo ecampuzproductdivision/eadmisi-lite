@@ -522,37 +522,36 @@
                 @forelse($activePaths as $path)
                 @php
                     $isOpen = $path->registration_start && $path->registration_end
-                        ? now()->between($path->registration_start, $path->registration_end)
+                        ? now()->between($path->registration_start->startOfDay(), $path->registration_end->endOfDay())
                         : true;
                     $sisaKuota = $path->quota ? $path->quota - ($path->terdaftar ?? 0) : null;
                 @endphp
                 <div class="col-lg-4 col-md-6 stagger-item">
                     <div class="card path-card h-100 border-0 shadow-sm animate-scale">
                         <div class="card-body p-5 d-flex flex-column">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div>
-                                    <span class="badge bg-{{ $path->color ?? 'secondary' }}-subtle text-{{ $path->color ?? 'secondary' }} px-3 py-2 fs-6 mb-2">{{ $path->kategori->nama ?? 'Jalur' }}</span>
-                                    <h5 class="fw-bold mb-1 mt-2">{{ $path->name }}</h5>
-                                </div>
-                                @if($isOpen)
-                                    <span class="badge bg-success-subtle text-success px-3 py-2 fs-6"><i class="ti ti-circle-check me-1"></i>Buka</span>
-                                @else
-                                    <span class="badge bg-secondary-subtle text-secondary px-3 py-2 fs-6"><i class="ti ti-clock me-1"></i>Tutup</span>
-                                @endif
-                            </div>
+                             <div class="d-flex justify-content-between align-items-center mb-2">
+                                 <span class="badge bg-{{ $path->color ?? 'secondary' }}-subtle text-{{ $path->color ?? 'secondary' }} px-3 py-1.5 fs-6">{{ $path->kategori->nama ?? 'Jalur' }}</span>
+                                 @if($isOpen)
+                                     <span class="badge bg-success-subtle text-success px-3 py-1.5 fs-6"><i class="ti ti-circle-check me-1"></i>Buka</span>
+                                 @else
+                                     <span class="badge bg-secondary-subtle text-secondary px-3 py-1.5 fs-6"><i class="ti ti-clock me-1"></i>Tutup</span>
+                                 @endif
+                             </div>
+                             @if($path->periode)
+                                 <div class="mb-3">
+                                     <span class="badge bg-info-subtle text-info px-2.5 py-1.5 text-wrap text-start lh-base" style="font-size: 0.78rem;">
+                                         <i class="ti ti-calendar-event me-1"></i>Pendaftaran TA {{ $path->periode->tahun_akademik }} - {{ $path->periode->semester }}
+                                     </span>
+                                 </div>
+                             @endif
+                             <h5 class="fw-bold mb-2">{{ $path->name }}</h5>
                             @if($path->description)
                             <p class="text-secondary  mb-4">{{ Str::limit($path->description, 100) }}</p>
                             @endif
                             <div class="mt-auto">
                                 <div class="d-flex justify-content-between align-items-center border-top pt-3 mb-3">
-                                    <span class="text-secondary"><i class="ti ti-calendar me-1"></i>
-                                        @if($path->registration_start && $path->registration_end)
-                                            {{ $path->registration_start->format('d/m/Y') }} - {{ $path->registration_end->format('d/m/Y') }}
-                                        @else
-                                            Sepanjang Tahun
-                                        @endif
-                                    </span>
-                                    <span class="fw-bold text-danger fs-5">Rp {{ number_format($path->fee, 0, ',', '.') }}</span>
+                                    <small class="text-secondary text-nowrap me-2"><i class="ti ti-calendar me-1"></i>@if($path->registration_start && $path->registration_end){{ $path->registration_start->format('d/m/Y') }} - {{ $path->registration_end->format('d/m/Y') }}@else Sepanjang Tahun @endif</small>
+                                    <span class="fw-bold text-danger text-nowrap">Rp {{ number_format($path->fee, 0, ',', '.') }}</span>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <p class="text-secondary"><i class="ti ti-users me-1"></i>

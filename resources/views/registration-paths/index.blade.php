@@ -28,6 +28,16 @@
                 @endforeach
             </select>
         </div>
+        <div class="col-md-3 col-12">
+            <select name="periode_id" class="form-select">
+                <option value="">-- Periode Akademik --</option>
+                @foreach($periodes ?? [] as $periode)
+                    <option value="{{ $periode->id }}" {{ request('periode_id') == $periode->id ? 'selected' : '' }}>
+                        {{ $periode->tahun_akademik }} - {{ $periode->semester }} {{ $periode->status_aktif ? '(Aktif)' : '' }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
         <div class="col-md-3 col-12 d-flex gap-2">
             <button type="submit" class="btn btn-white border"><i class="ti ti-filter"></i> Terapkan</button>
             <a href="{{ route('registration-paths.index') }}" class="btn btn-white border px-3" title="Reset Filter"><i class="ti ti-refresh"></i></a>
@@ -52,7 +62,8 @@
                     <th>Jenis Pendaftaran</th>
                     <th>Form Template</th>
                     <th>Biaya</th>
-                    <th>Periode</th>
+                    <th>PERIODE AKADEMIK</th>
+                    <th>Jadwal Pendaftaran</th>
                     <th>Kuota</th>
                     <x-sortable-header field="is_active" label="Status" width="90px" />
                     <th style="width: 150px;">Aksi</th>
@@ -61,7 +72,7 @@
             <tbody id="paths-table-body">
                 @if($paths->isEmpty())
                     <tr>
-                        <td colspan="10" class="text-center py-5">
+                        <td colspan="11" class="text-center py-5">
                             <i class="ti ti-road-off text-muted" style="font-size: 3rem;"></i>
                             <p class="mt-3 mb-0 text-muted">Belum ada jalur pendaftaran.</p>
                             <a href="{{ route('registration-paths.create') }}" class="btn btn-primary mt-3">Tambah Jalur Pertama</a>

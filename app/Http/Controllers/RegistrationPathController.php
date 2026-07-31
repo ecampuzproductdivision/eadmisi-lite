@@ -47,10 +47,27 @@ class RegistrationPathController extends Controller
 
     public function index(Request $request)
     {
-        $query = RegistrationPath::with('kategori', 'formPendaftaran')
-            ->byActivePeriode();
+        $query = RegistrationPath::with(['kategori', 'formPendaftaran', 'periode']);
+
+        if ($request->filled('periode_id')) {
+            $query->where('periode_id', $request->periode_id);
+        }
+
+        if ($request->filled('kategori')) {
+            $query->where('kategori_jalur_id', $request->kategori);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%");
+            });
+        }
+
         $paths = \App\Helpers\SortHelper::apply($query, ['code', 'name', 'biaya', 'kuota', 'is_active'], 'code', 'asc')->paginate(10);
         $kategoris = KategoriJalur::orderBy('nama')->get();
+        $periodes = Periode::orderByDesc('tahun_akademik')->orderBy('semester')->get();
 
         if ($request->ajax()) {
             return response()->json([
@@ -60,7 +77,7 @@ class RegistrationPathController extends Controller
             ]);
         }
 
-        return view('registration-paths.index', compact('paths', 'kategoris'));
+        return view('registration-paths.index', compact('paths', 'kategoris', 'periodes'));
     }
 
     public function create()
@@ -891,11 +908,27 @@ class RegistrationPathController extends Controller
         $perPage = 6;
         $page = $request->get('page', 1);
         $kategoriId = $request->get('kategori_id');
-        $query = RegistrationPath::with('kategori')->where('is_active', true)->orderBy('code');
+        $query = RegistrationPath::with(['kategori', 'periode'])->where('is_active', true)->orderBy('code');
         if ($kategoriId) $query->where('kategori_jalur_id', $kategoriId);
         $paths = $query->paginate($perPage, ['*'], 'page', $page);
         $data = $paths->map(function ($path) {
-            return ['id' => $path->id, 'code' => $path->code, 'name' => $path->name, 'description' => $path->description, 'fee_formatted' => 'Rp ' . number_format($path->fee, 0, ',', '.'), 'fee' => (int) $path->fee, 'color' => $path->color ?? 'secondary', 'quota' => $path->quota, 'kategori' => $path->kategori?->nama, 'registration_start' => $path->registration_start?->format('d M Y'), 'registration_end' => $path->registration_end?->format('d M Y'), 'is_open' => $path->registration_start === null || $path->registration_end === null ? true : now()->between($path->registration_start, $path->registration_end)];
+            $periodeText = $path->periode ? $path->periode->tahun_akademik . ' - ' . $path->periode->semester : null;
+            return [
+                'id' => $path->id,
+                'code' => $path->code,
+                'name' => $path->name,
+                'description' => $path->description,
+                'fee_formatted' => 'Rp ' . number_format($path->fee, 0, ',', '.'),
+                'fee' => (int) $path->fee,
+                'color' => $path->color ?? 'secondary',
+                'quota' => $path->quota,
+                'kategori' => $path->kategori?->nama,
+                'periode' => $periodeText,
+                'periode_label' => $periodeText ? 'Pendaftaran TA ' . $periodeText : null,
+                'registration_start' => $path->registration_start?->format('d M Y'),
+                'registration_end' => $path->registration_end?->format('d M Y'),
+                'is_open' => $path->registration_start === null || $path->registration_end === null ? true : now()->between($path->registration_start, $path->registration_end)
+            ];
         });
         return response()->json(['data' => $data, 'current_page' => $paths->currentPage(), 'last_page' => $paths->lastPage(), 'per_page' => $paths->perPage(), 'total' => $paths->total(), 'has_more' => $paths->hasMorePages()]);
     }

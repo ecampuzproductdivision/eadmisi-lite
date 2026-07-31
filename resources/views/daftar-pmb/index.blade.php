@@ -104,7 +104,11 @@
               <div>
                 <div class="fw-semibold d-flex flex-column gap-1">
                   ${path.name}
-                  <div class="d-flex gap-1 flex-wrap">
+                  <div class="d-flex gap-1 flex-wrap align-items-center mt-1">
+                    ${path.periode_label
+                      ? `<span class="badge bg-info-subtle text-info fw-semibold"><i class="ti ti-calendar-event me-1"></i>${path.periode_label}</span>`
+                      : ''
+                    }
                     ${path.is_open
                       ? '<span class="badge bg-success-subtle text-success fw-semibold"><i class="ti ti-circle-check me-1"></i> Dibuka</span>'
                       : '<span class="badge bg-danger-subtle text-danger fw-semibold"><i class="ti ti-circle-off me-1"></i> Ditutup</span>'

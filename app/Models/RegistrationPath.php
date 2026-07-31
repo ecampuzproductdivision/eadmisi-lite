@@ -57,11 +57,11 @@ class RegistrationPath extends Model
         return $query->where('is_active', true)
             ->where(function ($q) {
                 $q->whereNull('registration_start')
-                  ->orWhere('registration_start', '<=', now());
+                  ->orWhereDate('registration_start', '<=', now());
             })
             ->where(function ($q) {
                 $q->whereNull('registration_end')
-                  ->orWhere('registration_end', '>=', now());
+                  ->orWhereDate('registration_end', '>=', now());
             });
     }
 

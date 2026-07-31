@@ -37,9 +37,8 @@ Route::get('/locale/{locale}', [LocaleController::class, 'switch'])
     ->name('locale.switch');
 
 Route::get('/', function () {
-    $activePaths = \App\Models\RegistrationPath::with('kategori')
-        ->byActivePeriode()
-        ->where('is_active', true)
+    $activePaths = \App\Models\RegistrationPath::with(['kategori', 'periode'])
+        ->active()
         ->orderBy('code')
         ->get();
 

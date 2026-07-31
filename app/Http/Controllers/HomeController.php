@@ -97,14 +97,14 @@ class HomeController extends Controller
                     : '';
                 $actionLabel = 'Lihat Detail';
                 $actionUrl = route('pendaftaran.show', $reg->id);
-            } elseif ($reg->status === 'rejected') {
-                $statusLabel = 'Ditolak';
+            } elseif (in_array($reg->status, ['rejected', 'Gagal']) || in_array($reg->status_kelulusan, ['Tidak Lulus', 'Gagal'])) {
+                $statusLabel = 'Ditolak / Tidak Lulus';
                 $badgeBg = 'bg-danger';
                 $badgeText = 'text-white';
                 $subBadge = '';
                 $actionLabel = null;
                 $actionUrl = null;
-            } elseif ($reg->status === 'accepted') {
+            } elseif (in_array($reg->status, ['accepted', 'Lulus']) || $reg->status_kelulusan === 'Lulus') {
                 $statusLabel = 'Lulus Seleksi (Registrasi Ulang)';
                 $badgeBg = 'bg-success';
                 $badgeText = 'text-white';
@@ -211,8 +211,8 @@ class HomeController extends Controller
                 'noPendaftaran' => $reg->no_pendaftaran,
                 'pathName' => $pathObj?->name ?? 'Unknown Path',
                 'pathCode' => $pathObj?->code,
-                'prodi1' => $reg->programStudi1?->nama ?? '-',
-                'prodi2' => $reg->programStudi2?->nama ?? '-',
+                'prodi1' => $reg->programStudi1?->nama_prodi ?? $reg->programStudi1?->nama ?? '-',
+                'prodi2' => $reg->programStudi2?->nama_prodi ?? $reg->programStudi2?->nama ?? '-',
                 'createdAt' => $reg->created_at,
                 'statusLabel' => $statusLabel,
                 'badgeBg' => $badgeBg,

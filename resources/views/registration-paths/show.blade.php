@@ -91,6 +91,16 @@
                 <h4 class="fw-bold mt-1 mb-0">{{ $registrationPath->jumlah_pilihan_prodi ?? 1 }} Pilihan</h4>
               </div>
             </div>
+
+            @if($registrationPath->gunakan_ujian)
+              <div class="col-md-6">
+                <div class="border rounded p-3 bg-light-subtle">
+                  <small class="text-muted text-uppercase fw-semibold"><i class="ti ti-checklist text-primary me-1"></i>Nilai Ambang Batas Ujian (Passing Grade)</small>
+                  <h4 class="fw-bold text-primary mt-1 mb-0">{{ $registrationPath->nilai_ambang_batas ?? 75 }} / 100</h4>
+                  <small class="text-muted">Metode Pengumuman: <strong>{{ ucfirst($registrationPath->metode_pengumuman ?? 'ditahan') }}</strong></small>
+                </div>
+              </div>
+            @endif
             <div class="col-md-6">
               <div class="border rounded p-3">
                 <small class="text-muted text-uppercase fw-semibold">Program Studi Ditawarkan</small>

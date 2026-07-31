@@ -11,6 +11,9 @@ class Registration extends Model
         'registration_path_id',
         'program_studi_1_id',
         'program_studi_2_id',
+        'program_studi_3_id',
+        'accepted_program_studi_id',
+        'accepted_pilihan_ke',
         'nama_lengkap',
         'tempat_lahir',
         'tanggal_lahir',
@@ -127,7 +130,17 @@ class Registration extends Model
 
     public function programStudi2()
     {
-        return $this->belongsTo(ProgramStudi::class, 'program_studi_2');
+        return $this->belongsTo(ProgramStudi::class, 'program_studi_2_id');
+    }
+
+    public function programStudi3()
+    {
+        return $this->belongsTo(ProgramStudi::class, 'program_studi_3_id');
+    }
+
+    public function acceptedProgramStudi()
+    {
+        return $this->belongsTo(ProgramStudi::class, 'accepted_program_studi_id');
     }
 
     public function payments()

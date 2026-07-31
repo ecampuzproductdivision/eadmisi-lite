@@ -158,7 +158,15 @@
                 <tr>
                     <td class="ps-4 py-3">
                         @if($canProcessKelulusan)
-                            <input type="checkbox" name="selected_ids[]" value="{{ $registration->id }}" class="form-check-input row-checkbox">
+                            <input type="checkbox" name="selected_ids[]" value="{{ $registration->id }}" class="form-check-input row-checkbox"
+                                data-name="{{ $registration->nama_lengkap }}"
+                                data-prodi1-id="{{ $registration->program_studi_1_id }}"
+                                data-prodi1-name="{{ $registration->programStudi1?->nama_prodi }}"
+                                data-prodi2-id="{{ $registration->program_studi_2_id }}"
+                                data-prodi2-name="{{ $registration->programStudi2?->nama_prodi }}"
+                                data-prodi3-id="{{ $registration->program_studi_3_id }}"
+                                data-prodi3-name="{{ $registration->programStudi3?->nama_prodi }}"
+                                data-accepted-id="{{ $registration->accepted_program_studi_id }}">
                         @endif
                     </td>
                     <td class="ps-2 py-3 text-muted">{{ $loop->iteration + ($registrations->currentPage() - 1) * $registrations->perPage() }}</td>
@@ -179,6 +187,12 @@
                     <td class="py-3">{{ $registration->created_at->format('d/m/Y H:i') }}</td>
                     <td class="py-3">
                         <span class="badge {{ $badgeBg }} rounded-pill px-3 py-1 fw-semibold">{{ $statusLabel }}</span>
+                        @if(in_array($registration->status, ['accepted', 'Lulus']) || $registration->status_kelulusan === 'Lulus')
+                            @php $accProdi = $registration->acceptedProgramStudi ?? $registration->programStudi1; @endphp
+                            @if($accProdi)
+                                <div class="mt-1"><small class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="ti ti-check me-1"></i>Diterima: {{ $accProdi->nama_prodi }} (Pilihan {{ $registration->accepted_pilihan_ke ?? 1 }})</small></div>
+                            @endif
+                        @endif
                         @if(!empty($subBadge))
                             {!! $subBadge !!}
                         @endif
@@ -265,26 +279,112 @@
             </div>
         </div>
     </div>
+    <!-- Modal Selector Program Studi Diterima -->
+    <div class="modal fade" id="modalKelulusanProdi" tabindex="-1" aria-labelledby="modalKelulusanProdiLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title fw-bold" id="modalKelulusanProdiLabel">
+                        <i class="ti ti-circle-check me-2"></i>Penentuan Program Studi Diterima
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4" id="modalKelulusanProdiBody">
+                    <!-- Dynamically generated list of selected students and their prodi options -->
+                </div>
+                <div class="modal-footer bg-light p-3">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-success fw-semibold" id="btn-confirm-kelulusan">
+                        <i class="ti ti-check me-1"></i> Simpan &amp; Luluskan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
 <script>
+function buildProdiOptionsHTML(checkboxes) {
+    let html = '<div class="alert alert-info border-0 rounded-3 mb-3"><i class="ti ti-info-circle me-1"></i> Silakan tentukan Program Studi yang <strong>DITERIMA</strong> untuk calon mahasiswa berikut:</div>';
+    checkboxes.forEach(cb => {
+        const id = cb.value;
+        const name = cb.dataset.name || 'Calon Mahasiswa #' + id;
+        const p1Id = cb.dataset.prodi1Id;
+        const p1Name = cb.dataset.prodi1Name;
+        const p2Id = cb.dataset.prodi2Id;
+        const p2Name = cb.dataset.prodi2Name;
+        const p3Id = cb.dataset.prodi3Id;
+        const p3Name = cb.dataset.prodi3Name;
+        const acceptedId = cb.dataset.acceptedId;
+
+        html += `<div class="card mb-3 border">
+            <div class="card-header bg-light py-2 fw-semibold">
+                <i class="ti ti-user me-1 text-primary"></i> ${name}
+            </div>
+            <div class="card-body p-3">
+                <div class="fw-semibold text-muted mb-2 small">Pilihan Program Studi Diterima:</div>
+                <div class="d-flex flex-column gap-2">`;
+
+        if (p1Id && p1Name) {
+            const checked = (!acceptedId || acceptedId == p1Id) ? 'checked' : '';
+            html += `<label class="form-check-label d-flex align-items-center gap-2 p-2 border rounded cursor-pointer">
+                <input type="radio" name="prodi_selections[${id}]" value="${p1Id}" class="form-check-input" ${checked}>
+                <span><span class="badge bg-primary me-1">Pilihan 1</span> ${p1Name}</span>
+            </label>`;
+        }
+
+        if (p2Id && p2Name) {
+            const checked = (acceptedId == p2Id) ? 'checked' : '';
+            html += `<label class="form-check-label d-flex align-items-center gap-2 p-2 border rounded cursor-pointer">
+                <input type="radio" name="prodi_selections[${id}]" value="${p2Id}" class="form-check-input" ${checked}>
+                <span><span class="badge bg-info text-dark me-1">Pilihan 2</span> ${p2Name}</span>
+            </label>`;
+        }
+
+        if (p3Id && p3Name) {
+            const checked = (acceptedId == p3Id) ? 'checked' : '';
+            html += `<label class="form-check-label d-flex align-items-center gap-2 p-2 border rounded cursor-pointer">
+                <input type="radio" name="prodi_selections[${id}]" value="${p3Id}" class="form-check-input" ${checked}>
+                <span><span class="badge bg-secondary me-1">Pilihan 3</span> ${p3Name}</span>
+            </label>`;
+        }
+
+        if (!p1Id && !p2Id && !p3Id) {
+            html += `<div class="text-muted small">Tidak ada data pilihan prodi. Sistem akan menyetujui pendaftaran secara otomatis.</div>`;
+        }
+
+        html += `</div></div></div>`;
+    });
+    return html;
+}
+
 async function processSingle(id, action) {
-    const confirmed = await confirmAsync('Yakin ingin mengubah status pendaftar ini menjadi ' + action + '?');
-    if (!confirmed) return;
-    
     const form = document.getElementById('bulk-kelulusan-form');
     const input = document.getElementById('bulk-action-input');
     
     // Uncheck all checkboxes
     document.querySelectorAll('input[name="selected_ids[]"]').forEach(cb => cb.checked = false);
     
-    // Check only the target one
+    // Check only target one
     const targetCb = document.querySelector('input.row-checkbox[value="' + id + '"]');
-    if (targetCb) targetCb.checked = true;
-    
-    input.value = action;
-    form.submit();
+    if (!targetCb) {
+        alert('Pendaftar tidak ditemukan.');
+        return;
+    }
+    targetCb.checked = true;
+
+    if (action === 'Lulus') {
+        const body = document.getElementById('modalKelulusanProdiBody');
+        body.innerHTML = buildProdiOptionsHTML([targetCb]);
+        const modal = new bootstrap.Modal(document.getElementById('modalKelulusanProdi'));
+        modal.show();
+    } else {
+        const confirmed = await confirmAsync('Yakin ingin mengubah status pendaftar ini menjadi Gagal?');
+        if (!confirmed) return;
+        input.value = 'Gagal';
+        form.submit();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -300,6 +400,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnBulk = document.getElementById('btn-bulk-kelulusan');
     const bulkForm = document.getElementById('bulk-kelulusan-form');
     const bulkActionInput = document.getElementById('bulk-action-input');
+    const btnConfirmModal = document.getElementById('btn-confirm-kelulusan');
 
     if (btnBulk && bulkForm) {
         btnBulk.addEventListener('click', async function(e) {
@@ -309,18 +410,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Silakan pilih minimal satu pendaftar terlebih dahulu.');
                 return;
             }
-            const doLulus = await confirmAsync(checked.length + ' pendaftar dipilih. Klik OK untuk Luluskan, Batal untuk Gagalkan.', {
-              confirmText: 'Ya, Luluskan',
+
+            const doLulus = await confirmAsync(checked.length + ' pendaftar dipilih. Pilih aksi kelulusan:', {
+              confirmText: 'Luluskan Seleksi',
               buttonClass: 'btn-success',
               icon: 'checklist',
               iconColor: 'text-success',
-              title: 'Konfirmasi Kelulusan Massal'
+              title: 'Proses Kelulusan Massal'
             });
+
             if (doLulus) {
-                bulkActionInput.value = 'Lulus';
+                const body = document.getElementById('modalKelulusanProdiBody');
+                body.innerHTML = buildProdiOptionsHTML(checked);
+                const modal = new bootstrap.Modal(document.getElementById('modalKelulusanProdi'));
+                modal.show();
             } else {
-                bulkActionInput.value = 'Gagal';
+                const confirmedGagal = await confirmAsync('Yakin ingin men-set Gagal untuk ' + checked.length + ' pendaftar?');
+                if (confirmedGagal) {
+                    bulkActionInput.value = 'Gagal';
+                    bulkForm.submit();
+                }
             }
+        });
+    }
+
+    if (btnConfirmModal && bulkForm) {
+        btnConfirmModal.addEventListener('click', function() {
+            bulkActionInput.value = 'Lulus';
             bulkForm.submit();
         });
     }

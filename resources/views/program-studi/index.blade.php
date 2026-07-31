@@ -51,6 +51,7 @@
                     <x-sortable-header field="nama_prodi" label="Nama Prodi" />
                     <x-sortable-header field="jurusan" label="Jurusan" />
                     <x-sortable-header field="jenjang_akademik" label="Jenjang" width="80px" />
+                    <x-sortable-header field="passing_grade" label="Passing Grade" width="110px" />
                     <x-sortable-header field="program" label="Program" />
                     <x-sortable-header field="kelompok" label="Kelompok" />
                     <x-sortable-header field="status_aktif" label="Status" width="90px" />

@@ -638,12 +638,18 @@
                                   </div>
                                   <div>
                                       <span class="badge bg-success px-3 py-1 font-weight-bold" style="font-size: 0.85rem;">PENGUMUMAN HASIL SELEKSI</span>
-                                      <h4 class="card-title text-success font-weight-bold mb-0 mt-1">Selamat! Anda Dinyatakan LULUS</h4>
+                                      @php $accProdiStudent = $registration->acceptedProgramStudi ?? $registration->programStudi1; @endphp
+                                      <h4 class="card-title text-success font-weight-bold mb-0 mt-1">
+                                          Selamat! Anda Dinyatakan LULUS di Program Studi: {{ $accProdiStudent?->jenjang }} - {{ $accProdiStudent?->nama_prodi }}
+                                          @if($registration->accepted_pilihan_ke)
+                                              <span class="badge bg-success-subtle text-success border border-success-subtle fs-6 ms-2">(Pilihan {{ $registration->accepted_pilihan_ke }})</span>
+                                          @endif
+                                      </h4>
                                   </div>
                               </div>
                               
                               <p class="card-text text-dark" style="font-size: 0.95rem; line-height: 1.6;">
-                                  Selamat! Anda telah memenuhi syarat dan dinyatakan <strong>LULUS</strong> seleksi Penerimaan Mahasiswa Baru. Silakan melanjutkan ke tahap berikutnya untuk melengkapi berkas registrasi ulang dan mengunci status kemahasiswaan Anda.
+                                  Selamat! Anda telah memenuhi syarat dan dinyatakan <strong>LULUS</strong> seleksi Penerimaan Mahasiswa Baru pada Program Studi <strong>{{ $accProdiStudent?->jenjang }} {{ $accProdiStudent?->nama_prodi }}</strong>. Silakan melanjutkan ke tahap berikutnya untuk melengkapi berkas registrasi ulang dan mengunci status kemahasiswaan Anda.
                               </p>
                               
                               <hr class="my-3" style="border-top: 1px dashed #28a745;">

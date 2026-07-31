@@ -92,6 +92,11 @@ class User extends Authenticatable
             return true;
         }
 
+        // Modal complete biodata is strictly for users registered via Google OAuth
+        if (empty($this->google_id)) {
+            return true;
+        }
+
         if ($this->is_profile_completed) {
             return true;
         }

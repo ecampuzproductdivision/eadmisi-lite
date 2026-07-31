@@ -445,7 +445,7 @@
             <tr>
                 <td class="label-col">Program Studi Diterima</td>
                 <td class="separator-col">:</td>
-                <td class="val-col"><strong style="color: #0b5ed7;">{{ $prodiDiterima }} {{ $jenjang ? '('.$jenjang.')' : '' }}</strong></td>
+                <td class="val-col"><strong style="color: #0b5ed7;">{{ $prodiDiterima }} {{ $jenjang ? '('.$jenjang.')' : '' }} {{ isset($pilihanKe) ? '[Pilihan '.$pilihanKe.']' : '' }}</strong></td>
             </tr>
             @if($skorUjian)
             <tr>

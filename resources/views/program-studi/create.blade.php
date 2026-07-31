@@ -131,6 +131,13 @@
                     </div>
 
                     <div class="col-md-3 col-12">
+                        <label for="passing_grade" class="form-label fw-semibold">Passing Grade (Ambang Batas)</label>
+                        <input type="number" name="passing_grade" id="passing_grade" class="form-control @error('passing_grade') is-invalid @enderror" placeholder="Contoh: 80" value="{{ old('passing_grade') }}" min="0" max="100">
+                        <div class="form-text">Batas nilai lulus CBT prodi (kosongkan/0 untuk fallback jalur).</div>
+                        @error('passing_grade') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-3 col-12">
                         <label class="form-label fw-semibold d-block">Status Aktif <span class="text-danger">*</span></label>
                         <div class="d-flex gap-4 mt-2">
                             <div class="form-check">

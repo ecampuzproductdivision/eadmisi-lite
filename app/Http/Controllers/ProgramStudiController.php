@@ -55,6 +55,7 @@ class ProgramStudiController extends Controller
             'kelompok'         => 'required|string|in:Eksakta,Non Eksakta',
             'program'          => 'required|string|max:50',
             'label_prodi_no_pendaftaran' => 'nullable|string|max:50',
+            'passing_grade'              => 'nullable|integer|min:0|max:100',
             'status_aktif'     => 'boolean',
         ]);
 
@@ -102,6 +103,7 @@ class ProgramStudiController extends Controller
             'kelompok'         => 'required|string|in:Eksakta,Non Eksakta',
             'program'          => 'required|string|max:50',
             'label_prodi_no_pendaftaran' => 'nullable|string|max:50',
+            'passing_grade'              => 'nullable|integer|min:0|max:100',
             'status_aktif'     => 'boolean',
         ]);
 

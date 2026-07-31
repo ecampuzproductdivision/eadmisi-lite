@@ -408,12 +408,59 @@ class RegistrationPathController extends Controller
             $metode = $path ? $path->metode_pengumuman : 'ditahan';
             if ($metode === 'langsung' || $metode === 'Langsung (One Day Service)') {
                 $score = $examResult->score ?? 0;
-                $threshold = ($path && $path->nilai_ambang_batas !== null) ? $path->nilai_ambang_batas : 75;
+                $globalThreshold = ($path && $path->nilai_ambang_batas !== null) ? $path->nilai_ambang_batas : 75;
 
-                if ($score >= $threshold) {
-                    $registration->update(['status' => 'accepted', 'status_kelulusan' => 'Lulus', 'status_pendaftaran' => 'Lulus', 'updated_at' => now()]);
+                $accId = null;
+                $accPil = null;
+
+                $registration->loadMissing(['programStudi1', 'programStudi2', 'programStudi3']);
+
+                if ($registration->program_studi_1_id) {
+                    $p1 = $registration->programStudi1;
+                    $t1 = ($p1 && $p1->passing_grade !== null && $p1->passing_grade > 0) ? $p1->passing_grade : $globalThreshold;
+                    if ($score >= $t1) {
+                        $accId = $registration->program_studi_1_id;
+                        $accPil = 1;
+                    }
+                }
+
+                if (!$accId && $registration->program_studi_2_id) {
+                    $p2 = $registration->programStudi2;
+                    $t2 = ($p2 && $p2->passing_grade !== null && $p2->passing_grade > 0) ? $p2->passing_grade : $globalThreshold;
+                    if ($score >= $t2) {
+                        $accId = $registration->program_studi_2_id;
+                        $accPil = 2;
+                    }
+                }
+
+                if (!$accId && $registration->program_studi_3_id) {
+                    $p3 = $registration->programStudi3;
+                    $t3 = ($p3 && $p3->passing_grade !== null && $p3->passing_grade > 0) ? $p3->passing_grade : $globalThreshold;
+                    if ($score >= $t3) {
+                        $accId = $registration->program_studi_3_id;
+                        $accPil = 3;
+                    }
+                }
+
+                if ($accId !== null) {
+                    $registration->update([
+                        'status' => 'accepted',
+                        'status_kelulusan' => 'Lulus',
+                        'status_pendaftaran' => 'Lulus',
+                        'accepted_program_studi_id' => $accId,
+                        'accepted_pilihan_ke' => $accPil,
+                        'status_registrasi_ulang' => 'belum_registrasi',
+                        'updated_at' => now()
+                    ]);
                 } else {
-                    $registration->update(['status' => 'rejected', 'status_kelulusan' => 'Tidak Lulus', 'status_pendaftaran' => 'Gagal', 'updated_at' => now()]);
+                    $registration->update([
+                        'status' => 'rejected',
+                        'status_kelulusan' => 'Tidak Lulus',
+                        'status_pendaftaran' => 'Gagal',
+                        'accepted_program_studi_id' => null,
+                        'accepted_pilihan_ke' => null,
+                        'updated_at' => now()
+                    ]);
                 }
                 $registration->refresh();
             }

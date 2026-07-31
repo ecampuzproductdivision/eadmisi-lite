@@ -21,6 +21,7 @@ class ProgramStudi extends Model
         'label_prodi_no_pendaftaran',
         'status',
         'status_aktif',
+        'passing_grade',
         'deskripsi_singkat',
         'akreditasi',
         'kode_icon',

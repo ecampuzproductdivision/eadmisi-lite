@@ -64,6 +64,7 @@ class DatabaseSeeder extends Seeder
 
             // ── Menu Category (update categories for all menus) ──
             MenuCategorySeeder::class,
+            BeasiswaPotonganMenuSeeder::class,
         ]);
     }
 }

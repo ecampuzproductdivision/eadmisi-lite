@@ -31,6 +31,8 @@ class PendaftaranController extends Controller
             'registrationPath' => fn($q) => $q->withTrashed()->with('templateBerkas.syaratDokumens'),
             'programStudi1',
             'programStudi2',
+            'programStudi3',
+            'acceptedProgramStudi',
             'documents',
             'payments',
             'examResults',
@@ -74,6 +76,8 @@ class PendaftaranController extends Controller
             'registrationPath' => fn($q) => $q->withTrashed()->with('templateBerkas.syaratDokumens'),
             'programStudi1',
             'programStudi2',
+            'programStudi3',
+            'acceptedProgramStudi',
             'documents',
         ])->findOrFail($id);
 
@@ -149,9 +153,27 @@ class PendaftaranController extends Controller
                 'status_pendaftaran' => $action === 'Lulus' ? 'Lulus' : 'Gagal',
             ];
 
-            // TRIGGER 1: When candidate passes selection, set re-registration status
+            // TRIGGER 1: When candidate passes selection, set re-registration status & accepted prodi
             if ($action === 'Lulus') {
                 $updateData['status_registrasi_ulang'] = 'belum_registrasi';
+
+                $chosenProdiId = $request->input("prodi_selections.{$id}");
+                if (!$chosenProdiId) {
+                    $chosenProdiId = $registration->program_studi_1_id ?: ($registration->program_studi_2_id ?: $registration->program_studi_3_id);
+                }
+
+                $pilihanKe = 1;
+                if ($chosenProdiId == $registration->program_studi_2_id) {
+                    $pilihanKe = 2;
+                } elseif ($chosenProdiId == $registration->program_studi_3_id) {
+                    $pilihanKe = 3;
+                }
+
+                $updateData['accepted_program_studi_id'] = $chosenProdiId;
+                $updateData['accepted_pilihan_ke'] = $pilihanKe;
+            } else {
+                $updateData['accepted_program_studi_id'] = null;
+                $updateData['accepted_pilihan_ke'] = null;
             }
 
             $registration->update($updateData);
@@ -477,6 +499,8 @@ class PendaftaranController extends Controller
                 'registrationPath.kategori',
                 'programStudi1',
                 'programStudi2',
+                'programStudi3',
+                'acceptedProgramStudi',
                 'examResults'
             ])->findOrFail($id);
 
@@ -490,6 +514,8 @@ class PendaftaranController extends Controller
                 'registrationPath.kategori',
                 'programStudi1',
                 'programStudi2',
+                'programStudi3',
+                'acceptedProgramStudi',
                 'examResults'
             ])->where('user_id', $user->id)
               ->latest()
@@ -504,8 +530,11 @@ class PendaftaranController extends Controller
             abort(403, 'Dokumen Bukti Kelulusan hanya dapat dicetak oleh calon mahasiswa yang telah dinyatakan LULUS seleksi PMB.');
         }
 
-        $prodiDiterima = $registration->programStudi1?->nama_prodi ?? '-';
-        $jenjang = $registration->programStudi1?->jenjang ?? '';
+        $acceptedProdi = $registration->acceptedProgramStudi ?: $registration->programStudi1;
+        $prodiDiterima = $acceptedProdi?->nama_prodi ?? '-';
+        $jenjang = $acceptedProdi?->jenjang ?? '';
+        $pilihanKe = $registration->accepted_pilihan_ke ?? 1;
+
         $examResult = $registration->examResults->sortByDesc('created_at')->first();
         $skorUjian = $examResult ? number_format($examResult->score, 1) : null;
 
@@ -517,6 +546,7 @@ class PendaftaranController extends Controller
             'noSurat' => $noSurat,
             'prodiDiterima' => $prodiDiterima,
             'jenjang' => $jenjang,
+            'pilihanKe' => $pilihanKe,
             'skorUjian' => $skorUjian,
             'tanggalCetak' => now()->translatedFormat('d F Y'),
         ];

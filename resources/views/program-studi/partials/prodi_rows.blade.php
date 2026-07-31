@@ -17,6 +17,13 @@
       @endphp
       <span class="badge {{ $badgeClass }}">{{ $prodi->jenjang_akademik }}</span>
     </td>
+    <td>
+      @if($prodi->passing_grade)
+        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 fw-bold">{{ $prodi->passing_grade }}</span>
+      @else
+        <span class="text-muted small">Jalur (Default)</span>
+      @endif
+    </td>
     <td>{{ $prodi->program }}</td>
     <td>
       @if($prodi->kelompok === 'Eksakta')

@@ -67,6 +67,19 @@
             </span>
             <small class="text-muted">{{ $badge[3] }}</small>
           </div>
+          @if(in_array($registration->status, ['accepted', 'Lulus']) || $registration->status_kelulusan === 'Lulus')
+            @php $accProdi = $registration->acceptedProgramStudi ?? $registration->programStudi1; @endphp
+            @if($accProdi)
+              <div class="alert alert-success border-0 rounded-3 mt-3 mb-0 d-flex align-items-center gap-2">
+                <i class="ti ti-trophy fs-3 text-success"></i>
+                <div>
+                  <strong class="d-block text-success">Dinyatakan LULUS pada Program Studi:</strong>
+                  <span class="fw-bold fs-6">{{ $accProdi->jenjang }} {{ $accProdi->nama_prodi }}</span>
+                  <span class="badge bg-success ms-2">Pilihan {{ $registration->accepted_pilihan_ke ?? 1 }}</span>
+                </div>
+              </div>
+            @endif
+          @endif
           
           @if($registration->status === 'payment_pending')
             @php
@@ -213,13 +226,34 @@
         </div>
         <div class="card-body">
           <div class="row g-3">
-            <div class="col-md-6">
+            <div class="col-md-4">
               <label class="small text-muted mb-1">Pilihan 1</label>
-              <p class="fw-semibold mb-0">{{ $registration->programStudi1?->nama ?? '-' }}</p>
+              <p class="fw-semibold mb-0">
+                {{ $registration->programStudi1?->nama_prodi ?? '-' }}
+                @if($registration->accepted_program_studi_id && $registration->accepted_program_studi_id == $registration->program_studi_1_id)
+                  <span class="badge bg-success ms-1"><i class="ti ti-check me-1"></i>Diterima</span>
+                @elseif(!$registration->accepted_program_studi_id && (in_array($registration->status, ['accepted', 'Lulus']) || $registration->status_kelulusan === 'Lulus') && $registration->programStudi1)
+                  <span class="badge bg-success ms-1"><i class="ti ti-check me-1"></i>Diterima</span>
+                @endif
+              </p>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
               <label class="small text-muted mb-1">Pilihan 2</label>
-              <p class="fw-semibold mb-0">{{ $registration->programStudi2?->nama ?? '-' }}</p>
+              <p class="fw-semibold mb-0">
+                {{ $registration->programStudi2?->nama_prodi ?? '-' }}
+                @if($registration->accepted_program_studi_id && $registration->accepted_program_studi_id == $registration->program_studi_2_id)
+                  <span class="badge bg-success ms-1"><i class="ti ti-check me-1"></i>Diterima</span>
+                @endif
+              </p>
+            </div>
+            <div class="col-md-4">
+              <label class="small text-muted mb-1">Pilihan 3</label>
+              <p class="fw-semibold mb-0">
+                {{ $registration->programStudi3?->nama_prodi ?? '-' }}
+                @if($registration->accepted_program_studi_id && $registration->accepted_program_studi_id == $registration->program_studi_3_id)
+                  <span class="badge bg-success ms-1"><i class="ti ti-check me-1"></i>Diterima</span>
+                @endif
+              </p>
             </div>
           </div>
         </div>

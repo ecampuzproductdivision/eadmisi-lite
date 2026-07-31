@@ -301,12 +301,51 @@ class TesOnlineController extends Controller
         } else {
             // ── OPTION 1: "Langsung (One Day Service)" ──
             // ── OPTION 3: "Penilaian Manual / Verifikasi Langsung" ──
-            // Leave existing logic exactly as is (no changes)
-            if ($totalScore >= $threshold) {
+            $globalThreshold = ($jalur && $jalur->nilai_ambang_batas !== null) ? $jalur->nilai_ambang_batas : 75;
+
+            $acceptedProdiId = null;
+            $acceptedPilihanKe = null;
+
+            $registration->loadMissing(['programStudi1', 'programStudi2', 'programStudi3']);
+
+            // 1. Evaluasi Pilihan 1
+            if ($registration->program_studi_1_id) {
+                $p1 = $registration->programStudi1;
+                $t1 = ($p1 && $p1->passing_grade !== null && $p1->passing_grade > 0) ? $p1->passing_grade : $globalThreshold;
+                if ($totalScore >= $t1) {
+                    $acceptedProdiId = $registration->program_studi_1_id;
+                    $acceptedPilihanKe = 1;
+                }
+            }
+
+            // 2. Evaluasi Pilihan 2 (jika Pilihan 1 tidak lolos passing grade)
+            if (!$acceptedProdiId && $registration->program_studi_2_id) {
+                $p2 = $registration->programStudi2;
+                $t2 = ($p2 && $p2->passing_grade !== null && $p2->passing_grade > 0) ? $p2->passing_grade : $globalThreshold;
+                if ($totalScore >= $t2) {
+                    $acceptedProdiId = $registration->program_studi_2_id;
+                    $acceptedPilihanKe = 2;
+                }
+            }
+
+            // 3. Evaluasi Pilihan 3 (jika Pilihan 1 & 2 tidak lolos passing grade)
+            if (!$acceptedProdiId && $registration->program_studi_3_id) {
+                $p3 = $registration->programStudi3;
+                $t3 = ($p3 && $p3->passing_grade !== null && $p3->passing_grade > 0) ? $p3->passing_grade : $globalThreshold;
+                if ($totalScore >= $t3) {
+                    $acceptedProdiId = $registration->program_studi_3_id;
+                    $acceptedPilihanKe = 3;
+                }
+            }
+
+            if ($acceptedProdiId !== null) {
                 $registration->update([
                     'status' => 'accepted',
                     'status_kelulusan' => 'Lulus',
                     'status_pendaftaran' => 'Lulus',
+                    'accepted_program_studi_id' => $acceptedProdiId,
+                    'accepted_pilihan_ke' => $acceptedPilihanKe,
+                    'status_registrasi_ulang' => 'belum_registrasi',
                     'updated_at' => now()
                 ]);
             } else {
@@ -314,6 +353,8 @@ class TesOnlineController extends Controller
                     'status' => 'rejected',
                     'status_kelulusan' => 'Tidak Lulus',
                     'status_pendaftaran' => 'Gagal',
+                    'accepted_program_studi_id' => null,
+                    'accepted_pilihan_ke' => null,
                     'updated_at' => now()
                 ]);
             }
